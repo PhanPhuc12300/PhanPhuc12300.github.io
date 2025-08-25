@@ -66,7 +66,150 @@
   <title>404 – Không tìm thấy trang</title>
   <meta name="description" content="Trang 404 – Không tìm thấy nội dung bạn yêu cầu." />
   <style>
-    /* Giữ nguyên toàn bộ CSS như cậu có ở trên */
+    :root {
+  --bg: #f9fafb;
+  --fg: #111827;
+  --primary: #2563eb;
+  --secondary: #4b5563;
+  --danger: #dc2626;
+  --radius: 0.75rem;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0 }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+main.wrap {
+  max-width: 900px;
+  width: 100%;
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.badge {
+  display: inline-block;
+  background: var(--danger);
+  color: #fff;
+  font-weight: bold;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+p.lead {
+  color: var(--secondary);
+  margin-bottom: 1.5rem;
+}
+
+form.search {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+form.search input {
+  flex: 1;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #d1d5db;
+  border-radius: var(--radius);
+}
+
+.btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn.primary {
+  background: var(--primary);
+  color: #fff;
+}
+.btn.primary:hover { background: #1d4ed8 }
+
+.btn.ghost {
+  background: transparent;
+  border: 1px solid #d1d5db;
+}
+.btn.ghost:hover { background: #f3f4f6 }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.code {
+  font-family: monospace;
+  background: #f3f4f6;
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--radius);
+}
+
+.hint {
+  font-size: 0.9rem;
+  color: var(--secondary);
+}
+
+aside.art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+aside.art svg {
+  max-width: 100%;
+  height: auto;
+}
+
+footer {
+  background: #f9fafb;
+  padding: 1rem 2rem;
+  font-size: 0.85rem;
+  color: var(--secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+  aside.art { order: -1 }
+}
+
   </style>
 </head>
 <body>
