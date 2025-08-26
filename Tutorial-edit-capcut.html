@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hướng dẫn CapCut — Tutorial HTML</title>
+  <meta name="description" content="Hướng dẫn chi tiết cách edit video bằng CapCut (Mobile & Desktop) với từng bước cụ thể, mẹo, preset gợi ý, và lỗi thường gặp." />
+  <style>
+    :root{
+      --bg:#0b1320;--fg:#e7edf5;--muted:#9fb3c8;--card:rgba(255,255,255,.04);--accent:#60a5fa;--ok:#34d399;--warn:#f59e0b;--bad:#ef4444;--br:22px
+    }
+    @media(prefers-color-scheme:light){:root{--bg:#f6f7fb;--fg:#0f172a;--muted:#64748b;--card:#fff;--accent:#2563eb;--ok:#059669;--warn:#b45309;--bad:#b91c1c}}
+    *{box-sizing:border-box}html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.55;color:var(--fg);background:
+      radial-gradient(900px 600px at -10% 110%, rgba(96,165,250,.18), transparent 60%),
+      radial-gradient(1000px 700px at 100% -10%, rgba(99,102,241,.18), transparent 60%),
+      var(--bg)}
+    .container{max-width:1080px;margin:auto;padding:28px 16px}
+    header{background:var(--card);border-radius:var(--br);padding:26px 22px;box-shadow:0 14px 40px rgba(0,0,0,.18)}
+    h1{margin:0 0 6px;font-size:clamp(1.8rem,4vw,2.6rem);letter-spacing:-.02em}
+    p.lead{margin:6px 0 0;color:var(--muted)}
+    nav.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:16px 0 0}
+    .toc a{display:block;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.06);text-decoration:none;color:var(--fg);border:1px solid rgba(148,163,184,.3)}
+    main{margin-top:22px;display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+    @media(max-width:980px){main{grid-template-columns:1fr}}
+    section.card{background:var(--card);border-radius:var(--br);padding:22px;border:1px solid rgba(148,163,184,.3)}
+    h2{margin:0 0 12px;font-size:clamp(1.2rem,3vw,1.6rem)}
+    h3{margin:18px 0 8px}
+    .step{display:flex;gap:12px;margin:10px 0;padding:12px;border:1px dashed rgba(148,163,184,.35);border-radius:14px;background:rgba(148,163,184,.08)}
+    .step .num{flex:0 0 28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;background:var(--accent);color:white}
+    .kbd{display:inline-block;padding:.15rem .45rem;border-radius:6px;border:1px solid rgba(148,163,184,.45);background:rgba(148,163,184,.12);font-family:ui-monospace,Menlo,Consolas,monospace}
+    .tip{padding:10px 12px;border-left:4px solid var(--ok);border-radius:12px;background:rgba(16,185,129,.12)}
+    .warn{padding:10px 12px;border-left:4px solid var(--warn);border-radius:12px;background:rgba(245,158,11,.12)}
+    .danger{padding:10px 12px;border-left:4px solid var(--bad);border-radius:12px;background:rgba(239,68,68,.12)}
+    details{border:1px solid rgba(148,163,184,.3);border-radius:12px;padding:10px 12px;background:rgba(148,163,184,.08)}
+    summary{cursor:pointer;font-weight:700}
+    .imgph{width:100%;aspect-ratio:16/9;border-radius:14px;border:1px solid rgba(148,163,184,.3);display:grid;place-items:center;color:var(--muted);background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.02));margin:8px 0}
+    footer{margin-top:16px;text-align:center;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1rem;border-radius:12px;border:1px solid rgba(148,163,184,.35);background:transparent;color:var(--fg);text-decoration:none}
+    .btn.primary{background:linear-gradient(180deg,color-mix(in oklab,var(--accent) 92%,#fff 8%),var(--accent));color:#0b0c10;border-color:transparent}
+    .small{font-size:.95rem;color:var(--muted)}
+    code{background:rgba(148,163,184,.12);padding:.2rem .35rem;border-radius:6px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>CapCut — Hướng dẫn chi tiết chỉnh sửa video</h1>
+      <p class="lead">Tutorial từng bước cho cả <strong>Mobile</strong> (Android/iOS) và <strong>Desktop</strong> (Windows/macOS). Có kèm mẹo nhanh, preset gợi ý và xử lý lỗi thường gặp.</p>
+      <nav class="toc" aria-label="Mục lục nhanh">
+        <a href="#start">Bắt đầu nhanh</a>
+        <a href="#workflow">Quy trình 10 bước</a>
+        <a href="#mobile">CapCut Mobile</a>
+        <a href="#desktop">CapCut Desktop</a>
+        <a href="#shorts">Edit dọc: TikTok/Reels/Shorts</a>
+        <a href="#export">Xuất video chuẩn</a>
+        <a href="#tricks">Mẹo & phím tắt</a>
+        <a href="#troubleshoot">Lỗi thường gặp</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="start" class="card" role="region" aria-labelledby="h2-start">
+        <h2 id="h2-start">1) Bắt đầu nhanh</h2>
+        <div class="grid">
+          <div>
+            <h3>Cài đặt</h3>
+            <div class="step"><div class="num">1</div><div>Tải <strong>CapCut</strong> trên <em>App Store/Google Play</em> (Mobile) hoặc <em>capcut.com</em> (Desktop).</div></div>
+            <div class="step"><div class="num">2</div><div>Đăng nhập (khuyên dùng) để đồng bộ dự án & font.</div></div>
+            <div class="step"><div class="num">3</div><div>Chuẩn bị media: video gốc, ảnh, logo (PNG), nhạc (MP3/WAV), subtitle nếu có (SRT).</div></div>
+          </div>
+          <div>
+            <h3>Tạo dự án</h3>
+            <div class="step"><div class="num">4</div><div>Mobile: <strong>New project</strong> → chọn clip. Desktop: <strong>New project</strong> → kéo media vào thư viện.</div></div>
+            <div class="step"><div class="num">5</div><div>Chọn tỉ lệ khung hình: <code>9:16</code> (dọc), <code>16:9</code> (ngang), <code>1:1</code>, <code>4:5</code>.</div></div>
+            <div class="step"><div class="num">6</div><div>Kéo thả clip vào timeline để bắt đầu edit.</div></div>
+          </div>
+        </div>
+        <div class="imgph" aria-label="Ảnh minh họa giao diện CapCut">
+  <a href="https://capcut.com" target="_blank">
+    <img src="https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:format(webp):quality(75)/2024_3_22_638467159232366847_mau-capcut-tren-pc.png" alt="Ảnh giao diện CapCut" style="max-width:100%; border-radius:12px;">
+  </a>
+</div>
+
+        <p class="tip">Mẹo: Ngay từ đầu hãy quyết định <strong>FPS</strong> mục tiêu (30fps cho nội dung nói; 60fps cho gameplay/chuyển động nhanh).</p>
+      </section>
+
+      <section id="workflow" class="card" aria-labelledby="h2-flow">
+        <h2 id="h2-flow">2) Quy trình 10 bước (chuẩn cho hầu hết video)</h2>
+        <ol>
+          <li><strong>Nạp media</strong> (video, ảnh, nhạc, logo).</li>
+          <li><strong>Chọn tỉ lệ</strong> và <strong>độ phân giải</strong> dự án (1080p mặc định).</li>
+          <li><strong>Cắt gọn</strong> (Trim), <strong>tách</strong> (Split) phần thừa.</li>
+          <li><strong>Canh nhịp</strong> theo beat nhạc (đặt <em>markers</em> hoặc xem dạng sóng âm).</li>
+          <li><strong>Thêm chữ</strong> (Text), <strong>Auto captions</strong> nếu nói nhiều.</li>
+          <li><strong>Transitions</strong> nhẹ giữa các đoạn quan trọng.</li>
+          <li><strong>Màu sắc</strong>: Exposure, Contrast, Saturation, LUT nếu cần.</li>
+          <li><strong>Hiệu ứng</strong>: Motion blur, Shake subtle; tránh lạm dụng.</li>
+          <li><strong>Âm thanh</strong>: Normalize, Ducking (nói rõ, nhạc nhỏ).</li>
+          <li><strong>Xuất</strong> (Export) đúng thông số nền tảng đăng.</li>
+        </ol>
+        <details><summary>Tham khảo preset xuất file theo nền tảng</summary>
+          <ul>
+            <li><strong>TikTok/Reels/Shorts</strong>: 1080×1920, 24–30fps, Bitrate 8–12 Mbps (H.264), AAC 256 kbps.</li>
+            <li><strong>YouTube ngang</strong>: 1920×1080, 30/60fps, Bitrate 12–20 Mbps, AAC 320 kbps.</li>
+            <li><strong>Facebook</strong>: 1080p, 30fps, VBR 2-pass nếu có.</li>
+          </ul>
+        </details>
+      </section>
+
+      <section id="mobile" class="card" aria-labelledby="h2-mobile">
+        <h2 id="h2-mobile">3) CapCut Mobile — từng bước cụ thể</h2>
+        <div class="step"><div class="num">1</div><div><strong>New project</strong> → chọn clip → <em>Add</em>. Đổi tỉ lệ ở <strong>Canvas</strong> → chọn <code>9:16</code>/<code>16:9</code>.</div></div>
+        <div class="step"><div class="num">2</div><div><strong>Cắt & Tách</strong>: kéo hai đầu clip để <em>Trim</em>; di chuyển playhead và ấn <strong>Split</strong> để tách đoạn.</div></div>
+        <div class="step"><div class="num">3</div><div><strong>Ghép & Sắp xếp</strong>: nhấn giữ clip để kéo vị trí; chèn ảnh B‑roll lên track trên cùng (Overlay).</div></div>
+        <div class="step"><div class="num">4</div><div><strong>Text</strong>: <em>Text → Add text</em>, chọn Font, Size, Stroke/Shadow; dùng <strong>Auto captions</strong> để tạo phụ đề tự động (chọn ngôn ngữ phù hợp).</div></div>
+        <div class="step"><div class="num">5</div><div><strong>Âm thanh</strong>: <em>Audio → Sounds</em> (nhạc) hoặc <em>Extract</em> từ video khác; giảm nhạc khi có giọng nói (Ducking).</div></div>
+        <div class="step"><div class="num">6</div><div><strong>Transitions</strong>: chạm biểu tượng giữa 2 clip → chọn hiệu ứng nhẹ (Cross‑fade 8‑12 khung hình).</div></div>
+        <div class="step"><div class="num">7</div><div><strong>Hiệu ứng</strong>: <em>Effects → Video effects</em> (Blur/Motion) hoặc <em>Body effects</em> khi quay dọc.</div></div>
+        <div class="step"><div class="num">8</div><div><strong>Tốc độ</strong>: <em>Speed</em> → Normal (đều) hoặc Curve (nhấn‑nhả). Tạo nhấn nhá theo beat.</div></div>
+        <div class="step"><div class="num">9</div><div><strong>Chroma key</strong> (xóa phông xanh): chọn clip Overlay → <em>Chroma key</em> → Eyedropper chọn màu → Adjust Strength/Shadow.</div></div>
+        <div class="step"><div class="num">10</div><div><strong>Export</strong>: Ấn <strong>▲</strong> (góc phải) → chọn <em>Resolution</em> (1080p), <em>FPS</em> (30/60), <em>Bitrate</em> (8–12 Mbps) → Export.</div></div>
+<div class="imgph" aria-label="Màn hình Auto Captions & Speed Curve">
+  <img src="https://sadesign.vn/pictures/picfullsizes/2025/01/04/huong-dan-chen-phu-de-tu-dong-capcut-14.jpg" 
+       alt="Màn hình Auto Captions & Speed Curve trong CapCut" 
+       style="max-width:100%; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+</div>
+
+        <p class="tip">Giữ video dưới <strong>60–90s</strong> cho nền tảng dọc. Hook 3s đầu: chữ to, nhạc nổi.</p>
+      </section>
+
+      <section id="desktop" class="card" aria-labelledby="h2-desktop">
+        <h2 id="h2-desktop">4) CapCut Desktop — từng bước cụ thể</h2>
+        <div class="step"><div class="num">1</div><div><strong>New project</strong> → kéo media vào <em>Media bin</em>. Kéo clip xuống <strong>Timeline</strong>.</div></div>
+        <div class="step"><div class="num">2</div><div><strong>Split</strong>: đặt playhead → bấm nút <em>Split</em> trên toolbar <em>(phím tắt phổ biến: <span class="kbd">Ctrl/Cmd</span> + <span class="kbd">B</span>)</em>. <strong>Undo</strong>: <span class="kbd">Ctrl/Cmd</span> + <span class="kbd">Z</span>.</div></div>
+        <div class="step"><div class="num">3</div><div><strong>Markers</strong>: click dòng thời gian → <em>Add marker</em> tại nhịp trống để canh beat.</div></div>
+        <div class="step"><div class="num">4</div><div><strong>Audio ducking</strong>: chọn track voice → bật <em>Auto ducking</em> hoặc giảm nhạc khi voice phát.</div></div>
+        <div class="step"><div class="num">5</div><div><strong>Text & Captions</strong>: <em>Text → Default text</em> hoặc <em>Auto captions</em>. Sửa chính tả, căn thời lượng khung thoại.</div></div>
+        <div class="step"><div class="num">6</div><div><strong>Color</strong>: <em>Adjustment</em> → Exposure, Contrast, Temperature; thử LUT nhẹ (10–20%).</div></div>
+        <div class="step"><div class="num">7</div><div><strong>Keyframe</strong>: chọn thuộc tính (Scale/Position/Opacity) → nhấn biểu tượng <em>◆</em> để tạo chuyển động mượt.</div></div>
+        <div class="step"><div class="num">8</div><div><strong>Mask</strong>: <em>Mask → Linear/Circle</em> để che/ghép cảnh; feather 20–40 để mịn mép.</div></div>
+        <div class="step"><div class="num">9</div><div><strong>Stabilize</strong> (chống rung): chọn clip → <em>Stabilize</em> (nếu có).</div></div>
+        <div class="step"><div class="num">10</div><div><strong>Export</strong>: File → Export. Chọn <em>H.264</em>, 1080p, 30/60fps, Bitrate 12–20 Mbps. Bật <em>Hardware acceleration</em> nếu máy hỗ trợ.</div></div>
+        <div class="warn small">Phím tắt có thể khác tuỳ phiên bản CapCut; nếu không khớp, xem menu <em>Keyboard Shortcuts</em>.</div>
+      </section>
+
+      <section id="shorts" class="card" aria-labelledby="h2-shorts">
+        <h2 id="h2-shorts">5) Công thức cho video dọc (TikTok/Reels/Shorts)</h2>
+        <ul>
+          <li><strong>Canvas</strong>: 9:16 (1080×1920).</li>
+          <li><strong>Hook 3s</strong>: câu mở đầu mạnh + chữ to (40–72px) + âm thanh nổi.</li>
+          <li><strong>Cut nhanh</strong>: mỗi cut 1.0–2.5s; hạn chế đoạn trống.</li>
+          <li><strong>Auto captions</strong> + highlight từ khoá bằng màu/outline.</li>
+          <li><strong>Sound</strong>: -6 dB cho nhạc nền, 0 dB cho voice; bật <em>Noise reduction</em> nếu ồn.</li>
+          <li><strong>Thumbnails</strong>: chọn frame sắc nét, thêm chữ 3–5 từ.</li>
+        </ul>
+        <details><summary>Preset màu gợi ý (nhẹ, an toàn)</summary>
+          <pre><code>Exposure: +0.1  | Contrast: +8
+Saturation: +6  | Temperature: -2
+Sharpen: +10    | Vignette: 0
+          </code></pre>
+        </details>
+      </section>
+
+      <section id="export" class="card" aria-labelledby="h2-export">
+        <h2 id="h2-export">6) Xuất video chuẩn (Export)</h2>
+        <div class="grid">
+          <div>
+            <h3>Cài đặt khuyến nghị</h3>
+            <ul>
+              <li><strong>Codec</strong>: H.264 (MP4).</li>
+              <li><strong>Resolution</strong>: 1080p (hoặc 4K nếu quay 4K).</li>
+              <li><strong>FPS</strong>: 30 (nội dung nói) hoặc 60 (game/chuyển động nhanh).</li>
+              <li><strong>Bitrate</strong>: 8–12 Mbps (dọc), 12–20 Mbps (ngang).</li>
+              <li><strong>Audio</strong>: AAC, 256–320 kbps, 48 kHz.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Tối ưu chất lượng</h3>
+            <ul>
+              <li>Bật <em>Hardware acceleration</em> nếu GPU hỗ trợ.</li>
+              <li>Dùng <em>VBR 2‑pass</em> (nếu có) để bitrate ổn định.</li>
+              <li>Đặt <em>Filename</em> có phiên bản: <code>video-v1.mp4</code>, <code>v2</code>…</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="tricks" class="card" aria-labelledby="h2-tricks">
+        <h2 id="h2-tricks">7) Mẹo, template & phím tắt hay</h2>
+        <ul>
+          <li><strong>Beat edit nhanh</strong>: Nhấn phát nhạc và bấm <em>Add marker</em> theo nhịp → cắt tại marker.</li>
+          <li><strong>Zoom động</strong>: Dùng <em>Keyframe</em> Scale 100% → 115% trong 10–14 khung hình tại điểm nhấn.</li>
+          <li><strong>Sub tự động</strong>: Auto captions xong nhớ <em>Review</em> và sửa dấu câu/viết hoa.</li>
+          <li><strong>Logo/Watermark</strong>: đặt PNG trên top track; set Opacity 40–70% nếu cần mờ.</li>
+          <li><strong>LUT</strong>: áp dụng nhẹ 10–20% để tránh bệt màu.</li>
+        </ul>
+        <div class="tip">Gợi ý template cơ bản: <em>Intro 1.5s → Nội dung 45–60s → Outro 1.5s + CTA (Like/Follow)</em>.</div>
+        <div class="small">Phím phổ biến Desktop: <span class="kbd">Space</span> (Play/Pause), <span class="kbd">Ctrl/Cmd</span> + <span class="kbd">Z</span> (Undo), <span class="kbd">Ctrl/Cmd</span> + <span class="kbd">B</span> (Split), <span class="kbd">Ctrl/Cmd</span> + <span class="kbd">S</span> (Save).</div>
+      </section>
+
+      <section id="troubleshoot" class="card" aria-labelledby="h2-trouble">
+        <h2 id="h2-trouble">8) Xử lý lỗi thường gặp</h2>
+        <div class="danger"><strong>Không thấy media</strong>: Kiểm tra quyền truy cập thư viện (Mobile) hoặc đường dẫn tệp (Desktop). Đổi tên thư mục có dấu/ ký tự lạ nếu cần.</div>
+        <div class="warn" style="margin-top:8px"><strong>Lệch tiếng/hình</strong>: Đồng bộ FPS. Nếu clip 60fps mà project 30fps dễ gây giật; chọn <em>Match frame rate</em> khi nhập.</div>
+        <div class="warn" style="margin-top:8px"><strong>Xuất bị mờ</strong>: Kiểm tra <em>Resolution</em> & <em>Bitrate</em> khi Export; tránh upscale quá mức từ nguồn 720p.</div>
+        <div class="warn" style="margin-top:8px"><strong>Auto captions sai</strong>: Chọn đúng ngôn ngữ, thu âm sạch; sửa tay các từ viết tắt/tiếng lóng.</div>
+        <details style="margin-top:8px"><summary>Máy yếu edit lag thì làm gì?</summary>
+          <ul>
+            <li>Bật <em>Proxy/Performance mode</em> (nếu có) để xem trước mượt hơn.</li>
+            <li>Giảm <em>Preview Quality</em> xuống 540p/720p trong lúc edit.</li>
+            <li>Tắt layer hiệu ứng nặng (Blur/Glow) khi chưa cần xem.</li>
+          </ul>
+        </details>
+      </section>
+    </main>
+
+    <footer>
+      <p>Made by AI.</p>
+    </footer>
+  </div>
+</body>
+</html>
