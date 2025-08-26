@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Cá Nhân</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+    :root {
+      --primary: #7c3aed;
+      --secondary: #ec4899;
+      --accent: #06b6d4;
+      --bg-gradient: linear-gradient(135deg, #7c3aed, #ec4899, #06b6d4);
+      --card-bg: rgba(255,255,255,0.15);
+      --radius: 1.2rem;
+      --shadow: 0 6px 16px rgba(0,0,0,0.25);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      background-size: 300% 300%;
+      animation: gradientMove 12s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    main {
+      max-width: 950px;
+      width: 100%;
+      background: rgba(255,255,255,0.1);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(15px);
+      color: #fff;
+      overflow: hidden;
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem;
+    }
+    header img {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 4px solid #fff;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: transform 0.4s;
+    }
+    header img:hover { transform: scale(1.08) rotate(3deg); }
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+    header p { opacity: 0.85; margin-top: 0.5rem; }
+
+    section {
+      padding: 2rem;
+    }
+    section h2 {
+      font-size: 1.6rem;
+      margin-bottom: 1.2rem;
+      font-weight: 600;
+      border-left: 5px solid var(--accent);
+      padding-left: 0.7rem;
+    }
+
+    .info p { margin-bottom: 0.5rem; }
+
+    .achievements {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      padding: 1.2rem;
+      border-radius: var(--radius);
+      background: var(--card-bg);
+      box-shadow: var(--shadow);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover {
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.35);
+    }
+    .card h3 {
+      margin-bottom: 0.5rem;
+      color: #ffe066;
+    }
+
+    .blogs ul { list-style: none; padding: 0; }
+    .blogs li { margin-bottom: 0.8rem; }
+    .blogs a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      background: var(--accent);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      transition: background 0.3s;
+    }
+    .blogs a:hover {
+      background: #22d3ee;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      opacity: 0.85;
+      background: rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <img src="avatar.png" alt="Ảnh đại diện">
+      <h1>Phan Trọng Phúc</h1></h1>
+      <p>✨ Lập trình viên • Content Tutorial • Minecraft Player ✨</p>
+    </header>
+    
+    <section class="info">
+      <h2>Thông tin cơ bản</h2>
+      <p><b>Email:</b> phantrongphuc2k12@gmail.com</p>
+      <p><b>Địa chỉ:</b> Đồng Tháp (Tiền Giang cũ), Việt Nam</p>
+      <p><b>Sở thích:</b> Coding, Edit video, Viết blog</p>
+    </section>
+    
+    <section class="achievements">
+      <h2>Thành tựu</h2>
+      <div class="card">
+        <h3>🏆 Đạt HSG môn tin học</h3>
+        <p>Đạt HSG trong lĩnh vực lập trình Python.</p>
+      </div>
+<!--       <div class="card">
+        <h3>📹 100k lượt xem</h3>
+        <p>Kênh YouTube tutorial đạt cột mốc 100,000 views.</p>
+      </div> -->
+      <div class="card">
+        <h3>💻 Dự án GitHub</h3>
+        <p>Tạo web cá nhân & chia sẻ mã nguồn mở trên GitHub.</p>
+      </div>
+    </section>
+    
+    <section class="blogs">
+      <h2>Liên kết blog</h2>
+      <ul>
+        <li><a href="Tutorial-edit-capcut.html">📖 CapCut Tutorial</a></li>
+<!--         <br/>
+        <li><a href="https://phanphuc12300.github.io/404-demo">⚠️ Trang 404 Demo</a></li> -->
+      </ul>
+    </section>
+    
+    <footer>
+      © 2025 - My Profile ✨
+    </footer>
+  </main>
+</body>
+</html>
