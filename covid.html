@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <title>Báo cáo COVID-19 — Toàn cầu & VN</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --bg1: #fff7f0;
+      --bg2: #e6f7ff;
+      --card: #ffffff;
+      --accent: #6c5ce7;
+      --accent-2: #00b894;
+      --danger: #ff7675;
+      --muted: #6b7280;
+      --glass: rgba(255,255,255,0.6);
+    }
+
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(120deg,#a7f3d0 0%, #f0f9ff 50%, #dfe7ff 100%);
+      color:#111827;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    .container{
+      max-width:1100px;
+      margin:36px auto;
+      padding:20px;
+    }
+
+    header{
+      text-align:center;
+      margin-bottom:18px;
+    }
+    header h1{
+      margin:0;
+      font-size:28px;
+      letter-spacing:0.2px;
+    }
+    header p{
+      margin:6px 0 0;
+      color:var(--muted);
+    }
+
+    .controls{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      margin:18px 0 28px;
+    }
+    .btn{
+      background:linear-gradient(90deg,var(--accent),#a29bfe);
+      color:white;
+      border:none;
+      padding:10px 16px;
+      border-radius:10px;
+      cursor:pointer;
+      box-shadow:0 6px 18px rgba(108,92,231,0.18);
+      font-weight:600;
+    }
+    .btn.alt{
+      background:linear-gradient(90deg,var(--accent-2),#12c2e9);
+      box-shadow:0 6px 18px rgba(0,184,148,0.16);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:18px;
+    }
+
+    @media (max-width:800px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:14px;
+      padding:18px;
+      box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+      min-height:100px;
+    }
+
+    .title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    .title h3{ margin:0; font-size:18px; }
+    .muted { color:var(--muted); font-size:13px; }
+
+    .stats{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .stat{
+      flex:1 1 140px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01));
+      padding:12px;
+      border-radius:10px;
+      min-width:140px;
+    }
+    .stat .num{ font-weight:700; font-size:20px; margin-bottom:6px; }
+    .stat .label{ color:var(--muted); font-size:13px; }
+
+    .num.green { color:var(--accent-2); }
+    .num.red { color:var(--danger); }
+    .num.purple { color:var(--accent); }
+
+    .chart-wrap { margin-top:14px; }
+
+    footer{
+      margin-top:22px;
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Báo cáo COVID-19 (Toàn cầu & Việt Nam)</h1>
+      <p>Dữ liệu lấy từ API <strong>disease.sh</strong>. Cập nhật gần như thời gian thực.</p>
+    </header>
+
+    <div class="controls">
+      <button id="refreshBtn" class="btn">⟳ Tải lại dữ liệu</button>
+      <button id="toggleChartBtn" class="btn alt">Ẩn/Hiện biểu đồ 30 ngày</button>
+    </div>
+
+    <div class="grid">
+      <!-- Toàn cầu -->
+      <div class="card" id="globalCard">
+        <div class="title">
+          <h3>Toàn cầu</h3>
+          <div class="muted" id="globalUpdated">—</div>
+        </div>
+
+        <div class="stats" id="globalStats">
+          <div class="stat">
+            <div class="num purple" id="gCases">…</div>
+            <div class="label">Tổng ca</div>
+          </div>
+          <div class="stat">
+            <div class="num red" id="gToday">…</div>
+            <div class="label">Ca mới (hôm nay)</div>
+          </div>
+          <div class="stat">
+            <div class="num" id="gDeaths">…</div>
+            <div class="label">Tử vong</div>
+          </div>
+          <div class="stat">
+            <div class="num green" id="gRecovered">…</div>
+            <div class="label">Hồi phục (reported)</div>
+          </div>
+        </div>
+
+        <div class="chart-wrap">
+          <canvas id="globalChart" height="120"></canvas>
+        </div>
+      </div>
+
+      <!-- Việt Nam -->
+      <div class="card" id="vnCard">
+        <div class="title">
+          <h3>Việt Nam</h3>
+          <div class="muted" id="vnUpdated">—</div>
+        </div>
+
+        <div class="stats" id="vnStats">
+          <div class="stat">
+            <div class="num purple" id="vCases">…</div>
+            <div class="label">Tổng ca</div>
+          </div>
+          <div class="stat">
+            <div class="num red" id="vToday">…</div>
+            <div class="label">Ca mới (hôm nay)</div>
+          </div>
+          <div class="stat">
+            <div class="num" id="vDeaths">…</div>
+            <div class="label">Tử vong</div>
+          </div>
+          <div class="stat">
+            <div class="num green" id="vRecovered">…</div>
+            <div class="label">Hồi phục (reported)</div>
+          </div>
+        </div>
+
+        <div class="chart-wrap">
+          <canvas id="vnChart" height="120"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div id="status">Trạng thái: chờ tải dữ liệu...</div>
+    </footer>
+  </div>
+
+<script>
+/*
+  Mã JS:
+  - Lấy dữ liệu từ disease.sh
+  - Cập nhật UI
+  - Vẽ biểu đồ 30 ngày (số ca mới/ngày)
+*/
+
+const endpoints = {
+  global: 'https://disease.sh/v3/covid-19/all',
+  country: (c) => `https://disease.sh/v3/covid-19/countries/${encodeURIComponent(c)}?strict=true`,
+  histGlobal: 'https://disease.sh/v3/covid-19/historical/all?lastdays=31', // cumulative
+  histCountry: (c) => `https://disease.sh/v3/covid-19/historical/${encodeURIComponent(c)}?lastdays=31`
+};
+
+const qs = (id) => document.getElementById(id);
+const statusEl = qs('status');
+const refreshBtn = qs('refreshBtn');
+const toggleChartBtn = qs('toggleChartBtn');
+
+let globalChartInstance = null;
+let vnChartInstance = null;
+
+async function fetchJson(url){
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
+  return res.json();
+}
+
+function fmtNum(n){
+  if (n === null || n === undefined) return '—';
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+function timeNow(){
+  return new Date().toLocaleString();
+}
+
+async function updateData(){
+  try{
+    statusEl.textContent = 'Đang tải dữ liệu...';
+    refreshBtn.disabled = true;
+
+    // fetch global & VN current stats
+    const [g, vn] = await Promise.all([
+      fetchJson(endpoints.global),
+      fetchJson(endpoints.country('vietnam'))
+    ]);
+
+    // update global UI
+    qs('gCases').textContent = fmtNum(g.cases);
+    qs('gToday').textContent = (g.todayCases >= 0 ? '+' + fmtNum(g.todayCases) : fmtNum(g.todayCases));
+    qs('gDeaths').textContent = fmtNum(g.deaths);
+    qs('gRecovered').textContent = g.recovered ? fmtNum(g.recovered) : '—';
+    qs('globalUpdated').textContent = 'Cập nhật: ' + (g.updated ? new Date(g.updated).toLocaleString() : timeNow());
+
+    // update VN UI
+    qs('vCases').textContent = fmtNum(vn.cases);
+    qs('vToday').textContent = (vn.todayCases >= 0 ? '+' + fmtNum(vn.todayCases) : fmtNum(vn.todayCases));
+    qs('vDeaths').textContent = fmtNum(vn.deaths);
+    qs('vRecovered').textContent = vn.recovered ? fmtNum(vn.recovered) : '—';
+    qs('vnUpdated').textContent = 'Cập nhật: ' + (vn.updated ? new Date(vn.updated).toLocaleString() : timeNow());
+
+    statusEl.textContent = 'Đã cập nhật: ' + timeNow();
+
+    // fetch historical cumulative (last 31 days) and convert to daily new
+    const [hg, hv] = await Promise.all([
+      fetchJson(endpoints.histGlobal),
+      fetchJson(endpoints.histCountry('vietnam'))
+    ]);
+
+    // hg: { cases: {...}, deaths: {...}, recovered: {...} } for global
+    // hv: { timeline: { cases: {...}, deaths: {...}, recovered: {...} } }
+    const gCasesCum = hg.cases || {};
+    const vCasesCum = (hv.timeline && hv.timeline.cases) ? hv.timeline.cases : (hv.cases || {});
+
+    const gDates = Object.keys(gCasesCum);
+    const vDates = Object.keys(vCasesCum);
+
+    // function to compute daily new from cumulative map
+    function toDaily(cumMap){
+      const dates = Object.keys(cumMap);
+      const daily = [];
+      for(let i=1;i<dates.length;i++){
+        const dPrev = cumMap[dates[i-1]];
+        const dNow = cumMap[dates[i]];
+        daily.push(Math.max(0, dNow - dPrev));
+      }
+      // labels are dates[1..end]
+      return { labels: dates.slice(1), values: daily };
+    }
+
+    const gDaily = toDaily(gCasesCum);
+    const vDaily = toDaily(vCasesCum);
+
+    // render charts
+    renderChart('globalChart', 'Số ca mới/ngày (Toàn cầu - 30 ngày)', gDaily.labels, gDaily.values, 'rgba(108,92,231,0.8)', (chart) => {
+      globalChartInstance = chart;
+    });
+
+    renderChart('vnChart', 'Số ca mới/ngày (Việt Nam - 30 ngày)', vDaily.labels, vDaily.values, 'rgba(0,184,148,0.9)', (chart) => {
+      vnChartInstance = chart;
+    });
+
+  }catch(err){
+    console.error(err);
+    statusEl.textContent = 'Lỗi khi tải dữ liệu: ' + (err.message || err);
+  }finally{
+    refreshBtn.disabled = false;
+  }
+}
+
+function renderChart(canvasId, title, labels, data, color, cb){
+  const ctx = qs(canvasId).getContext('2d');
+  // destroy previous if exists
+  if (canvasId === 'globalChart' && globalChartInstance) globalChartInstance.destroy();
+  if (canvasId === 'vnChart' && vnChartInstance) vnChartInstance.destroy();
+
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels.map(l => l),
+      datasets: [{
+        label: title,
+        data: data,
+        backgroundColor: color,
+        borderRadius: 6,
+        barThickness: 'flex'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 8 },
+          grid: { display: false }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { callback: function(v){ return v >= 1000 ? (v/1000).toFixed(1) + 'k' : v; } }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        title: { display: false }
+      }
+    }
+  });
+
+  if (typeof cb === 'function') cb(chart);
+}
+
+refreshBtn.addEventListener('click', updateData);
+
+toggleChartBtn.addEventListener('click', () => {
+  const gWrap = qs('globalChart').parentElement;
+  const vWrap = qs('vnChart').parentElement;
+  const hidden = gWrap.style.display === 'none';
+  gWrap.style.display = hidden ? '' : 'none';
+  vWrap.style.display = hidden ? '' : 'none';
+});
+
+// initial load
+updateData();
+</script>
+</body>
+</html>
