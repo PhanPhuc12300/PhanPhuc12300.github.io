@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>PyScript + CSS demo</title>
+  <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+  <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #89f7fe, #66a6ff);
+      color: #333;
+      text-align: center;
+      padding-top: 50px;
+    }
+    .box {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      display: inline-block;
+    }
+    .result {
+      margin-top: 15px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #ff4b5c;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Kiểm tra ngày</h2>
+  <py-script>
+from datetime import date
+
+today = date.today()
+target = date(2025, 9, 20)
+
+if today >= target:
+    result = "Hôm nay là ngày 20/9/2025 hoặc sau ngày đó."
+else:
+    result = "Hôm nay vẫn trước ngày 20/9/2025."
+
+# In ra phần tử HTML có id="output"
+from js import document
+document.getElementById("output").innerText = result
+  </py-script>
+  <div id="output" class="result"></div>
+</div>
+
+</body>
+</html>
