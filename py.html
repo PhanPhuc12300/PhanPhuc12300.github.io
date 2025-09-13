@@ -33,8 +33,10 @@
 
 <div class="box">
   <h2>Kiểm tra ngày</h2>
+  
   <py-script>
 from datetime import date
+from js import document
 
 today = date.today()
 target = date(2025, 9, 20)
@@ -44,10 +46,9 @@ if today >= target:
 else:
     result = "Hôm nay vẫn trước ngày 20/9/2025."
 
-# In ra phần tử HTML có id="output"
-from js import document
 document.getElementById("output").innerText = result
   </py-script>
+
   <div id="output" class="result"></div>
 </div>
 
