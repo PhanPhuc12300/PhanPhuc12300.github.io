@@ -2,18 +2,13 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8">
-  <title>PyScript + CSS demo</title>
+  <title>Brython + CSS demo</title>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.12.0/brython.min.js"></script>
 
-  <!-- PyScript (bản ổn định) -->
-  <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/pyscript.css" />
-  <script defer src="https://pyscript.net/releases/2024.1.1/pyscript.js"></script>
-
-  <!-- CSS tùy chỉnh -->
   <style>
     body {
       font-family: Arial, sans-serif;
       background: linear-gradient(to right, #89f7fe, #66a6ff);
-      color: #333;
       text-align: center;
       padding-top: 50px;
     }
@@ -33,14 +28,16 @@
     }
   </style>
 </head>
-<body>
+<body onload="brython()">
 
 <div class="box">
   <h2>Kiểm tra ngày</h2>
-  
-  <py-script>
+  <div id="output" class="result"></div>
+</div>
+
+<script type="text/python">
 from datetime import date
-from js import document
+from browser import document
 
 today = date.today()
 target = date(2025, 9, 20)
@@ -50,12 +47,8 @@ if today >= target:
 else:
     result = "Hôm nay vẫn trước ngày 20/9/2025."
 
-# Xuất kết quả ra div#output
-document.getElementById("output").innerText = result
-  </py-script>
-
-  <div id="output" class="result"></div>
-</div>
+document["output"].text = result
+</script>
 
 </body>
 </html>
