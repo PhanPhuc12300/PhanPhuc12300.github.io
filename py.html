@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
   <meta charset="utf-8">
   <title>PyScript + CSS demo</title>
-  <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-  <script defer src="https://pyscript.net/latest/pyscript.js"></script>
 
+  <!-- PyScript (bản ổn định) -->
+  <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/pyscript.css" />
+  <script defer src="https://pyscript.net/releases/2024.1.1/pyscript.js"></script>
+
+  <!-- CSS tùy chỉnh -->
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -20,6 +23,7 @@
       border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       display: inline-block;
+      min-width: 300px;
     }
     .result {
       margin-top: 15px;
@@ -46,6 +50,7 @@ if today >= target:
 else:
     result = "Hôm nay vẫn trước ngày 20/9/2025."
 
+# Xuất kết quả ra div#output
 document.getElementById("output").innerText = result
   </py-script>
 
