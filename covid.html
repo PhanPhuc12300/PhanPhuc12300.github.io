@@ -2,116 +2,111 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Báo cáo COVID-19 (Toàn cầu & Việt Nam)</title>
+  <title>Báo cáo COVID-19</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(to right, #a1c4fd, #c2e9fb, #fbc2eb, #a6c1ee);
       margin: 0;
-      padding: 0;
-      background: linear-gradient(135deg, #a8edea, #fed6e3);
+      padding: 20px;
     }
     h1 {
-      text-align: center;
-      padding: 20px;
-      color: #222;
+      margin-bottom: 20px;
+      color: #333;
     }
     .container {
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
-      gap: 20px;
-      margin: 20px;
+      gap: 30px;
+      flex-wrap: wrap;
     }
     .card {
       background: #fff;
       padding: 20px;
       border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      width: 400px;
-    }
-    .title {
-      font-size: 1.3em;
-      font-weight: bold;
-      margin-bottom: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      width: 250px;
       text-align: center;
-      color: #333;
     }
-    .stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 10px;
+    .card h2 {
+      margin-bottom: 10px;
     }
     .stat {
-      background: #f9f9f9;
-      padding: 12px;
-      border-radius: 10px;
-      text-align: center;
+      margin: 10px 0;
+      font-size: 18px;
     }
-    .stat span {
-      display: block;
-      font-size: 1.1em;
+    .number {
       font-weight: bold;
-      margin-top: 5px;
+      font-size: 20px;
     }
-    .updated {
-      text-align: center;
+    .update {
       margin-top: 20px;
-      font-size: 0.9em;
-      color: #555;
+      font-size: 14px;
+      color: #444;
+    }
+    canvas {
+      margin-top: 40px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
   </style>
 </head>
 <body>
   <h1>Báo cáo COVID-19 (Toàn cầu & Việt Nam)</h1>
   <div class="container">
-    <div class="card" id="global">
-      <div class="title">🌍 Toàn cầu</div>
-      <div class="stats">
-        <div class="stat">Tổng ca <span id="global-cases">...</span></div>
-        <div class="stat">Ca mới <span id="global-today">...</span></div>
-        <div class="stat">Tử vong <span id="global-deaths">...</span></div>
-        <div class="stat">Hồi phục <span id="global-recovered">...</span></div>
-        <div class="stat">Đang nhiễm <span id="global-active">...</span></div>
-      </div>
+    <div class="card">
+      <h2>🌍 Toàn cầu</h2>
+      <div class="stat">Tổng ca <div class="number">704.753.890</div></div>
+      <div class="stat">Ca mới <div class="number">+0</div></div>
+      <div class="stat">Tử vong <div class="number">7.010.681</div></div>
+      <div class="stat">Hồi phục <div class="number">675.619.811</div></div>
+      <div class="stat">Đang nhiễm <div class="number">22.123.398</div></div>
     </div>
-    <div class="card" id="vn">
-      <div class="title">🇻🇳 Việt Nam</div>
-      <div class="stats">
-        <div class="stat">Tổng ca <span id="vn-cases">...</span></div>
-        <div class="stat">Ca mới <span id="vn-today">...</span></div>
-        <div class="stat">Tử vong <span id="vn-deaths">...</span></div>
-        <div class="stat">Hồi phục <span id="vn-recovered">...</span></div>
-        <div class="stat">Đang nhiễm <span id="vn-active">...</span></div>
-      </div>
+    <div class="card">
+      <h2>🇻🇳 Việt Nam</h2>
+      <div class="stat">Tổng ca <div class="number">11.625.195</div></div>
+      <div class="stat">Ca mới <div class="number">+0</div></div>
+      <div class="stat">Tử vong <div class="number">43.206</div></div>
+      <div class="stat">Hồi phục <div class="number">10.640.971</div></div>
+      <div class="stat">Đang nhiễm <div class="number">941.018</div></div>
     </div>
   </div>
-  <div class="updated" id="updated"></div>
+
+  <canvas id="covidChart" width="600" height="300"></canvas>
+
+  <div class="update">Cập nhật: 15:54:50, 13/9/2025</div>
 
   <script>
-    async function fetchCovid() {
-      let [global, vn] = await Promise.all([
-        fetch("https://disease.sh/v3/covid-19/all").then(r => r.json()),
-        fetch("https://disease.sh/v3/covid-19/countries/vn").then(r => r.json())
-      ]);
-
-      document.getElementById("global-cases").innerText = global.cases.toLocaleString();
-      document.getElementById("global-today").innerText = "+" + global.todayCases.toLocaleString();
-      document.getElementById("global-deaths").innerText = global.deaths.toLocaleString();
-      document.getElementById("global-recovered").innerText = global.recovered.toLocaleString();
-      document.getElementById("global-active").innerText = global.active.toLocaleString();
-
-      document.getElementById("vn-cases").innerText = vn.cases.toLocaleString();
-      document.getElementById("vn-today").innerText = "+" + vn.todayCases.toLocaleString();
-      document.getElementById("vn-deaths").innerText = vn.deaths.toLocaleString();
-      document.getElementById("vn-recovered").innerText = vn.recovered.toLocaleString();
-      document.getElementById("vn-active").innerText = vn.active.toLocaleString();
-
-      let updated = new Date(global.updated);
-      document.getElementById("updated").innerText = "Cập nhật: " + updated.toLocaleString();
-    }
-    fetchCovid();
+    const ctx = document.getElementById('covidChart').getContext('2d');
+    const covidChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Tổng ca', 'Hồi phục', 'Tử vong', 'Đang nhiễm'],
+        datasets: [
+          {
+            label: 'Toàn cầu',
+            data: [704753890, 675619811, 7010681, 22123398],
+            backgroundColor: 'rgba(54, 162, 235, 0.7)'
+          },
+          {
+            label: 'Việt Nam',
+            data: [11625195, 10640971, 43206, 941018],
+            backgroundColor: 'rgba(255, 99, 132, 0.7)'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' },
+          title: { display: true, text: 'So sánh tình hình COVID-19' }
+        }
+      }
+    });
   </script>
 </body>
 </html>
