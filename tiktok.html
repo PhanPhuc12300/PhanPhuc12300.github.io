@@ -2,71 +2,81 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Nhúng video TikTok</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video TikTok nổi bật</title>
   <style>
     body {
-      background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fbc2eb, #a6c1ee);
+      margin: 0;
       font-family: Arial, sans-serif;
       text-align: center;
-      padding: 40px;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fad0c4, #a1c4fd, #c2e9fb);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
     }
 
-    /* Bọc tất cả video lại trong 1 hàng */
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    h1 {
+      margin: 20px 0;
+      font-size: 2em;
+      color: white;
+      text-shadow: 0 0 10px #ff4da6, 0 0 20px #ff99cc;
+    }
+
     .videos-row {
       display: flex;
-      flex-wrap: wrap;        /* đủ chỗ thì nằm ngang, thiếu thì xuống dòng */
-      justify-content: center; /* căn giữa */
-      gap: 20px;               /* khoảng cách giữa các video */
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
     }
 
     .video-container {
       background: white;
-      border: 5px solid #ff6ec7;
-      border-radius: 20px;
-      box-shadow: 0 0 30px rgba(255, 0, 150, 0.6);
-      padding: 20px;
-      animation: glow 2s infinite alternate;
-      flex: 0 1 350px; /* video rộng khoảng 350px, tự co giãn khi cần */
-    }
-
-    @keyframes glow {
-      from { box-shadow: 0 0 20px #ff6ec7; }
-      to { box-shadow: 0 0 40px #6ec7ff; }
-    }
-
-    h1 {
-      color: #fff;
-      text-shadow: 2px 2px 5px #000;
+      border: 3px solid hotpink;
+      border-radius: 15px;
+      padding: 10px;
+      box-shadow: 0 0 15px rgba(255, 105, 180, 0.7);
+      max-width: 325px;
+      min-width: 250px;
+      flex: 1;
     }
   </style>
 </head>
 <body>
   <h1>✨ Video TikTok nổi bật ✨</h1>
 
-  <div class="video-container">
-  <blockquote class="tiktok-embed"
-    cite="https://www.tiktok.com/@_arikito/video/7527494402042776839"
-    data-video-id="7527494402042776839"
-    style="max-width: 325px; min-width: 250px; margin: auto;">
-  </blockquote>
+  <div class="videos-row">
+    <div class="video-container">
+      <blockquote class="tiktok-embed"
+        cite="https://www.tiktok.com/@_arikito/video/7527494402042776839"
+        data-video-id="7527494402042776839"
+        style="max-width: 325px; min-width: 250px; margin: auto;">
+      </blockquote>
+    </div>
 
-  <blockquote class="tiktok-embed"
-    cite="https://www.tiktok.com/@andanhtw/video/7281298742019284226"
-    data-video-id="7281298742019284226"
-    style="max-width: 325px; min-width: 250px; margin: auto;">
-  </blockquote>
+    <div class="video-container">
+      <blockquote class="tiktok-embed"
+        cite="https://www.tiktok.com/@lecwong.2809/video/7534506277364452616"
+        data-video-id="7534506277364452616"
+        style="max-width: 325px; min-width: 250px; margin: auto;">
+      </blockquote>
+    </div>
 
-  <blockquote class="tiktok-embed"
-    cite="https://www.tiktok.com/@someuser/video/7265432109876543210"
-    data-video-id="7265432109876543210"
-    style="max-width: 325px; min-width: 250px; margin: auto;">
-  </blockquote>
-</div>
+    <div class="video-container">
+      <blockquote class="tiktok-embed"
+        cite="https://www.tiktok.com/@lecwong.2809/video/7531180702503668999"
+        data-video-id="7531180702503668999"
+        style="max-width: 325px; min-width: 250px; margin: auto;">
+      </blockquote>
+    </div>
+  </div>
 
-<script async src="https://www.tiktok.com/embed.js"></script>
-
-
-  <!-- Chỉ cần 1 script cuối -->
+  <!-- Script TikTok, chỉ cần gọi 1 lần -->
   <script async src="https://www.tiktok.com/embed.js"></script>
 </body>
 </html>
