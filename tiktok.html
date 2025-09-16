@@ -34,21 +34,16 @@
   <div class="video-container">
     
     <iframe
-      src="https://www.tiktok.com/player/v1/6718335390845095173"
+      src="https://www.tiktok.com/player/v1/7535451015924026632"
       width="325"
       height="575"
       frameborder="0"
       allow="autoplay; encrypted-media; picture-in-picture"
       allowfullscreen>
     </iframe>
-    
     <script>
-      // nhận message từ iframe
       window.addEventListener('message', e => {
-        // e.data chứa dữ liệu từ player
       });
-    
-      // gửi lệnh tới player
       function seekTo(seconds) {
         const iframe = document.querySelector('iframe');
         iframe.contentWindow.postMessage({ type: 'seekTo', value: seconds, 'x-tiktok-player': true }, '*');
