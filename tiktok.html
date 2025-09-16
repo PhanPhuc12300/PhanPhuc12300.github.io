@@ -33,14 +33,36 @@
   <h1>✨ Video TikTok nổi bật ✨</h1>
   <div class="video-container">
     
-    <iframe
+<!--     <iframe
       src="https://www.tiktok.com/player/v1/7535451015924026632"
       width="325"
       height="575"
       frameborder="0"
       allow="autoplay; encrypted-media; picture-in-picture"
       allowfullscreen>
-    </iframe>
+    </iframe> -->
+    <script>
+    const ids = [
+      "7535451015924026632",
+      "7287654321234567890",
+      "7311122334455667788"
+    ];
+    
+    const container = document.getElementById("videos");
+    
+    ids.forEach(id => {
+      const iframe = document.createElement("iframe");
+      iframe.src = `https://www.tiktok.com/player/v1/${id}`;
+      iframe.width = "325";
+      iframe.height = "575";
+      iframe.frameBorder = "0";
+      iframe.allow = "autoplay; encrypted-media; picture-in-picture";
+      iframe.allowFullscreen = true;
+      iframe.style.margin = "10px";
+      container.appendChild(iframe);
+    });
+    </script>
+
     <script>
       window.addEventListener('message', e => {
       });
