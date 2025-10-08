@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Birthday Galaxy — Tặng Crush</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#0b0f2a;
+    --accent1:#9b59ff;
+    --accent2:#ff6fb5;
+    --card:#0f1724;
+  }
+  html,body{height:100%;margin:0;font-family:'Nunito',system-ui,Segoe UI,Roboto,Arial;}
+  body{
+    background: radial-gradient(ellipse at top, rgba(155,89,255,0.12) 0%, rgba(0,0,0,0.35) 60%), linear-gradient(180deg,#050517 0%, #081029 100%);
+    color:#fff;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* canvas container */
+  #canvas-wrap{position:relative;width:100%;height:100%;min-height:600px;min-width:320px;}
+
+  /* UI overlay */
+  .ui {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 28px;
+    display:flex;
+    gap:12px;
+    align-items:center;
+    z-index:10;
+    pointer-events: auto;
+  }
+  .btn {
+    background: linear-gradient(180deg,var(--accent2),var(--accent1));
+    border: none;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 14px;
+    font-weight:700;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.45), inset 0 -3px 6px rgba(0,0,0,0.12);
+    cursor:pointer;
+    transition: transform .12s ease, box-shadow .12s ease, opacity .12s;
+    font-size:16px;
+  }
+  .btn:active{ transform: translateY(2px) scale(.995); }
+  .btn[disabled]{ opacity:.5; cursor: not-allowed; transform:none; box-shadow:none; }
+
+  /* congrats overlay text box */
+  #messageOverlay {
+    position:absolute;
+    left:50%;
+    top:20%;
+    transform:translateX(-50%) translateY(-10px);
+    background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    border: 1px solid rgba(255,255,255,0.06);
+    padding:18px 22px;
+    border-radius:14px;
+    z-index:20;
+    text-align:center;
+    max-width:92%;
+    backdrop-filter: blur(6px);
+    display:none;
+  }
+  #messageOverlay h2 { margin:0 0 8px 0; font-size:20px; letter-spacing:.6px; color: #ffe9ff; text-shadow:0 2px 8px rgba(155,89,255,0.22);}
+  #messageOverlay p { margin:0; font-size:15px; line-height:1.35; color:#fffdf9; }
+
+  /* final greeting big overlay */
+  #finalText {
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:40;
+    pointer-events:none;
+  }
+  #finalText .card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    border-radius:18px;
+    padding:28px;
+    max-width:880px;
+    text-align:center;
+    border:1px solid rgba(255,255,255,0.06);
+    transform: scale(.9);
+    opacity:0;
+    pointer-events:auto;
+  }
+  #finalText h1 { margin:0 0 12px 0; font-size:28px; color:#fff; text-shadow:0 8px 30px rgba(155,89,255,0.12);}
+  #finalText p { margin:0; font-size:18px; color:#fffdf9; line-height:1.5; }
+
+  /* bottom credit small */
+  .credit {
+    position:absolute;
+    left:12px;
+    bottom:8px;
+    font-size:12px;
+    color:rgba(255,255,255,0.6);
+    z-index:50;
+    pointer-events:none;
+  }
+
+  /* responsive tweaks */
+  @media (max-width:420px){
+    .btn{ padding:10px 14px; font-size:14px; border-radius:12px; }
+    #messageOverlay { top:18%; padding:12px 14px; }
+    #finalText h1 { font-size:22px; }
+    #finalText p { font-size:15px; }
+  }
+</style>
+</head>
+<body>
+  <div id="canvas-wrap"></div>
+
+  <!-- UI buttons -->
+  <div class="ui" id="controls">
+    <button class="btn" id="blowBtn">💨 Thổi nến</button>
+    <button class="btn" id="congratsBtn" disabled>🎉 Chúc mừng sinh nhật</button>
+  </div>
+
+  <div id="messageOverlay">
+    <h2>Happy Birthday!</h2>
+    <p id="smallMsg">Bấm "Thổi nến" để thổi nến và nghe nhạc nhé 🎶</p>
+  </div>
+
+  <div id="finalText" aria-hidden="true">
+    <div class="card" id="cardFinal">
+      <h1>Chúc mừng sinh nhật!</h1>
+      <p id="finalMessage">
+        Chúc bạn sinh thật dzui dẻ. Sinh nhật mình chúc bạn lun xink đẹp, dễ thương, học giỏi - Trần Phú Khang
+      </p>
+    </div>
+  </div>
+
+  <div class="credit">Miền và code đc lm bởi PhanPhuc12300</div>
+
+  <!-- three.js -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+
+  <script>
+  // ========== Setup basics ==========
+  const wrap = document.getElementById('canvas-wrap');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 0.1, 2000);
+  camera.position.set(0, 1.6, 6);
+
+  const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.toneMappingExposure = 0.9;
+  wrap.appendChild(renderer.domElement);
+
+  // subtle fog
+  scene.fog = new THREE.FogExp2(0x050517, 0.03);
+
+  // ========== Galaxy particle background ==========
+  const galaxy = new THREE.BufferGeometry();
+  const starCount = 1600;
+  const positions = new Float32Array(starCount * 3);
+  const colors = new Float32Array(starCount * 3);
+  for(let i=0; i<starCount; i++){
+    // generate a flattened sphere / disc with some radius variance
+    const r = Math.random()*18 + 2;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = (Math.random() - 0.5) * 0.8; // thinness
+    const x = r * Math.cos(theta) * Math.cos(phi);
+    const y = r * Math.sin(phi);
+    const z = r * Math.sin(theta) * Math.cos(phi);
+    const i3 = i*3;
+    positions[i3] = x;
+    positions[i3+1] = y;
+    positions[i3+2] = z;
+    // color gradient purple -> pink -> cyan
+    const t = Math.random();
+    const c1 = new THREE.Color().setHSL(0.78 + 0.12*t, 0.8, 0.6); // purplish
+    colors[i3] = c1.r;
+    colors[i3+1] = c1.g;
+    colors[i3+2] = c1.b;
+  }
+  galaxy.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  galaxy.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  const starMat = new THREE.PointsMaterial({
+    size: 0.06 * (window.devicePixelRatio>1?1.6:1),
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.95,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+  const stars = new THREE.Points(galaxy, starMat);
+  scene.add(stars);
+
+  // add a subtle glowing "nebula" using a big sprite
+  const texCanvas = document.createElement('canvas');
+  texCanvas.width = texCanvas.height = 256;
+  const ctx = texCanvas.getContext('2d');
+  const grad = ctx.createRadialGradient(128,128,10,128,128,128);
+  grad.addColorStop(0, 'rgba(255,200,255,0.28)');
+  grad.addColorStop(0.4, 'rgba(155,89,255,0.18)');
+  grad.addColorStop(1, 'rgba(15,5,30,0)');
+  ctx.fillStyle = grad; ctx.fillRect(0,0,256,256);
+  const nebTexture = new THREE.CanvasTexture(texCanvas);
+  const neb = new THREE.Sprite(new THREE.SpriteMaterial({map:nebTexture, transparent:true, opacity:0.85}));
+  neb.scale.set(12,12,1);
+  neb.position.set(-3,1,-6);
+  scene.add(neb);
+
+  // ambient glow light
+  const amb = new THREE.AmbientLight(0x8877aa, 0.8);
+  scene.add(amb);
+
+  // point light for cake
+  const light = new THREE.PointLight(0xffc0f3, 1.3, 20);
+  light.position.set(0,4,4);
+  scene.add(light);
+
+  // ========== Cake model (simple) ==========
+  const cake = new THREE.Group();
+  // cake base
+  const cakeMat = new THREE.MeshStandardMaterial({color:0xffc9e6, roughness:0.6, metalness:0.05});
+  const cakeGeo = new THREE.CylinderGeometry(1.6,1.6,1.0,48);
+  const cakeMesh = new THREE.Mesh(cakeGeo, cakeMat);
+  cakeMesh.position.y = 0.5;
+  cake.add(cakeMesh);
+  // top frosting ring (slightly different color)
+  const frostingMat = new THREE.MeshStandardMaterial({color:0xff8fc0, roughness:0.5, metalness:0.02});
+  const ringGeo = new THREE.CylinderGeometry(1.62,1.62,0.18,48);
+  const ring = new THREE.Mesh(ringGeo, frostingMat);
+  ring.position.y = 1.05;
+  cake.add(ring);
+
+  // place cake
+  cake.position.set(0, -0.6, 0);
+  scene.add(cake);
+
+  // ========== Candles ==========
+  const candleGroup = new THREE.Group();
+  const candleMat = new THREE.MeshStandardMaterial({color:0xffffff, roughness:0.4});
+  const wickMat = new THREE.MeshStandardMaterial({color:0x2b2b2b, roughness:0.5});
+  const flameMat = new THREE.MeshStandardMaterial({emissive:0xffb64d, emissiveIntensity:1.6, color:0xffcfa8});
+  const candlePositions = [-0.6, 0, 0.6]; // three candles
+  const flameMeshes = [];
+  for(let i=0;i<candlePositions.length;i++){
+    const x = candlePositions[i];
+    const cylGeo = new THREE.CylinderGeometry(0.07,0.07,0.7,20);
+    const cyl = new THREE.Mesh(cylGeo, candleMat);
+    cyl.position.set(x, 1.3, 0);
+    // wick
+    const wick = new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02,0.07,8), wickMat);
+    wick.position.set(x, 1.65, 0);
+    // flame (a small sphere)
+    const flame = new THREE.Mesh(new THREE.SphereGeometry(0.09,12,12), flameMat);
+    flame.position.set(x, 1.77, 0.03);
+    candleGroup.add(cyl, wick, flame);
+    flameMeshes.push(flame);
+  }
+  scene.add(candleGroup);
+
+  // small plane under cake to receive shadow (fake)
+  const groundMat = new THREE.MeshStandardMaterial({color:0x031028, roughness:1, metalness:0});
+  const g = new THREE.Mesh(new THREE.PlaneGeometry(18,18), groundMat);
+  g.rotation.x = -Math.PI/2;
+  g.position.y = -1.1;
+  scene.add(g);
+
+  // 3D text "Happy Birthday" (simple billboard using sprite)
+  const messageCanvas = document.createElement('canvas');
+  messageCanvas.width = 1024; messageCanvas.height = 256;
+  const mc = messageCanvas.getContext('2d');
+  const gradient = mc.createLinearGradient(0,0,messageCanvas.width,0);
+  gradient.addColorStop(0,'#9b59ff'); gradient.addColorStop(1,'#ff6fb5');
+  mc.font = 'bold 80px Nunito, Arial';
+  mc.textAlign = 'center';
+  mc.fillStyle = gradient;
+  mc.shadowColor = 'rgba(255,255,255,0.08)';
+  mc.shadowBlur = 20;
+  mc.fillText('Happy Birthday', messageCanvas.width/2, 150);
+  const msgTexture = new THREE.CanvasTexture(messageCanvas);
+  const msgSprite = new THREE.Sprite(new THREE.SpriteMaterial({map:msgTexture, transparent:true}));
+  msgSprite.scale.set(3.6,0.9,1);
+  msgSprite.position.set(0, 3.0, -0.2);
+  scene.add(msgSprite);
+
+  // ========== Smoke system ==========
+  const smokeParticles = [];
+  const smokeMaterial = new THREE.MeshStandardMaterial({color:0xeeddff, transparent:true, opacity:0.22, roughness:1, metalness:0});
+  function spawnSmoke(x,y,z){
+    const s = Math.random()*0.18+0.12;
+    const geom = new THREE.SphereGeometry(s, 8, 8);
+    const m = new THREE.Mesh(geom, smokeMaterial.clone());
+    m.position.set(x, y, z);
+    m.material.opacity = 0.28;
+    m.scale.setScalar(0.6);
+    scene.add(m);
+    smokeParticles.push({
+      mesh: m,
+      vel: new THREE.Vector3((Math.random()-0.5)*0.02, 0.02 + Math.random()*0.02, (Math.random()-0.5)*0.02),
+      life: 0,
+      maxLife: 2 + Math.random()*1.4
+    });
+  }
+
+  // ========== Animation state ==========
+  let blowing = false;
+  let blowFinished = false;
+  const blowBtn = document.getElementById('blowBtn');
+  const congratsBtn = document.getElementById('congratsBtn');
+  const messageOverlay = document.getElementById('messageOverlay');
+  const smallMsg = document.getElementById('smallMsg');
+  const finalText = document.getElementById('finalText');
+  const cardFinal = document.getElementById('cardFinal');
+
+  // play a short melody (synth) — approximate "Happy Birthday" theme
+  function playMelody(){
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const ac = new AudioContext();
+      const notes = [
+        // [freq, dur(sec)]
+        [264, 0.28],[264,0.28],[297,0.56],[264,0.56],[352,0.56],[330,1.0],
+        [264,0.28],[264,0.28],[297,0.56],[264,0.56],[396,0.56],[352,1.0],
+        [264,0.28],[264,0.28],[528,0.56],[440,0.56],[352,0.56],[330,0.56],[297,0.56],
+        [466,0.28],[466,0.28],[440,0.56],[352,0.56],[396,0.56],[352,1.0]
+      ];
+      let t = ac.currentTime + 0.08;
+      notes.forEach(([freq,dur], idx)=>{
+        const o = ac.createOscillator();
+        const g = ac.createGain();
+        o.type = 'sine';
+        o.frequency.value = freq;
+        g.gain.value = 0;
+        o.connect(g);
+        g.connect(ac.destination);
+        // ADSR-ish
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.09, t + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur - 0.02);
+        o.start(t);
+        o.stop(t + dur);
+        t += dur;
+      });
+      // return a promise that resolves when melody ends
+      return new Promise(res => setTimeout(res, (t - ac.currentTime) * 1000 + 80));
+    } catch(e){
+      return Promise.resolve();
+    }
+  }
+
+  // Blow animation: extinguish flames + spawn smoke + play melody
+  async function doBlowSequence(){
+    if(blowing) return;
+    blowing = true;
+    blowBtn.disabled = true;
+    smallMsg.textContent = 'Đang thổi... ✨';
+    // animate flames scale down over 900ms
+    const total = 900;
+    const start = performance.now();
+    const initialScales = flameMeshes.map(f => f.scale.clone());
+    function animateFlames(t){
+      const p = Math.min(1, (t - start)/total);
+      const ease = 1 - Math.pow(1-p,3);
+      flameMeshes.forEach((f, i)=>{
+        const s = 1 - ease;
+        f.scale.setScalar( s * initialScales[i].x );
+        // dim emissive intensity too
+        f.material.emissiveIntensity = 1.6 * s;
+      });
+      if(p < 1) requestAnimationFrame(animateFlames);
+    }
+    requestAnimationFrame(animateFlames);
+
+    // spawn smoke for ~2.4s
+    const smokeInterval = setInterval(()=>{
+      for(let i=0;i<candlePositions.length;i++){
+        spawnSmoke(candlePositions[i], 1.78, 0.04);
+      }
+    }, 180);
+
+    // play melody (await)
+    await playMelody();
+
+    clearInterval(smokeInterval);
+
+    // let smoke linger then finish
+    await new Promise(res => setTimeout(res, 900));
+    blowFinished = true;
+    blowing = false;
+    smallMsg.textContent = 'Nến đã tắt! Bấm "Chúc mừng sinh nhật" để gửi lời chúc 🎉';
+    congratsBtn.disabled = false;
+    // update overlay message
+    messageOverlay.style.display = 'block';
+    messageOverlay.querySelector('h2').textContent = 'Nến đã tắt 🎂';
+    messageOverlay.querySelector('p').textContent = 'Nhấn "Chúc mừng sinh nhật" để gửi lời chúc của cậu.';
+  }
+
+  // congrats click -> show final message and a confetti burst
+  function showFinalMessage(){
+    // animate final card in
+    finalText.style.pointerEvents = 'auto';
+    finalText.querySelector('.card').style.transition = 'transform .6s cubic-bezier(.18,.9,.27,1), opacity .6s ease';
+    finalText.querySelector('.card').style.transform = 'scale(1)';
+    finalText.querySelector('.card').style.opacity = '1';
+    finalText.style.display = 'flex';
+    // spawn confetti particles (simple)
+    spawnConfetti();
+  }
+
+  // confetti as small boxes that burst from cake
+  const confetti = [];
+  function spawnConfetti(){
+    const colors = [0xff6fb5, 0x9b59ff, 0x65e0d6, 0xffe07a, 0xff9f66];
+    for(let i=0;i<60;i++){
+      const g = new THREE.BoxGeometry(0.06,0.02,0.02);
+      const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({color: colors[Math.floor(Math.random()*colors.length)], roughness:0.6}));
+      const angle = Math.random()*Math.PI*2;
+      const r = 0.3 + Math.random()*0.8;
+      m.position.set(Math.cos(angle)*r, 1.2 + Math.random()*0.4, Math.sin(angle)*r);
+      m.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
+      scene.add(m);
+      confetti.push({
+        mesh: m,
+        vel: new THREE.Vector3((Math.random()-0.5)*1.4, 2 + Math.random()*1.4, (Math.random()-0.5)*1.4),
+        life: 0,
+        maxLife: 2.4 + Math.random()*1.2
+      });
+    }
+  }
+
+  // ========== Animation loop ==========
+  const clock = new THREE.Clock();
+  function animate(){
+    const dt = clock.getDelta();
+    // rotate galaxy slowly
+    stars.rotation.y += 0.003 * (1 + dt*6);
+    neb.rotation.z += 0.0008 * (1 + dt*6);
+    msgSprite.position.x = Math.sin(Date.now()*0.0006) * 0.14;
+    msgSprite.material.opacity = 0.9 + Math.sin(Date.now()*0.0012)*0.08;
+
+    // smoke update
+    for(let i=smokeParticles.length-1;i>=0;i--){
+      const p = smokeParticles[i];
+      p.mesh.position.addScaledVector(p.vel, dt*60);
+      p.life += dt;
+      const t = p.life / p.maxLife;
+      p.mesh.material.opacity = Math.max(0, 0.28 * (1 - t));
+      p.mesh.scale.multiplyScalar(1 + dt*0.18);
+      if(p.life >= p.maxLife){
+        scene.remove(p.mesh);
+        smokeParticles.splice(i,1);
+      }
+    }
+
+    // confetti update
+    for(let i=confetti.length-1;i>=0;i--){
+      const c = confetti[i];
+      c.mesh.position.addScaledVector(c.vel, dt*60);
+      c.vel.y -= 9.8 * dt * 0.25; // gravity
+      c.mesh.rotation.x += dt * 4;
+      c.mesh.rotation.y += dt * 3;
+      c.life += dt;
+      if(c.life >= c.maxLife){
+        scene.remove(c.mesh);
+        confetti.splice(i,1);
+      }
+    }
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // ========== UI Events ==========
+  blowBtn.addEventListener('click', ()=>{
+    if(!blowFinished) doBlowSequence();
+  });
+
+  congratsBtn.addEventListener('click', ()=>{
+    // show final overlay, reveal message exactly as requested
+    const finalMessage = document.getElementById('finalMessage');
+    finalMessage.textContent = 'Chúc bạn sinh thật dzui dẻ. Sinh nhật mình chúc bạn lun xink đẹp, dễ thương, học giỏi - Trần Phú Khang';
+    showFinalMessage();
+    congratsBtn.disabled = true;
+    // hide messageOverlay small
+    messageOverlay.style.display = 'none';
+  });
+
+  // initial small message overlay visible
+  messageOverlay.style.display = 'block';
+
+  // resize
+  window.addEventListener('resize', ()=>{
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  // friendly touch: press space to trigger blow (desktop)
+  window.addEventListener('keydown', (e)=>{
+    if(e.code === 'Space'){ e.preventDefault(); if(!blowFinished) doBlowSequence(); }
+  });
+
+  // make sure the credit text always visible (style already set)
+
+  // End of script
+  </script>
+</body>
+</html>
