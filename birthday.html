@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nhập Pass đi người đẹp 💕</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+  body {
+    background: linear-gradient(135deg, #f9c5d1, #fad0c4);
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  h1 {
+    color: #ff2e63;
+    text-shadow: 1px 1px #fff;
+  }
+  .container {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+  .container:hover {
+    transform: scale(1.03);
+  }
+  .avatar {
+    width: 100px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+  }
+  input {
+    width: 180px;
+    height: 35px;
+    text-align: center;
+    border-radius: 10px;
+    border: 2px solid #ff2e63;
+    outline: none;
+    font-size: 20px;
+    letter-spacing: 5px;
+    margin-bottom: 15px;
+  }
+  .keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 60px);
+    gap: 10px;
+    justify-content: center;
+  }
+  button {
+    font-size: 20px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background-color: #ffb6c1;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  button:hover {
+    background-color: #ff7aa2;
+    color: white;
+  }
+  .action {
+    grid-column: span 3;
+    display: flex;
+    justify-content: space-between;
+  }
+  .action button {
+    width: 45%;
+  }
+  .error {
+    color: red;
+    margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+
+  <h1>NHẬP PASS ĐI NGƯỜI ĐẸP 💖</h1>
+  <div class="container">
+    <img src="89ee85cf-7b63-4f95-ab95-d2557dd8b1c0.png" alt="chibi" class="avatar">
+    <br>
+    <input type="password" id="password" readonly>
+    <div class="keypad">
+      <button onclick="addNum('1')">1</button>
+      <button onclick="addNum('2')">2</button>
+      <button onclick="addNum('3')">3</button>
+      <button onclick="addNum('4')">4</button>
+      <button onclick="addNum('5')">5</button>
+      <button onclick="addNum('6')">6</button>
+      <button onclick="addNum('7')">7</button>
+      <button onclick="addNum('8')">8</button>
+      <button onclick="addNum('9')">9</button>
+      <div class="action">
+        <button onclick="checkPass()">✔</button>
+        <button onclick="clearPass()">✖</button>
+      </div>
+      <button onclick="addNum('0')" style="grid-column: span 3;">0</button>
+    </div>
+    <p id="error" class="error"></p>
+  </div>
+
+<script>
+  const correctPass = "123456"; // Cậu đổi pass tại đây
+  function addNum(num) {
+    document.getElementById('password').value += num;
+  }
+  function clearPass() {
+    document.getElementById('password').value = "";
+    document.getElementById('error').innerText = "";
+  }
+  function checkPass() {
+    const input = document.getElementById('password').value;
+    if (input === correctPass) {
+      window.location.href = "next.html"; // Đổi sang file của cậu
+    } else {
+      document.getElementById('error').innerText = "Sai pass rồi 😝";
+    }
+  }
+</script>
+
+</body>
+</html>
