@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Colorful YouTube Music Player</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1: linear-gradient(135deg,#0f1028,#1b1340 60%);
+    --card: rgba(255,255,255,0.04);
+    --accent1: #ff6fb5;
+    --accent2: #9b59ff;
+    --glass: rgba(255,255,255,0.06);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; font-family:'Nunito',system-ui,Arial;
+    background: radial-gradient(ellipse at 10% 10%, rgba(255,111,181,0.08), transparent 10%),
+                radial-gradient(ellipse at 90% 90%, rgba(155,89,255,0.06), transparent 20%),
+                var(--bg1);
+    color:#fff; display:flex; align-items:center; justify-content:center; padding:32px;
+  }
+
+  .player-wrap{
+    width:100%; max-width:920px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:18px; padding:20px; box-shadow: 0 10px 40px rgba(10,8,20,0.6);
+    border:1px solid rgba(255,255,255,0.04);
+  }
+
+  .header{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px;
+  }
+  .title{
+    display:flex; gap:12px; align-items:center;
+  }
+  .logo{
+    width:56px; height:56px; border-radius:12px; background:linear-gradient(135deg,var(--accent1),var(--accent2));
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px; color:white;
+    box-shadow: 0 6px 18px rgba(155,89,255,0.12), inset 0 -6px 12px rgba(0,0,0,0.12);
+  }
+  h1{font-size:20px;margin:0}
+  p.small{margin:0;color:rgba(255,255,255,0.8);font-size:13px}
+
+  .controls{
+    display:flex; gap:10px; align-items:center;
+  }
+  .btn{
+    padding:10px 14px; border-radius:12px; border:none; cursor:pointer; font-weight:700;
+    background:linear-gradient(180deg,var(--accent1),var(--accent2)); color:#fff; box-shadow: 0 8px 20px rgba(155,89,255,0.12);
+  }
+  .btn.ghost{ background:transparent; border:1px solid rgba(255,255,255,0.06); box-shadow:none; color:#fff; padding:8px 12px; }
+  .btn:active{ transform:translateY(1px) scale(.997) }
+
+  .content{ display:flex; gap:18px; align-items:flex-start; flex-wrap:wrap; }
+  .playlist{
+    flex:1 1 320px; background:var(--card); padding:14px; border-radius:12px; min-width:260px;
+    border:1px solid rgba(255,255,255,0.03);
+  }
+  .track{
+    display:flex; align-items:center; gap:12px; padding:10px; border-radius:10px; margin-bottom:10px;
+    transition: background .15s, transform .08s;
+  }
+  .track:hover{ transform:translateY(-3px); background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); }
+  .thumb{
+    width:64px; height:48px; border-radius:8px; background:#111; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-weight:700;
+    color:#fff; font-size:12px; overflow:hidden;
+  }
+  .meta{ flex:1; }
+  .meta .t{ font-weight:700; font-size:15px; margin-bottom:4px; }
+  .meta .a{ font-size:13px; color:rgba(255,255,255,0.78); }
+
+  .playBtn{ padding:8px 12px; border-radius:10px; border:none; cursor:pointer; font-weight:700; background:linear-gradient(90deg,#ffd1ec,#ffd4ff); color:#111; }
+  .playing{ outline: 2px solid rgba(155,89,255,0.18); box-shadow: 0 6px 18px rgba(155,89,255,0.06); }
+
+  .visual{
+    width:320px; min-width:260px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:14px;
+    border:1px solid rgba(255,255,255,0.03);
+    display:flex; flex-direction:column; gap:12px; align-items:center; justify-content:center;
+  }
+  .status{ font-size:14px; color:#fff; text-align:center; min-height:34px }
+  .meter{ width:100%; height:8px; background:rgba(255,255,255,0.04); border-radius:8px; overflow:hidden; margin-top:6px; }
+  .meter > i{ display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--accent1),var(--accent2)); transition: width .25s linear; }
+
+  .footer{ margin-top:12px; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .credit{ color:rgba(255,255,255,0.6); font-size:12px }
+
+  @media (max-width:760px){
+    .content{ flex-direction:column-reverse; align-items:stretch; }
+    .visual{ width:100% }
+  }
+</style>
+</head>
+<body>
+
+<div class="player-wrap">
+  <div class="header">
+    <div class="title">
+      <div class="logo">YT</div>
+      <div>
+        <h1>Music Player — YouTube Links</h1>
+        <p class="small">Nhấn 1 lần để play (trình duyệt yêu cầu tương tác nếu chặn autoplay).</p>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="pauseAll" class="btn ghost">⏸ Pause</button>
+      <button id="stopAll" class="btn ghost">⏹ Stop</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="playlist" id="playlist">
+      <!-- Mỗi .track có data-src = link YouTube hoặc ID -->
+      <!-- Cậu đổi link ở đây tuỳ ý -->
+      <div class="track" data-src="https://www.youtube.com/watch?v=5qap5aO4i9A">
+        <div class="thumb">1</div>
+        <div class="meta">
+          <div class="t">Lo-fi Chill #1</div>
+          <div class="a">YouTube Link (ví dụ)</div>
+        </div>
+        <button class="playBtn">Play</button>
+      </div>
+
+      <div class="track" data-src="https://www.youtube.com/watch?v=DWcJFNfaw9c">
+        <div class="thumb">2</div>
+        <div class="meta">
+          <div class="t">Relaxing Ambient</div>
+          <div class="a">YouTube Link (ví dụ)</div>
+        </div>
+        <button class="playBtn">Play</button>
+      </div>
+
+      <div class="track" data-src="https://www.youtube.com/watch?v=3JZ4pnNtyxQ">
+        <div class="thumb">3</div>
+        <div class="meta">
+          <div class="t">Piano Calm</div>
+          <div class="a">YouTube Link (ví dụ)</div>
+        </div>
+        <button class="playBtn">Play</button>
+      </div>
+
+    </div>
+
+    <div class="visual">
+      <div class="status" id="status">Không có bài nào đang phát</div>
+      <div class="meter"><i id="meterBar"></i></div>
+      <div class="footer" style="width:100%">
+        <div class="credit">Được làm bởi cậu - Tớ giúp code</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.8)">YouTube API</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Player (ẩn) -->
+<div id="yt-player" style="display:none"></div>
+
+<!-- YouTube IFrame API -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<script>
+/* ---------- Utility: extract Video ID from many YouTube URL formats ---------- */
+function extractYouTubeID(url){
+  if(!url) return null;
+  // common formats: youtu.be/ID, youtube.com/watch?v=ID, youtube.com/embed/ID
+  const patterns = [
+    /(?:youtube\.com\/.*v=|youtube\.com\/embed\/|youtu\.be\/)([A-Za-z0-9_-]{6,})/,
+    /youtube\.com\/shorts\/([A-Za-z0-9_-]{6,})/,
+  ];
+  for(const p of patterns){
+    const m = url.match(p);
+    if(m && m[1]) return m[1];
+  }
+  // fallback: if url itself looks like an ID
+  if(/^[A-Za-z0-9_-]{6,}$/.test(url)) return url;
+  return null;
+}
+
+/* ---------- YT Player Singleton ---------- */
+let player = null;
+let playerReady = false;
+let currentVideoId = null;
+
+function onYouTubeIframeAPIReady(){
+  player = new YT.Player('yt-player', {
+    height: '0', width: '0',
+    videoId: '',
+    playerVars: {
+      autoplay: 0,
+      controls: 0,
+      rel: 0,
+      modestbranding: 1,
+      disablekb: 1
+    },
+    events: {
+      onReady: () => { playerReady = true; },
+      onStateChange: onPlayerStateChange
+    }
+  });
+}
+
+/* ---------- UI binding ---------- */
+const tracks = Array.from(document.querySelectorAll('.track'));
+const pauseAllBtn = document.getElementById('pauseAll');
+const stopAllBtn = document.getElementById('stopAll');
+const statusEl = document.getElementById('status');
+const meterBar = document.getElementById('meterBar');
+
+tracks.forEach(t => {
+  const btn = t.querySelector('.playBtn');
+  btn.addEventListener('click', async () => {
+    const src = t.getAttribute('data-src');
+    const id = extractYouTubeID(src);
+    if(!id){
+      alert('Không đọc được ID YouTube từ: ' + src);
+      return;
+    }
+    // nếu đang có video khác phát -> stop/pausing it, then load new
+    if(player && playerReady){
+      if(currentVideoId === id){
+        // toggle pause/play
+        const state = player.getPlayerState();
+        if(state === YT.PlayerState.PLAYING) player.pauseVideo();
+        else player.playVideo();
+        return;
+      } else {
+        // load new video (this will stop previous automatically)
+        player.loadVideoById(id);
+        currentVideoId = id;
+        updatePlayingUI(id);
+      }
+    } else {
+      alert('Player chưa sẵn sàng — chờ 1 chút rồi thử lại.');
+    }
+  });
+});
+
+pauseAllBtn.addEventListener('click', () => {
+  if(player && playerReady){
+    player.pauseVideo();
+    statusEl.textContent = 'Tạm dừng';
+    clearPlayingUI();
+  }
+});
+
+stopAllBtn.addEventListener('click', () => {
+  if(player && playerReady){
+    player.stopVideo();
+    statusEl.textContent = 'Đã dừng';
+    currentVideoId = null;
+    clearPlayingUI();
+    meterBar.style.width = '0%';
+  }
+});
+
+/* ---------- Player state tracking ---------- */
+function onPlayerStateChange(e){
+  // YT states: -1 unstarted, 0 ended, 1 playing, 2 paused, 3 buffering
+  const state = e.data;
+  if(state === YT.PlayerState.PLAYING){
+    statusEl.textContent = 'Đang phát';
+    startMeter();
+  } else if(state === YT.PlayerState.PAUSED){
+    statusEl.textContent = 'Tạm dừng';
+    stopMeter();
+  } else if(state === YT.PlayerState.ENDED){
+    statusEl.textContent = 'Kết thúc';
+    stopMeter();
+    currentVideoId = null;
+    clearPlayingUI();
+  } else if(state === YT.PlayerState.BUFFERING){
+    statusEl.textContent = 'Đang tải...';
+  } else if(state === YT.PlayerState.UNSTARTED){
+    statusEl.textContent = 'Sẵn sàng';
+  }
+  // highlight currently playing track
+  highlightTrack(currentVideoId);
+}
+
+/* ---------- UI helpers ---------- */
+function updatePlayingUI(videoId){
+  // set status text using thumbnail/title if available -> we'll show ID
+  statusEl.textContent = 'Đang phát: ' + videoId;
+  highlightTrack(videoId);
+}
+
+function highlightTrack(videoId){
+  tracks.forEach(t => {
+    const id = extractYouTubeID(t.getAttribute('data-src'));
+    if(id && id === videoId){
+      t.classList.add('playing');
+      t.querySelector('.playBtn').textContent = 'Playing';
+    } else {
+      t.classList.remove('playing');
+      t.querySelector('.playBtn').textContent = 'Play';
+    }
+  });
+}
+
+function clearPlayingUI(){
+  tracks.forEach(t => {
+    t.classList.remove('playing');
+    t.querySelector('.playBtn').textContent = 'Play';
+  });
+}
+
+/* ---------- Simple meter animation while playing ---------- */
+let meterInterval = null;
+function startMeter(){
+  stopMeter();
+  let pct = 0;
+  meterInterval = setInterval(()=>{
+    pct += Math.random()*6 + 2;
+    if(pct > 100) pct = 20 + Math.random()*20;
+    meterBar.style.width = pct + '%';
+  }, 220);
+}
+function stopMeter(){
+  if(meterInterval) clearInterval(meterInterval);
+  meterInterval = null;
+}
+
+/* ---------- Fallback: try to resume on user interaction (for autoplay restrictions) ---------- */
+document.addEventListener('click', async function resumeIfNeeded(){
+  if(window.YT && player && playerReady){
+    try{
+      // attempt to resume audio context by playing and pausing quickly
+      // not necessary for iframe player but keeps UX consistent
+      // remove listener after first click
+      document.removeEventListener('click', resumeIfNeeded);
+    }catch(e){}
+  }
+});
+
+/* ---------- Notes for usage ----------
+ - Đổi các giá trị data-src trong .track thành link YouTube của cậu
+ - Khi bấm 1 track: nếu khác track hiện tại -> dừng track cũ và load mới
+ - Pause dừng tạm thời; Stop dừng hẳn và reset progress bar
+ - Một số trình duyệt (mobile) chặn autoplay nếu chưa tương tác -> bấm 1 lần trên trang trước khi play
+------------------------------------------------- */
+</script>
+
+</body>
+</html>
