@@ -1,178 +1,925 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>Bảng Tuần Hoàn 2D - Siêu Màu Mè</title>
-<style>
-  body {
-    margin: 0;
-    background: radial-gradient(circle at top left, #ff7eb3, #8e44ad, #2c3e50);
-    font-family: "Poppins", sans-serif;
-    color: #fff;
-    overflow-x: hidden;
-    text-align: center;
-  }
-
-  h1 {
-    margin-top: 25px;
-    font-size: 38px;
-    text-shadow: 2px 2px 10px rgba(255,255,255,0.4);
-  }
-
-  .table {
-    display: grid;
-    grid-template-columns: repeat(18, 70px);
-    grid-gap: 6px;
-    justify-content: center;
-    margin: 40px auto;
-  }
-
-  .element {
-    width: 70px;
-    height: 80px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s;
-    box-shadow: 0 0 6px rgba(255,255,255,0.2);
-  }
-
-  .element:hover {
-    transform: scale(1.25);
-    box-shadow: 0 0 30px #fff;
-    z-index: 100;
-  }
-
-  .number {
-    font-size: 12px;
-  }
-  .symbol {
-    font-size: 22px;
-  }
-  .mass {
-    font-size: 11px;
-  }
-
-  .tooltip {
-    position: fixed;
-    background: rgba(0,0,0,0.85);
-    color: #fff;
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-size: 14px;
-    pointer-events: none;
-    display: none;
-    white-space: nowrap;
-    z-index: 1000;
-  }
-
-  footer {
-    margin: 20px;
-    font-size: 14px;
-    opacity: 0.8;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bảng Tuần Hoàn Hóa Học</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 10px;
+    }
+    .periodic-table {
+        display: grid;
+        grid-template-columns: repeat(18, 60px);
+        gap: 2px;
+        justify-content: center;
+    }
+    .element {
+        position: relative;
+        padding: 4px;
+        color: #000;
+        border: 1px solid #ccc;
+        text-align: center;
+        cursor: pointer;
+    }
+    .element .atomic-number {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        font-size: 0.6em;
+    }
+    .element .symbol {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-top: 10px;
+        display: block;
+    }
+    .element .atomic-mass, .element .valence {
+        font-size: 0.7em;
+    }
+    .element:hover {
+        transform: scale(1.05);
+        z-index: 2;
+        box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    }
+    .tooltip {
+        display: none;
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translate(-50%, -5px);
+        background: rgba(0,0,0,0.8);
+        color: #fff;
+        padding: 5px;
+        font-size: 0.8em;
+        border-radius: 3px;
+        white-space: nowrap;
+        z-index: 10;
+    }
+    .element:hover .tooltip {
+        display: block;
+    }
+    /* Màu sắc theo loại nguyên tố */
+    .kim-loai { background: #ffeb3b; }            /* kim loại: vàng */
+    .kim-loai-chuyen-tiep { background: #ff9800; } /* kim loại chuyển tiếp: cam */
+    .phi-kim { background: #4caf50; }              /* phi kim: xanh lá */
+    .halogen { background: #e91e63; }              /* halogen: hồng */
+    .khi-hiem { background: #00bcd4; }             /* khí hiếm: xanh dương sáng */
+    .a-kim { background: #9c27b0; color: #fff; }    /* á kim: tím */
+    @media (max-width: 600px) {
+        .element {
+            width: 40px;
+            height: 40px;
+            padding: 2px;
+        }
+        .element .symbol {
+            font-size: 1em;
+        }
+        .element .atomic-mass, .element .valence {
+            font-size: 0.6em;
+        }
+        .element .atomic-number { font-size: 0.5em; }
+    }
+  </style>
 </head>
 <body>
-  <h1>🌈 BẢNG TUẦN HOÀN NGUYÊN TỐ 2D 🌈</h1>
-
-  <div class="table" id="table"></div>
-  <div class="tooltip" id="tooltip"></div>
-
-  <footer>Code by <b>PhanPhuc12300</b> 🧪</footer>
-
-<script>
-const data = [
-  {num:1, sym:"H", mass:"1.008", val:"I", type:"phi kim"},
-  {num:2, sym:"He", mass:"4.003", val:"0", type:"khí hiếm"},
-  {num:3, sym:"Li", mass:"6.94", val:"I", type:"kim loại kiềm"},
-  {num:4, sym:"Be", mass:"9.012", val:"II", type:"kim loại kiềm thổ"},
-  {num:5, sym:"B", mass:"10.81", val:"III", type:"á kim"},
-  {num:6, sym:"C", mass:"12.01", val:"IV", type:"phi kim"},
-  {num:7, sym:"N", mass:"14.01", val:"III, V", type:"phi kim"},
-  {num:8, sym:"O", mass:"16.00", val:"II", type:"phi kim"},
-  {num:9, sym:"F", mass:"19.00", val:"I", type:"phi kim"},
-  {num:10, sym:"Ne", mass:"20.18", val:"0", type:"khí hiếm"},
-  {num:11, sym:"Na", mass:"22.99", val:"I", type:"kim loại kiềm"},
-  {num:12, sym:"Mg", mass:"24.31", val:"II", type:"kim loại kiềm thổ"},
-  {num:13, sym:"Al", mass:"26.98", val:"III", type:"kim loại"},
-  {num:14, sym:"Si", mass:"28.09", val:"IV", type:"á kim"},
-  {num:15, sym:"P", mass:"30.97", val:"III, V", type:"phi kim"},
-  {num:16, sym:"S", mass:"32.06", val:"II, IV, VI", type:"phi kim"},
-  {num:17, sym:"Cl", mass:"35.45", val:"I, III, V, VII", type:"phi kim"},
-  {num:18, sym:"Ar", mass:"39.95", val:"0", type:"khí hiếm"},
-  {num:19, sym:"K", mass:"39.10", val:"I", type:"kim loại kiềm"},
-  {num:20, sym:"Ca", mass:"40.08", val:"II", type:"kim loại kiềm thổ"},
-  {num:26, sym:"Fe", mass:"55.85", val:"II, III", type:"kim loại chuyển tiếp"},
-  {num:29, sym:"Cu", mass:"63.55", val:"I, II", type:"kim loại chuyển tiếp"},
-  {num:30, sym:"Zn", mass:"65.38", val:"II", type:"kim loại chuyển tiếp"},
-  {num:35, sym:"Br", mass:"79.90", val:"I, III, V", type:"phi kim"},
-  {num:47, sym:"Ag", mass:"107.87", val:"I", type:"kim loại quý"},
-  {num:53, sym:"I", mass:"126.90", val:"I, III, V, VII", type:"phi kim"},
-  {num:79, sym:"Au", mass:"196.97", val:"I, III", type:"kim loại quý"},
-  {num:80, sym:"Hg", mass:"200.59", val:"I, II", type:"kim loại chuyển tiếp"},
-  {num:82, sym:"Pb", mass:"207.2", val:"II, IV", type:"kim loại nặng"},
-  {num:92, sym:"U", mass:"238.03", val:"IV, VI", type:"kim loại phóng xạ"},
-  {num:118, sym:"Og", mass:"294", val:"0", type:"khí hiếm"},
-];
-
-const colors = {
-  "kim loại kiềm": "#ff7675",
-  "kim loại kiềm thổ": "#fab1a0",
-  "kim loại chuyển tiếp": "#ffeaa7",
-  "kim loại quý": "#fdcb6e",
-  "kim loại nặng": "#e17055",
-  "phi kim": "#74b9ff",
-  "á kim": "#a29bfe",
-  "khí hiếm": "#b388eb",
-  "kim loại phóng xạ": "#fd79a8"
-};
-
-const table = document.getElementById("table");
-const tooltip = document.getElementById("tooltip");
-
-// Tạo 118 ô
-for (let i=1;i<=118;i++) {
-  const info = data.find(e => e.num === i);
-  const div = document.createElement("div");
-  div.className = "element";
-
-  if (info) {
-    div.style.background = colors[info.type];
-    div.innerHTML = `
-      <div class="number">${info.num}</div>
-      <div class="symbol">${info.sym}</div>
-      <div class="mass">${info.mass}</div>
-    `;
-    div.dataset.info = `
-      <b>${info.sym}</b> (${info.num})<br>
-      Khối lượng: ${info.mass}<br>
-      Hóa trị: ${info.val}<br>
-      Loại: ${info.type}
-    `;
-  } else {
-    div.style.background = "rgba(255,255,255,0.1)";
-  }
-
-  div.addEventListener("mousemove", (e)=>{
-    if(info){
-      tooltip.innerHTML = div.dataset.info;
-      tooltip.style.display = "block";
-      tooltip.style.left = e.pageX + 10 + "px";
-      tooltip.style.top = e.pageY + 10 + "px";
-    }
-  });
-
-  div.addEventListener("mouseleave", ()=>{
-    tooltip.style.display = "none";
-  });
-
-  table.appendChild(div);
-}
-</script>
+  <div class="periodic-table">
+    <!-- Hàng 1 -->
+    <div class="element phi-kim" style="grid-row:1; grid-column:1;">
+      <span class="atomic-number">1</span>
+      <span class="symbol">H</span>
+      <span class="atomic-mass">1</span>
+      <span class="valence">1</span>
+      <div class="tooltip">Số hiệu: 1, Ký hiệu: H, Khối lượng nguyên tử: 1, Hóa trị: 1, Loại: Phi kim</div>
+    </div>
+    <div class="element khi-hiem" style="grid-row:1; grid-column:18;">
+      <span class="atomic-number">2</span>
+      <span class="symbol">He</span>
+      <span class="atomic-mass">4</span>
+      <span class="valence">0</span>
+      <div class="tooltip">Số hiệu: 2, Ký hiệu: He, Khối lượng nguyên tử: 4, Hóa trị: 0, Loại: Khí hiếm</div>
+    </div>
+    <!-- Hàng 2 -->
+    <div class="element kim-loai" style="grid-row:2; grid-column:1;">
+      <span class="atomic-number">3</span>
+      <span class="symbol">Li</span>
+      <span class="atomic-mass">7</span>
+      <span class="valence">1</span>
+      <div class="tooltip">Số hiệu: 3, Ký hiệu: Li, Khối lượng nguyên tử: 7, Hóa trị: 1, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:2; grid-column:2;">
+      <span class="atomic-number">4</span>
+      <span class="symbol">Be</span>
+      <span class="atomic-mass">9</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 4, Ký hiệu: Be, Khối lượng nguyên tử: 9, Hóa trị: 2, Loại: Kim loại</div>
+    </div>
+    <div class="element a-kim" style="grid-row:2; grid-column:13;">
+      <span class="atomic-number">5</span>
+      <span class="symbol">B</span>
+      <span class="atomic-mass">11</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 5, Ký hiệu: B, Khối lượng nguyên tử: 11, Hóa trị: 3, Loại: Á kim</div>
+    </div>
+    <div class="element phi-kim" style="grid-row:2; grid-column:14;">
+      <span class="atomic-number">6</span>
+      <span class="symbol">C</span>
+      <span class="atomic-mass">12</span>
+      <span class="valence">4</span>
+      <div class="tooltip">Số hiệu: 6, Ký hiệu: C, Khối lượng nguyên tử: 12, Hóa trị: 4, Loại: Phi kim</div>
+    </div>
+    <div class="element phi-kim" style="grid-row:2; grid-column:15;">
+      <span class="atomic-number">7</span>
+      <span class="symbol">N</span>
+      <span class="atomic-mass">14</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 7, Ký hiệu: N, Khối lượng nguyên tử: 14, Hóa trị: 3, Loại: Phi kim</div>
+    </div>
+    <div class="element phi-kim" style="grid-row:2; grid-column:16;">
+      <span class="atomic-number">8</span>
+      <span class="symbol">O</span>
+      <span class="atomic-mass">16</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 8, Ký hiệu: O, Khối lượng nguyên tử: 16, Hóa trị: 2, Loại: Phi kim</div>
+    </div>
+    <div class="element halogen" style="grid-row:2; grid-column:17;">
+      <span class="atomic-number">9</span>
+      <span class="symbol">F</span>
+      <span class="atomic-mass">19</span>
+      <span class="valence">1</span>
+      <div class="tooltip">Số hiệu: 9, Ký hiệu: F, Khối lượng nguyên tử: 19, Hóa trị: 1, Loại: Halogen</div>
+    </div>
+    <div class="element khi-hiem" style="grid-row:2; grid-column:18;">
+      <span class="atomic-number">10</span>
+      <span class="symbol">Ne</span>
+      <span class="atomic-mass">20</span>
+      <span class="valence">0</span>
+      <div class="tooltip">Số hiệu: 10, Ký hiệu: Ne, Khối lượng nguyên tử: 20, Hóa trị: 0, Loại: Khí hiếm</div>
+    </div>
+    <!-- Hàng 3 -->
+    <div class="element kim-loai" style="grid-row:3; grid-column:1;">
+      <span class="atomic-number">11</span>
+      <span class="symbol">Na</span>
+      <span class="atomic-mass">23</span>
+      <span class="valence">1</span>
+      <div class="tooltip">Số hiệu: 11, Ký hiệu: Na, Khối lượng nguyên tử: 23, Hóa trị: 1, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:3; grid-column:2;">
+      <span class="atomic-number">12</span>
+      <span class="symbol">Mg</span>
+      <span class="atomic-mass">24</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 12, Ký hiệu: Mg, Khối lượng nguyên tử: 24, Hóa trị: 2, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:3; grid-column:13;">
+      <span class="atomic-number">13</span>
+      <span class="symbol">Al</span>
+      <span class="atomic-mass">27</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 13, Ký hiệu: Al, Khối lượng nguyên tử: 27, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element a-kim" style="grid-row:3; grid-column:14;">
+      <span class="atomic-number">14</span>
+      <span class="symbol">Si</span>
+      <span class="atomic-mass">28</span>
+      <span class="valence">4</span>
+      <div class="tooltip">Số hiệu: 14, Ký hiệu: Si, Khối lượng nguyên tử: 28, Hóa trị: 4, Loại: Á kim</div>
+    </div>
+    <div class="element phi-kim" style="grid-row:3; grid-column:15;">
+      <span class="atomic-number">15</span>
+      <span class="symbol">P</span>
+      <span class="atomic-mass">31</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 15, Ký hiệu: P, Khối lượng nguyên tử: 31, Hóa trị: 3, Loại: Phi kim</div>
+    </div>
+    <div class="element phi-kim" style="grid-row:3; grid-column:16;">
+      <span class="atomic-number">16</span>
+      <span class="symbol">S</span>
+      <span class="atomic-mass">32</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 16, Ký hiệu: S, Khối lượng nguyên tử: 32, Hóa trị: 2, Loại: Phi kim</div>
+    </div>
+    <div class="element halogen" style="grid-row:3; grid-column:17;">
+      <span class="atomic-number">17</span>
+      <span class="symbol">Cl</span>
+      <span class="atomic-mass">35</span>
+      <span class="valence">1</span>
+      <div class="tooltip">Số hiệu: 17, Ký hiệu: Cl, Khối lượng nguyên tử: 35, Hóa trị: 1, Loại: Halogen</div>
+    </div>
+    <div class="element khi-hiem" style="grid-row:3; grid-column:18;">
+      <span class="atomic-number">18</span>
+      <span class="symbol">Ar</span>
+      <span class="atomic-mass">40</span>
+      <span class="valence">0</span>
+      <div class="tooltip">Số hiệu: 18, Ký hiệu: Ar, Khối lượng nguyên tử: 40, Hóa trị: 0, Loại: Khí hiếm</div>
+    </div>
+    <!-- Hàng 4 -->
+    <div class="element kim-loai" style="grid-row:4; grid-column:1;">
+      <span class="atomic-number">19</span>
+      <span class="symbol">K</span>
+      <span class="atomic-mass">39</span>
+      <span class="valence">1</span>
+      <div class="tooltip">Số hiệu: 19, Ký hiệu: K, Khối lượng nguyên tử: 39, Hóa trị: 1, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:4; grid-column:2;">
+      <span class="atomic-number">20</span>
+      <span class="symbol">Ca</span>
+      <span class="atomic-mass">40</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 20, Ký hiệu: Ca, Khối lượng nguyên tử: 40, Hóa trị: 2, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:4; grid-column:3;">
+      <span class="atomic-number">21</span>
+      <span class="symbol">Sc</span>
+      <span class="atomic-mass">45</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 21, Ký hiệu: Sc, Khối lượng nguyên tử: 45, Hóa trị: 3, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:4; grid-column:4;">
+      <span class="atomic-number">22</span>
+      <span class="symbol">Ti</span>
+      <span class="atomic-mass">48</span>
+      <span class="valence">4</span>
+      <div class="tooltip">Số hiệu: 22, Ký hiệu: Ti, Khối lượng nguyên tử: 48, Hóa trị: 4, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:4; grid-column:5;">
+      <span class="atomic-number">23</span>
+      <span class="symbol">V</span>
+      <span class="atomic-mass">51</span>
+      <span class="valence">5</span>
+      <div class="tooltip">Số hiệu: 23, Ký hiệu: V, Khối lượng nguyên tử: 51, Hóa trị: 5, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:4; grid-column:6;">
+      <span class="atomic-number">24</span>
+      <span class="symbol">Cr</span>
+      <span class="atomic-mass">52</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 24, Ký hiệu: Cr, Khối lượng nguyên tử: 52, Hóa trị: 3, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:4; grid-column:7;">
+      <span class="atomic-number">25</span>
+      <span class="symbol">Mn</span>
+      <span class="atomic-mass">55</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 25, Ký hiệu: Mn, Khối lượng nguyên tử: 55, Hóa trị: 2, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:4; grid-column:8;">
+      <span class="atomic-number">26</span>
+      <span class="symbol">Fe</span>
+      <span class="atomic-mass">56</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 26, Ký hiệu: Fe, Khối lượng nguyên tử: 56, Hóa trị: 2, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:4; grid-column:9;">
+      <span class="atomic-number">27</span>
+      <span class="symbol">Co</span>
+      <span class="atomic-mass">59</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 27, Ký hiệu: Co, Khối lượng nguyên tử: 59, Hóa trị: 2, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:4; grid-column:10;">
+      <span class="atomic-number">28</span>
+      <span class="symbol">Ni</span>
+      <span class="atomic-mass">59</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 28, Ký hiệu: Ni, Khối lượng nguyên tử: 59, Hóa trị: 2, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:4; grid-column:11;">
+      <span class="atomic-number">29</span>
+      <span class="symbol">Cu</span>
+      <span class="atomic-mass">64</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 29, Ký hiệu: Cu, Khối lượng nguyên tử: 64, Hóa trị: 2, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:4; grid-column:12;">
+      <span class="atomic-number">30</span>
+      <span class="symbol">Zn</span>
+      <span class="atomic-mass">65</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 30, Ký hiệu: Zn, Khối lượng nguyên tử: 65, Hóa trị: 2, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:4; grid-column:13;">
+      <span class="atomic-number">31</span>
+      <span class="symbol">Ga</span>
+      <span class="atomic-mass">70</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 31, Ký hiệu: Ga, Khối lượng nguyên tử: 70, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element a-kim" style="grid-row:4; grid-column:14;">
+      <span class="atomic-number">32</span>
+      <span class="symbol">Ge</span>
+      <span class="atomic-mass">73</span>
+      <span class="valence">4</span>
+      <div class="tooltip">Số hiệu: 32, Ký hiệu: Ge, Khối lượng nguyên tử: 73, Hóa trị: 4, Loại: Á kim</div>
+    </div>
+    <div class="element a-kim" style="grid-row:4; grid-column:15;">
+      <span class="atomic-number">33</span>
+      <span class="symbol">As</span>
+      <span class="atomic-mass">75</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 33, Ký hiệu: As, Khối lượng nguyên tử: 75, Hóa trị: 3, Loại: Á kim</div>
+    </div>
+    <div class="element phi-kim" style="grid-row:4; grid-column:16;">
+      <span class="atomic-number">34</span>
+      <span class="symbol">Se</span>
+      <span class="atomic-mass">79</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 34, Ký hiệu: Se, Khối lượng nguyên tử: 79, Hóa trị: 2, Loại: Phi kim</div>
+    </div>
+    <div class="element halogen" style="grid-row:4; grid-column:17;">
+      <span class="atomic-number">35</span>
+      <span class="symbol">Br</span>
+      <span class="atomic-mass">80</span>
+      <span class="valence">1</span>
+      <div class="tooltip">Số hiệu: 35, Ký hiệu: Br, Khối lượng nguyên tử: 80, Hóa trị: 1, Loại: Halogen</div>
+    </div>
+    <div class="element khi-hiem" style="grid-row:4; grid-column:18;">
+      <span class="atomic-number">36</span>
+      <span class="symbol">Kr</span>
+      <span class="atomic-mass">84</span>
+      <span class="valence">0</span>
+      <div class="tooltip">Số hiệu: 36, Ký hiệu: Kr, Khối lượng nguyên tử: 84, Hóa trị: 0, Loại: Khí hiếm</div>
+    </div>
+    <!-- Hàng 5 -->
+    <div class="element kim-loai" style="grid-row:5; grid-column:1;">
+      <span class="atomic-number">37</span>
+      <span class="symbol">Rb</span>
+      <span class="atomic-mass">85</span>
+      <span class="valence">1</span>
+      <div class="tooltip">Số hiệu: 37, Ký hiệu: Rb, Khối lượng nguyên tử: 85, Hóa trị: 1, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:5; grid-column:2;">
+      <span class="atomic-number">38</span>
+      <span class="symbol">Sr</span>
+      <span class="atomic-mass">88</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 38, Ký hiệu: Sr, Khối lượng nguyên tử: 88, Hóa trị: 2, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:5; grid-column:3;">
+      <span class="atomic-number">39</span>
+      <span class="symbol">Y</span>
+      <span class="atomic-mass">89</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 39, Ký hiệu: Y, Khối lượng nguyên tử: 89, Hóa trị: 3, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:5; grid-column:4;">
+      <span class="atomic-number">40</span>
+      <span class="symbol">Zr</span>
+      <span class="atomic-mass">91</span>
+      <span class="valence">4</span>
+      <div class="tooltip">Số hiệu: 40, Ký hiệu: Zr, Khối lượng nguyên tử: 91, Hóa trị: 4, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:5; grid-column:5;">
+      <span class="atomic-number">41</span>
+      <span class="symbol">Nb</span>
+      <span class="atomic-mass">93</span>
+      <span class="valence">5</span>
+      <div class="tooltip">Số hiệu: 41, Ký hiệu: Nb, Khối lượng nguyên tử: 93, Hóa trị: 5, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:5; grid-column:6;">
+      <span class="atomic-number">42</span>
+      <span class="symbol">Mo</span>
+      <span class="atomic-mass">96</span>
+      <span class="valence">6</span>
+      <div class="tooltip">Số hiệu: 42, Ký hiệu: Mo, Khối lượng nguyên tử: 96, Hóa trị: 6, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:5; grid-column:7;">
+      <span class="atomic-number">43</span>
+      <span class="symbol">Tc</span>
+      <span class="atomic-mass">98</span>
+      <span class="valence">7</span>
+      <div class="tooltip">Số hiệu: 43, Ký hiệu: Tc, Khối lượng nguyên tử: 98, Hóa trị: 7, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:5; grid-column:8;">
+      <span class="atomic-number">44</span>
+      <span class="symbol">Ru</span>
+      <span class="atomic-mass">101</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 44, Ký hiệu: Ru, Khối lượng nguyên tử: 101, Hóa trị: 3, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:5; grid-column:9;">
+      <span class="atomic-number">45</span>
+      <span class="symbol">Rh</span>
+      <span class="atomic-mass">103</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 45, Ký hiệu: Rh, Khối lượng nguyên tử: 103, Hóa trị: 3, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:5; grid-column:10;">
+      <span class="atomic-number">46</span>
+      <span class="symbol">Pd</span>
+      <span class="atomic-mass">106</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 46, Ký hiệu: Pd, Khối lượng nguyên tử: 106, Hóa trị: 2, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:5; grid-column:11;">
+      <span class="atomic-number">47</span>
+      <span class="symbol">Ag</span>
+      <span class="atomic-mass">108</span>
+      <span class="valence">1</span>
+      <div class="tooltip">Số hiệu: 47, Ký hiệu: Ag, Khối lượng nguyên tử: 108, Hóa trị: 1, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:5; grid-column:12;">
+      <span class="atomic-number">48</span>
+      <span class="symbol">Cd</span>
+      <span class="atomic-mass">112</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 48, Ký hiệu: Cd, Khối lượng nguyên tử: 112, Hóa trị: 2, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:5; grid-column:13;">
+      <span class="atomic-number">49</span>
+      <span class="symbol">In</span>
+      <span class="atomic-mass">115</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 49, Ký hiệu: In, Khối lượng nguyên tử: 115, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:5; grid-column:14;">
+      <span class="atomic-number">50</span>
+      <span class="symbol">Sn</span>
+      <span class="atomic-mass">119</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 50, Ký hiệu: Sn, Khối lượng nguyên tử: 119, Hóa trị: 2, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:5; grid-column:15;">
+      <span class="atomic-number">51</span>
+      <span class="symbol">Sb</span>
+      <span class="atomic-mass">122</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 51, Ký hiệu: Sb, Khối lượng nguyên tử: 122, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:5; grid-column:16;">
+      <span class="atomic-number">52</span>
+      <span class="symbol">Te</span>
+      <span class="atomic-mass">128</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 52, Ký hiệu: Te, Khối lượng nguyên tử: 128, Hóa trị: 2, Loại: Phi kim</div>
+    </div>
+    <div class="element halogen" style="grid-row:5; grid-column:17;">
+      <span class="atomic-number">53</span>
+      <span class="symbol">I</span>
+      <span class="atomic-mass">127</span>
+      <span class="valence">1</span>
+      <div class="tooltip">Số hiệu: 53, Ký hiệu: I, Khối lượng nguyên tử: 127, Hóa trị: 1, Loại: Halogen</div>
+    </div>
+    <div class="element khi-hiem" style="grid-row:5; grid-column:18;">
+      <span class="atomic-number">54</span>
+      <span class="symbol">Xe</span>
+      <span class="atomic-mass">131</span>
+      <span class="valence">0</span>
+      <div class="tooltip">Số hiệu: 54, Ký hiệu: Xe, Khối lượng nguyên tử: 131, Hóa trị: 0, Loại: Khí hiếm</div>
+    </div>
+    <!-- Hàng 6 (bao gồm La và dãy lanthanides) -->
+    <div class="element kim-loai" style="grid-row:6; grid-column:1;">
+      <span class="atomic-number">55</span>
+      <span class="symbol">Cs</span>
+      <span class="atomic-mass">133</span>
+      <span class="valence">1</span>
+      <div class="tooltip">Số hiệu: 55, Ký hiệu: Cs, Khối lượng nguyên tử: 133, Hóa trị: 1, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:6; grid-column:2;">
+      <span class="atomic-number">56</span>
+      <span class="symbol">Ba</span>
+      <span class="atomic-mass">137</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 56, Ký hiệu: Ba, Khối lượng nguyên tử: 137, Hóa trị: 2, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:6; grid-column:3;">
+      <span class="atomic-number">57</span>
+      <span class="symbol">La</span>
+      <span class="atomic-mass">139</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 57, Ký hiệu: La, Khối lượng nguyên tử: 139, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:6; grid-column:4;">
+      <span class="atomic-number">72</span>
+      <span class="symbol">Hf</span>
+      <span class="atomic-mass">178</span>
+      <span class="valence">4</span>
+      <div class="tooltip">Số hiệu: 72, Ký hiệu: Hf, Khối lượng nguyên tử: 178, Hóa trị: 4, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:6; grid-column:5;">
+      <span class="atomic-number">73</span>
+      <span class="symbol">Ta</span>
+      <span class="atomic-mass">181</span>
+      <span class="valence">5</span>
+      <div class="tooltip">Số hiệu: 73, Ký hiệu: Ta, Khối lượng nguyên tử: 181, Hóa trị: 5, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:6; grid-column:6;">
+      <span class="atomic-number">74</span>
+      <span class="symbol">W</span>
+      <span class="atomic-mass">184</span>
+      <span class="valence">6</span>
+      <div class="tooltip">Số hiệu: 74, Ký hiệu: W, Khối lượng nguyên tử: 184, Hóa trị: 6, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:6; grid-column:7;">
+      <span class="atomic-number">75</span>
+      <span class="symbol">Re</span>
+      <span class="atomic-mass">186</span>
+      <span class="valence">7</span>
+      <div class="tooltip">Số hiệu: 75, Ký hiệu: Re, Khối lượng nguyên tử: 186, Hóa trị: 7, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:6; grid-column:8;">
+      <span class="atomic-number">76</span>
+      <span class="symbol">Os</span>
+      <span class="atomic-mass">190</span>
+      <span class="valence">8</span>
+      <div class="tooltip">Số hiệu: 76, Ký hiệu: Os, Khối lượng nguyên tử: 190, Hóa trị: 8, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:6; grid-column:9;">
+      <span class="atomic-number">77</span>
+      <span class="symbol">Ir</span>
+      <span class="atomic-mass">192</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 77, Ký hiệu: Ir, Khối lượng nguyên tử: 192, Hóa trị: 3, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:6; grid-column:10;">
+      <span class="atomic-number">78</span>
+      <span class="symbol">Pt</span>
+      <span class="atomic-mass">195</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 78, Ký hiệu: Pt, Khối lượng nguyên tử: 195, Hóa trị: 2, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:6; grid-column:11;">
+      <span class="atomic-number">79</span>
+      <span class="symbol">Au</span>
+      <span class="atomic-mass">197</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 79, Ký hiệu: Au, Khối lượng nguyên tử: 197, Hóa trị: 3, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:6; grid-column:12;">
+      <span class="atomic-number">80</span>
+      <span class="symbol">Hg</span>
+      <span class="atomic-mass">201</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 80, Ký hiệu: Hg, Khối lượng nguyên tử: 201, Hóa trị: 2, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:6; grid-column:13;">
+      <span class="atomic-number">81</span>
+      <span class="symbol">Tl</span>
+      <span class="atomic-mass">204</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 81, Ký hiệu: Tl, Khối lượng nguyên tử: 204, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:6; grid-column:14;">
+      <span class="atomic-number">82</span>
+      <span class="symbol">Pb</span>
+      <span class="atomic-mass">207</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 82, Ký hiệu: Pb, Khối lượng nguyên tử: 207, Hóa trị: 2, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:6; grid-column:15;">
+      <span class="atomic-number">83</span>
+      <span class="symbol">Bi</span>
+      <span class="atomic-mass">209</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 83, Ký hiệu: Bi, Khối lượng nguyên tử: 209, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:6; grid-column:16;">
+      <span class="atomic-number">84</span>
+      <span class="symbol">Po</span>
+      <span class="atomic-mass">209</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 84, Ký hiệu: Po, Khối lượng nguyên tử: 209, Hóa trị: 2, Loại: Kim loại</div>
+    </div>
+    <div class="element halogen" style="grid-row:6; grid-column:17;">
+      <span class="atomic-number">85</span>
+      <span class="symbol">At</span>
+      <span class="atomic-mass">210</span>
+      <span class="valence">1</span>
+      <div class="tooltip">Số hiệu: 85, Ký hiệu: At, Khối lượng nguyên tử: 210, Hóa trị: 1, Loại: Halogen</div>
+    </div>
+    <div class="element khi-hiem" style="grid-row:6; grid-column:18;">
+      <span class="atomic-number">86</span>
+      <span class="symbol">Rn</span>
+      <span class="atomic-mass">222</span>
+      <span class="valence">0</span>
+      <div class="tooltip">Số hiệu: 86, Ký hiệu: Rn, Khối lượng nguyên tử: 222, Hóa trị: 0, Loại: Khí hiếm</div>
+    </div>
+    <!-- Hàng 7 (bao gồm Ac và dãy actinides) -->
+    <div class="element kim-loai" style="grid-row:7; grid-column:1;">
+      <span class="atomic-number">87</span>
+      <span class="symbol">Fr</span>
+      <span class="atomic-mass">223</span>
+      <span class="valence">1</span>
+      <div class="tooltip">Số hiệu: 87, Ký hiệu: Fr, Khối lượng nguyên tử: 223, Hóa trị: 1, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:7; grid-column:2;">
+      <span class="atomic-number">88</span>
+      <span class="symbol">Ra</span>
+      <span class="atomic-mass">226</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 88, Ký hiệu: Ra, Khối lượng nguyên tử: 226, Hóa trị: 2, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:7; grid-column:3;">
+      <span class="atomic-number">89</span>
+      <span class="symbol">Ac</span>
+      <span class="atomic-mass">227</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 89, Ký hiệu: Ac, Khối lượng nguyên tử: 227, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:7; grid-column:4;">
+      <span class="atomic-number">104</span>
+      <span class="symbol">Rf</span>
+      <span class="atomic-mass">267</span>
+      <span class="valence">4</span>
+      <div class="tooltip">Số hiệu: 104, Ký hiệu: Rf, Khối lượng nguyên tử: 267, Hóa trị: 4, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:7; grid-column:5;">
+      <span class="atomic-number">105</span>
+      <span class="symbol">Db</span>
+      <span class="atomic-mass">268</span>
+      <span class="valence">5</span>
+      <div class="tooltip">Số hiệu: 105, Ký hiệu: Db, Khối lượng nguyên tử: 268, Hóa trị: 5, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:7; grid-column:6;">
+      <span class="atomic-number">106</span>
+      <span class="symbol">Sg</span>
+      <span class="atomic-mass">269</span>
+      <span class="valence">6</span>
+      <div class="tooltip">Số hiệu: 106, Ký hiệu: Sg, Khối lượng nguyên tử: 269, Hóa trị: 6, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:7; grid-column:7;">
+      <span class="atomic-number">107</span>
+      <span class="symbol">Bh</span>
+      <span class="atomic-mass">270</span>
+      <span class="valence">7</span>
+      <div class="tooltip">Số hiệu: 107, Ký hiệu: Bh, Khối lượng nguyên tử: 270, Hóa trị: 7, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:7; grid-column:8;">
+      <span class="atomic-number">108</span>
+      <span class="symbol">Hs</span>
+      <span class="atomic-mass">277</span>
+      <span class="valence">8</span>
+      <div class="tooltip">Số hiệu: 108, Ký hiệu: Hs, Khối lượng nguyên tử: 277, Hóa trị: 8, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:7; grid-column:9;">
+      <span class="atomic-number">109</span>
+      <span class="symbol">Mt</span>
+      <span class="atomic-mass">278</span>
+      <span class="valence">8</span>
+      <div class="tooltip">Số hiệu: 109, Ký hiệu: Mt, Khối lượng nguyên tử: 278, Hóa trị: 8, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:7; grid-column:10;">
+      <span class="atomic-number">110</span>
+      <span class="symbol">Ds</span>
+      <span class="atomic-mass">281</span>
+      <span class="valence">8</span>
+      <div class="tooltip">Số hiệu: 110, Ký hiệu: Ds, Khối lượng nguyên tử: 281, Hóa trị: 8, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:7; grid-column:11;">
+      <span class="atomic-number">111</span>
+      <span class="symbol">Rg</span>
+      <span class="atomic-mass">282</span>
+      <span class="valence">1</span>
+      <div class="tooltip">Số hiệu: 111, Ký hiệu: Rg, Khối lượng nguyên tử: 282, Hóa trị: 1, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:7; grid-column:12;">
+      <span class="atomic-number">112</span>
+      <span class="symbol">Cn</span>
+      <span class="atomic-mass">285</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 112, Ký hiệu: Cn, Khối lượng nguyên tử: 285, Hóa trị: 2, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:7; grid-column:13;">
+      <span class="atomic-number">113</span>
+      <span class="symbol">Nh</span>
+      <span class="atomic-mass">286</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 113, Ký hiệu: Nh, Khối lượng nguyên tử: 286, Hóa trị: 3, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:7; grid-column:14;">
+      <span class="atomic-number">114</span>
+      <span class="symbol">Fl</span>
+      <span class="atomic-mass">289</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 114, Ký hiệu: Fl, Khối lượng nguyên tử: 289, Hóa trị: 2, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:7; grid-column:15;">
+      <span class="atomic-number">115</span>
+      <span class="symbol">Mc</span>
+      <span class="atomic-mass">290</span>
+      <span class="valence">5</span>
+      <div class="tooltip">Số hiệu: 115, Ký hiệu: Mc, Khối lượng nguyên tử: 290, Hóa trị: 5, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element kim-loai-chuyen-tiep" style="grid-row:7; grid-column:16;">
+      <span class="atomic-number">116</span>
+      <span class="symbol">Lv</span>
+      <span class="atomic-mass">293</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 116, Ký hiệu: Lv, Khối lượng nguyên tử: 293, Hóa trị: 2, Loại: Kim loại chuyển tiếp</div>
+    </div>
+    <div class="element halogen" style="grid-row:7; grid-column:17;">
+      <span class="atomic-number">117</span>
+      <span class="symbol">Ts</span>
+      <span class="atomic-mass">294</span>
+      <span class="valence">1</span>
+      <div class="tooltip">Số hiệu: 117, Ký hiệu: Ts, Khối lượng nguyên tử: 294, Hóa trị: 1, Loại: Halogen</div>
+    </div>
+    <div class="element khi-hiem" style="grid-row:7; grid-column:18;">
+      <span class="atomic-number">118</span>
+      <span class="symbol">Og</span>
+      <span class="atomic-mass">294</span>
+      <span class="valence">0</span>
+      <div class="tooltip">Số hiệu: 118, Ký hiệu: Og, Khối lượng nguyên tử: 294, Hóa trị: 0, Loại: Khí hiếm</div>
+    </div>
+    <!-- Dãy Lanthanides (hàng 8) -->
+    <div class="element kim-loai" style="grid-row:8; grid-column:4;">
+      <span class="atomic-number">58</span>
+      <span class="symbol">Ce</span>
+      <span class="atomic-mass">140</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 58, Ký hiệu: Ce, Khối lượng nguyên tử: 140, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:8; grid-column:5;">
+      <span class="atomic-number">59</span>
+      <span class="symbol">Pr</span>
+      <span class="atomic-mass">141</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 59, Ký hiệu: Pr, Khối lượng nguyên tử: 141, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:8; grid-column:6;">
+      <span class="atomic-number">60</span>
+      <span class="symbol">Nd</span>
+      <span class="atomic-mass">144</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 60, Ký hiệu: Nd, Khối lượng nguyên tử: 144, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:8; grid-column:7;">
+      <span class="atomic-number">61</span>
+      <span class="symbol">Pm</span>
+      <span class="atomic-mass">145</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 61, Ký hiệu: Pm, Khối lượng nguyên tử: 145, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:8; grid-column:8;">
+      <span class="atomic-number">62</span>
+      <span class="symbol">Sm</span>
+      <span class="atomic-mass">150</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 62, Ký hiệu: Sm, Khối lượng nguyên tử: 150, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:8; grid-column:9;">
+      <span class="atomic-number">63</span>
+      <span class="symbol">Eu</span>
+      <span class="atomic-mass">152</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 63, Ký hiệu: Eu, Khối lượng nguyên tử: 152, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:8; grid-column:10;">
+      <span class="atomic-number">64</span>
+      <span class="symbol">Gd</span>
+      <span class="atomic-mass">157</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 64, Ký hiệu: Gd, Khối lượng nguyên tử: 157, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:8; grid-column:11;">
+      <span class="atomic-number">65</span>
+      <span class="symbol">Tb</span>
+      <span class="atomic-mass">159</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 65, Ký hiệu: Tb, Khối lượng nguyên tử: 159, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:8; grid-column:12;">
+      <span class="atomic-number">66</span>
+      <span class="symbol">Dy</span>
+      <span class="atomic-mass">163</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 66, Ký hiệu: Dy, Khối lượng nguyên tử: 163, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:8; grid-column:13;">
+      <span class="atomic-number">67</span>
+      <span class="symbol">Ho</span>
+      <span class="atomic-mass">165</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 67, Ký hiệu: Ho, Khối lượng nguyên tử: 165, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:8; grid-column:14;">
+      <span class="atomic-number">68</span>
+      <span class="symbol">Er</span>
+      <span class="atomic-mass">167</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 68, Ký hiệu: Er, Khối lượng nguyên tử: 167, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:8; grid-column:15;">
+      <span class="atomic-number">69</span>
+      <span class="symbol">Tm</span>
+      <span class="atomic-mass">169</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 69, Ký hiệu: Tm, Khối lượng nguyên tử: 169, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:8; grid-column:16;">
+      <span class="atomic-number">70</span>
+      <span class="symbol">Yb</span>
+      <span class="atomic-mass">173</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 70, Ký hiệu: Yb, Khối lượng nguyên tử: 173, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:8; grid-column:17;">
+      <span class="atomic-number">71</span>
+      <span class="symbol">Lu</span>
+      <span class="atomic-mass">175</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 71, Ký hiệu: Lu, Khối lượng nguyên tử: 175, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <!-- Dãy Actinides (hàng 9) -->
+    <div class="element kim-loai" style="grid-row:9; grid-column:4;">
+      <span class="atomic-number">90</span>
+      <span class="symbol">Th</span>
+      <span class="atomic-mass">232</span>
+      <span class="valence">4</span>
+      <div class="tooltip">Số hiệu: 90, Ký hiệu: Th, Khối lượng nguyên tử: 232, Hóa trị: 4, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:9; grid-column:5;">
+      <span class="atomic-number">91</span>
+      <span class="symbol">Pa</span>
+      <span class="atomic-mass">231</span>
+      <span class="valence">5</span>
+      <div class="tooltip">Số hiệu: 91, Ký hiệu: Pa, Khối lượng nguyên tử: 231, Hóa trị: 5, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:9; grid-column:6;">
+      <span class="atomic-number">92</span>
+      <span class="symbol">U</span>
+      <span class="atomic-mass">238</span>
+      <span class="valence">6</span>
+      <div class="tooltip">Số hiệu: 92, Ký hiệu: U, Khối lượng nguyên tử: 238, Hóa trị: 6, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:9; grid-column:7;">
+      <span class="atomic-number">93</span>
+      <span class="symbol">Np</span>
+      <span class="atomic-mass">237</span>
+      <span class="valence">5</span>
+      <div class="tooltip">Số hiệu: 93, Ký hiệu: Np, Khối lượng nguyên tử: 237, Hóa trị: 5, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:9; grid-column:8;">
+      <span class="atomic-number">94</span>
+      <span class="symbol">Pu</span>
+      <span class="atomic-mass">244</span>
+      <span class="valence">4</span>
+      <div class="tooltip">Số hiệu: 94, Ký hiệu: Pu, Khối lượng nguyên tử: 244, Hóa trị: 4, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:9; grid-column:9;">
+      <span class="atomic-number">95</span>
+      <span class="symbol">Am</span>
+      <span class="atomic-mass">243</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 95, Ký hiệu: Am, Khối lượng nguyên tử: 243, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:9; grid-column:10;">
+      <span class="atomic-number">96</span>
+      <span class="symbol">Cm</span>
+      <span class="atomic-mass">247</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 96, Ký hiệu: Cm, Khối lượng nguyên tử: 247, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:9; grid-column:11;">
+      <span class="atomic-number">97</span>
+      <span class="symbol">Bk</span>
+      <span class="atomic-mass">247</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 97, Ký hiệu: Bk, Khối lượng nguyên tử: 247, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:9; grid-column:12;">
+      <span class="atomic-number">98</span>
+      <span class="symbol">Cf</span>
+      <span class="atomic-mass">251</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 98, Ký hiệu: Cf, Khối lượng nguyên tử: 251, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:9; grid-column:13;">
+      <span class="atomic-number">99</span>
+      <span class="symbol">Es</span>
+      <span class="atomic-mass">252</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 99, Ký hiệu: Es, Khối lượng nguyên tử: 252, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:9; grid-column:14;">
+      <span class="atomic-number">100</span>
+      <span class="symbol">Fm</span>
+      <span class="atomic-mass">257</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 100, Ký hiệu: Fm, Khối lượng nguyên tử: 257, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:9; grid-column:15;">
+      <span class="atomic-number">101</span>
+      <span class="symbol">Md</span>
+      <span class="atomic-mass">258</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 101, Ký hiệu: Md, Khối lượng nguyên tử: 258, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:9; grid-column:16;">
+      <span class="atomic-number">102</span>
+      <span class="symbol">No</span>
+      <span class="atomic-mass">259</span>
+      <span class="valence">2</span>
+      <div class="tooltip">Số hiệu: 102, Ký hiệu: No, Khối lượng nguyên tử: 259, Hóa trị: 2, Loại: Kim loại</div>
+    </div>
+    <div class="element kim-loai" style="grid-row:9; grid-column:17;">
+      <span class="atomic-number">103</span>
+      <span class="symbol">Lr</span>
+      <span class="atomic-mass">262</span>
+      <span class="valence">3</span>
+      <div class="tooltip">Số hiệu: 103, Ký hiệu: Lr, Khối lượng nguyên tử: 262, Hóa trị: 3, Loại: Kim loại</div>
+    </div>
+  </div>
 </body>
 </html>
