@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Bảng tuần hoàn 2D - Phiên bản màu mè</title>
+<title>Bảng tuần hoàn nguyên tố 2D 🌈</title>
 <style>
   body {
     margin: 0;
@@ -26,6 +26,7 @@
     grid-gap: 6px;
     justify-content: center;
     margin: 50px auto;
+    width: fit-content;
   }
 
   .element {
@@ -46,8 +47,8 @@
 
   .element:hover {
     transform: scale(1.2) rotate(5deg);
-    background: linear-gradient(145deg, #ff9a9e, #fad0c4);
     box-shadow: 0 0 25px #fff;
+    z-index: 2;
   }
 
   .symbol {
@@ -63,47 +64,156 @@
     font-size: 14px;
     color: rgba(255,255,255,0.7);
   }
+
+  /* nhóm màu */
+  .kimloai-kiem { background: linear-gradient(145deg,#ff9a9e,#fad0c4); }
+  .kimloai-kiemtho { background: linear-gradient(145deg,#fbc2eb,#a6c1ee); }
+  .transition { background: linear-gradient(145deg,#a1c4fd,#c2e9fb); }
+  .postmetal { background: linear-gradient(145deg,#f6d365,#fda085); }
+  .metalloid { background: linear-gradient(145deg,#84fab0,#8fd3f4); }
+  .nonmetal { background: linear-gradient(145deg,#fccb90,#d57eeb); }
+  .halogen { background: linear-gradient(145deg,#fda085,#f6d365); }
+  .noble { background: linear-gradient(145deg,#a18cd1,#fbc2eb); }
+  .lanthanide { background: linear-gradient(145deg,#fcb69f,#ffecd2); }
+  .actinide { background: linear-gradient(145deg,#cfd9df,#e2ebf0); }
+
 </style>
 </head>
 <body>
   <h1>🌈 BẢNG TUẦN HOÀN NGUYÊN TỐ 2D 🌈</h1>
-
   <div class="table" id="table"></div>
-
   <footer>Code by <b>PhanPhuc12300</b> 🧪</footer>
 
   <script>
-    // Dữ liệu cơ bản (chỉ 30 nguyên tố đầu cho nhẹ)
-    const elements = [
-      {num:1, sym:"H"},{num:2,sym:"He"},
-      {num:3,sym:"Li"},{num:4,sym:"Be"},{num:5,sym:"B"},{num:6,sym:"C"},{num:7,sym:"N"},{num:8,sym:"O"},{num:9,sym:"F"},{num:10,sym:"Ne"},
-      {num:11,sym:"Na"},{num:12,sym:"Mg"},
-      {num:13,sym:"Al"},{num:14,sym:"Si"},{num:15,sym:"P"},{num:16,sym:"S"},{num:17,sym:"Cl"},{num:18,sym:"Ar"},
-      {num:19,sym:"K"},{num:20,sym:"Ca"},{num:21,sym:"Sc"},{num:22,sym:"Ti"},{num:23,sym:"V"},{num:24,sym:"Cr"},{num:25,sym:"Mn"},{num:26,sym:"Fe"},{num:27,sym:"Co"},{num:28,sym:"Ni"},{num:29,sym:"Cu"},{num:30,sym:"Zn"}
-    ];
+  const elements = [
+    {num:1, sym:"H", group:"nonmetal"},
+    {num:2, sym:"He", group:"noble"},
+    {num:3, sym:"Li", group:"kimloai-kiem"},
+    {num:4, sym:"Be", group:"kimloai-kiemtho"},
+    {num:5, sym:"B", group:"metalloid"},
+    {num:6, sym:"C", group:"nonmetal"},
+    {num:7, sym:"N", group:"nonmetal"},
+    {num:8, sym:"O", group:"nonmetal"},
+    {num:9, sym:"F", group:"halogen"},
+    {num:10, sym:"Ne", group:"noble"},
+    {num:11, sym:"Na", group:"kimloai-kiem"},
+    {num:12, sym:"Mg", group:"kimloai-kiemtho"},
+    {num:13, sym:"Al", group:"postmetal"},
+    {num:14, sym:"Si", group:"metalloid"},
+    {num:15, sym:"P", group:"nonmetal"},
+    {num:16, sym:"S", group:"nonmetal"},
+    {num:17, sym:"Cl", group:"halogen"},
+    {num:18, sym:"Ar", group:"noble"},
+    {num:19, sym:"K", group:"kimloai-kiem"},
+    {num:20, sym:"Ca", group:"kimloai-kiemtho"},
+    {num:21, sym:"Sc", group:"transition"},
+    {num:22, sym:"Ti", group:"transition"},
+    {num:23, sym:"V", group:"transition"},
+    {num:24, sym:"Cr", group:"transition"},
+    {num:25, sym:"Mn", group:"transition"},
+    {num:26, sym:"Fe", group:"transition"},
+    {num:27, sym:"Co", group:"transition"},
+    {num:28, sym:"Ni", group:"transition"},
+    {num:29, sym:"Cu", group:"transition"},
+    {num:30, sym:"Zn", group:"transition"},
+    {num:31, sym:"Ga", group:"postmetal"},
+    {num:32, sym:"Ge", group:"metalloid"},
+    {num:33, sym:"As", group:"metalloid"},
+    {num:34, sym:"Se", group:"nonmetal"},
+    {num:35, sym:"Br", group:"halogen"},
+    {num:36, sym:"Kr", group:"noble"},
+    {num:37, sym:"Rb", group:"kimloai-kiem"},
+    {num:38, sym:"Sr", group:"kimloai-kiemtho"},
+    {num:39, sym:"Y", group:"transition"},
+    {num:40, sym:"Zr", group:"transition"},
+    {num:41, sym:"Nb", group:"transition"},
+    {num:42, sym:"Mo", group:"transition"},
+    {num:43, sym:"Tc", group:"transition"},
+    {num:44, sym:"Ru", group:"transition"},
+    {num:45, sym:"Rh", group:"transition"},
+    {num:46, sym:"Pd", group:"transition"},
+    {num:47, sym:"Ag", group:"transition"},
+    {num:48, sym:"Cd", group:"transition"},
+    {num:49, sym:"In", group:"postmetal"},
+    {num:50, sym:"Sn", group:"postmetal"},
+    {num:51, sym:"Sb", group:"metalloid"},
+    {num:52, sym:"Te", group:"metalloid"},
+    {num:53, sym:"I", group:"halogen"},
+    {num:54, sym:"Xe", group:"noble"},
+    {num:55, sym:"Cs", group:"kimloai-kiem"},
+    {num:56, sym:"Ba", group:"kimloai-kiemtho"},
+    {num:57, sym:"La", group:"lanthanide"},
+    {num:58, sym:"Ce", group:"lanthanide"},
+    {num:59, sym:"Pr", group:"lanthanide"},
+    {num:60, sym:"Nd", group:"lanthanide"},
+    {num:61, sym:"Pm", group:"lanthanide"},
+    {num:62, sym:"Sm", group:"lanthanide"},
+    {num:63, sym:"Eu", group:"lanthanide"},
+    {num:64, sym:"Gd", group:"lanthanide"},
+    {num:65, sym:"Tb", group:"lanthanide"},
+    {num:66, sym:"Dy", group:"lanthanide"},
+    {num:67, sym:"Ho", group:"lanthanide"},
+    {num:68, sym:"Er", group:"lanthanide"},
+    {num:69, sym:"Tm", group:"lanthanide"},
+    {num:70, sym:"Yb", group:"lanthanide"},
+    {num:71, sym:"Lu", group:"lanthanide"},
+    {num:72, sym:"Hf", group:"transition"},
+    {num:73, sym:"Ta", group:"transition"},
+    {num:74, sym:"W", group:"transition"},
+    {num:75, sym:"Re", group:"transition"},
+    {num:76, sym:"Os", group:"transition"},
+    {num:77, sym:"Ir", group:"transition"},
+    {num:78, sym:"Pt", group:"transition"},
+    {num:79, sym:"Au", group:"transition"},
+    {num:80, sym:"Hg", group:"transition"},
+    {num:81, sym:"Tl", group:"postmetal"},
+    {num:82, sym:"Pb", group:"postmetal"},
+    {num:83, sym:"Bi", group:"postmetal"},
+    {num:84, sym:"Po", group:"metalloid"},
+    {num:85, sym:"At", group:"halogen"},
+    {num:86, sym:"Rn", group:"noble"},
+    {num:87, sym:"Fr", group:"kimloai-kiem"},
+    {num:88, sym:"Ra", group:"kimloai-kiemtho"},
+    {num:89, sym:"Ac", group:"actinide"},
+    {num:90, sym:"Th", group:"actinide"},
+    {num:91, sym:"Pa", group:"actinide"},
+    {num:92, sym:"U", group:"actinide"},
+    {num:93, sym:"Np", group:"actinide"},
+    {num:94, sym:"Pu", group:"actinide"},
+    {num:95, sym:"Am", group:"actinide"},
+    {num:96, sym:"Cm", group:"actinide"},
+    {num:97, sym:"Bk", group:"actinide"},
+    {num:98, sym:"Cf", group:"actinide"},
+    {num:99, sym:"Es", group:"actinide"},
+    {num:100, sym:"Fm", group:"actinide"},
+    {num:101, sym:"Md", group:"actinide"},
+    {num:102, sym:"No", group:"actinide"},
+    {num:103, sym:"Lr", group:"actinide"},
+    {num:104, sym:"Rf", group:"transition"},
+    {num:105, sym:"Db", group:"transition"},
+    {num:106, sym:"Sg", group:"transition"},
+    {num:107, sym:"Bh", group:"transition"},
+    {num:108, sym:"Hs", group:"transition"},
+    {num:109, sym:"Mt", group:"transition"},
+    {num:110, sym:"Ds", group:"transition"},
+    {num:111, sym:"Rg", group:"transition"},
+    {num:112, sym:"Cn", group:"transition"},
+    {num:113, sym:"Nh", group:"postmetal"},
+    {num:114, sym:"Fl", group:"postmetal"},
+    {num:115, sym:"Mc", group:"postmetal"},
+    {num:116, sym:"Lv", group:"postmetal"},
+    {num:117, sym:"Ts", group:"halogen"},
+    {num:118, sym:"Og", group:"noble"}
+  ];
 
-    const colors = [
-      "#ff9a9e","#fbc2eb","#a1c4fd","#f6d365","#84fab0","#fccb90","#a18cd1","#cfd9df","#fda085","#ffecd2"
-    ];
-
-    const table = document.getElementById("table");
-
-    elements.forEach((e,i)=>{
-      const div = document.createElement("div");
-      div.className = "element";
-      div.style.background = `linear-gradient(145deg, ${colors[i%colors.length]}, ${colors[(i+3)%colors.length]})`;
-
-      div.innerHTML = `
-        <div class="number">${e.num}</div>
-        <div class="symbol">${e.sym}</div>
-      `;
-
-      div.addEventListener("click", ()=>{
-        alert(`Nguyên tố ${e.sym} - Số hiệu nguyên tử: ${e.num}`);
-      });
-
-      table.appendChild(div);
-    });
+  const table = document.getElementById("table");
+  elements.forEach(e=>{
+    const div=document.createElement("div");
+    div.className=`element ${e.group}`;
+    div.innerHTML=`<div class="number">${e.num}</div><div class="symbol">${e.sym}</div>`;
+    div.onclick=()=>alert(`Nguyên tố ${e.sym} — Số hiệu nguyên tử: ${e.num}`);
+    table.appendChild(div);
+  });
   </script>
 </body>
 </html>
