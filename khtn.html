@@ -2,178 +2,108 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Bảng tuần hoàn 3D - Three.js</title>
+<title>Bảng tuần hoàn 2D - Phiên bản màu mè</title>
 <style>
   body {
     margin: 0;
-    overflow: hidden;
-    background: linear-gradient(180deg, #020024, #090979, #00d4ff);
-    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top left, #ff7eb3, #8e44ad, #2c3e50);
+    font-family: "Poppins", sans-serif;
+    color: #fff;
+    overflow-x: hidden;
+    text-align: center;
   }
-  .button {
-    position: absolute;
-    left: 10px;
-    padding: 10px 16px;
-    background: linear-gradient(145deg, #ffb6ff, #b344ff);
-    color: white;
-    border: none;
-    border-radius: 12px;
+
+  h1 {
+    margin-top: 30px;
+    font-size: 40px;
+    text-shadow: 2px 2px 10px rgba(255,255,255,0.3);
+    letter-spacing: 2px;
+  }
+
+  .table {
+    display: grid;
+    grid-template-columns: repeat(18, 70px);
+    grid-gap: 6px;
+    justify-content: center;
+    margin: 50px auto;
+  }
+
+  .element {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.2), rgba(0,0,0,0.2));
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: 0.3s ease;
     cursor: pointer;
     font-weight: bold;
-    transition: 0.2s;
+    box-shadow: 0 0 8px rgba(255,255,255,0.2);
   }
-  .button:hover {
-    transform: scale(1.05);
-    background: linear-gradient(145deg, #b344ff, #ffb6ff);
+
+  .element:hover {
+    transform: scale(1.2) rotate(5deg);
+    background: linear-gradient(145deg, #ff9a9e, #fad0c4);
+    box-shadow: 0 0 25px #fff;
   }
-  #reset { top: 20px; }
-  #grid { top: 70px; }
-  #table { top: 120px; }
-  .credit {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    color: rgba(255,255,255,0.8);
-    font-size: 13px;
+
+  .symbol {
+    font-size: 22px;
+  }
+  .number {
+    font-size: 12px;
+    opacity: 0.8;
+  }
+
+  footer {
+    margin: 20px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
   }
 </style>
 </head>
 <body>
-  <button id="reset" class="button">Reset View</button>
-  <button id="grid" class="button">Xếp Grid</button>
-  <button id="table" class="button">Xếp Bảng</button>
-  <div class="credit">Miền và code được làm bởi <b>PhanPhuc12300</b></div>
+  <h1>🌈 BẢNG TUẦN HOÀN NGUYÊN TỐ 2D 🌈</h1>
 
-  <script src="https://unpkg.com/three@0.155.0/build/three.min.js"></script>
-  <script src="https://unpkg.com/three@0.155.0/examples/js/controls/OrbitControls.js"></script>
-  <script src="https://unpkg.com/three@0.155.0/examples/js/renderers/CSS3DRenderer.js"></script>
+  <div class="table" id="table"></div>
+
+  <footer>Code by <b>PhanPhuc12300</b> 🧪</footer>
 
   <script>
-    const table = [
-      "H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne",
-      "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar",
-      "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn"
+    // Dữ liệu cơ bản (chỉ 30 nguyên tố đầu cho nhẹ)
+    const elements = [
+      {num:1, sym:"H"},{num:2,sym:"He"},
+      {num:3,sym:"Li"},{num:4,sym:"Be"},{num:5,sym:"B"},{num:6,sym:"C"},{num:7,sym:"N"},{num:8,sym:"O"},{num:9,sym:"F"},{num:10,sym:"Ne"},
+      {num:11,sym:"Na"},{num:12,sym:"Mg"},
+      {num:13,sym:"Al"},{num:14,sym:"Si"},{num:15,sym:"P"},{num:16,sym:"S"},{num:17,sym:"Cl"},{num:18,sym:"Ar"},
+      {num:19,sym:"K"},{num:20,sym:"Ca"},{num:21,sym:"Sc"},{num:22,sym:"Ti"},{num:23,sym:"V"},{num:24,sym:"Cr"},{num:25,sym:"Mn"},{num:26,sym:"Fe"},{num:27,sym:"Co"},{num:28,sym:"Ni"},{num:29,sym:"Cu"},{num:30,sym:"Zn"}
     ];
 
-    let camera, scene, renderer, controls;
-    const objects = [];
-    const targets = { table: [], grid: [] };
+    const colors = [
+      "#ff9a9e","#fbc2eb","#a1c4fd","#f6d365","#84fab0","#fccb90","#a18cd1","#cfd9df","#fda085","#ffecd2"
+    ];
 
-    init();
-    animate();
+    const table = document.getElementById("table");
 
-    function init() {
-      camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
-      camera.position.z = 3000;
+    elements.forEach((e,i)=>{
+      const div = document.createElement("div");
+      div.className = "element";
+      div.style.background = `linear-gradient(145deg, ${colors[i%colors.length]}, ${colors[(i+3)%colors.length]})`;
 
-      scene = new THREE.Scene();
+      div.innerHTML = `
+        <div class="number">${e.num}</div>
+        <div class="symbol">${e.sym}</div>
+      `;
 
-      // Tạo các ô nguyên tố
-      for (let i = 0; i < table.length; i++) {
-        const element = document.createElement('div');
-        element.className = 'element';
-        element.style.width = '120px';
-        element.style.height = '160px';
-        element.style.background = 'rgba(255,255,255,0.15)';
-        element.style.border = '1px solid rgba(255,255,255,0.25)';
-        element.style.borderRadius = '15px';
-        element.style.color = '#fff';
-        element.style.fontSize = '32px';
-        element.style.display = 'flex';
-        element.style.alignItems = 'center';
-        element.style.justifyContent = 'center';
-        element.style.backdropFilter = 'blur(5px)';
-        element.textContent = table[i];
-
-        const objectCSS = new THREE.CSS3DObject(element);
-        objectCSS.position.x = Math.random() * 4000 - 2000;
-        objectCSS.position.y = Math.random() * 4000 - 2000;
-        objectCSS.position.z = Math.random() * 4000 - 2000;
-        scene.add(objectCSS);
-
-        objects.push(objectCSS);
-
-        const object = new THREE.Object3D();
-        object.position.x = (i % 10) * 250 - 1000;
-        object.position.y = - (Math.floor(i / 10)) * 250 + 500;
-        targets.table.push(object);
-
-        const gridObj = new THREE.Object3D();
-        gridObj.position.x = (i % 5) * 300 - 600;
-        gridObj.position.y = - (Math.floor(i / 5)) * 300 + 300;
-        gridObj.position.z = (i % 3) * 300 - 300;
-        targets.grid.push(gridObj);
-      }
-
-      renderer = new THREE.CSS3DRenderer();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      document.body.appendChild(renderer.domElement);
-
-      controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.05;
-
-      transform(targets.table, 2000);
-
-      document.getElementById('grid').addEventListener('click', function() {
-        transform(targets.grid, 2000);
+      div.addEventListener("click", ()=>{
+        alert(`Nguyên tố ${e.sym} - Số hiệu nguyên tử: ${e.num}`);
       });
 
-      document.getElementById('table').addEventListener('click', function() {
-        transform(targets.table, 2000);
-      });
-
-      document.getElementById('reset').addEventListener('click', function() {
-        camera.position.set(0, 0, 3000);
-      });
-
-      window.addEventListener('resize', onWindowResize);
-    }
-
-    function transform(targets, duration) {
-      TWEEN.removeAll();
-
-      for (let i = 0; i < objects.length; i++) {
-        const object = objects[i];
-        const target = targets[i];
-
-        new TWEEN.Tween(object.position)
-          .to({ x: target.position.x, y: target.position.y, z: target.position.z }, duration)
-          .easing(TWEEN.Easing.Exponential.InOut)
-          .start();
-
-        new TWEEN.Tween(object.rotation)
-          .to({ x: 0, y: 0, z: 0 }, duration)
-          .easing(TWEEN.Easing.Exponential.InOut)
-          .start();
-      }
-
-      new TWEEN.Tween(this)
-        .to({}, duration * 2)
-        .onUpdate(render)
-        .start();
-    }
-
-    function onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      render();
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-      TWEEN.update();
-      controls.update();
-      render();
-    }
-
-    function render() {
-      renderer.render(scene, camera);
-    }
+      table.appendChild(div);
+    });
   </script>
-
-  <!-- TWEEN cho animation -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 </body>
 </html>
