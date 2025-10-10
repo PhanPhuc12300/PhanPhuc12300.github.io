@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bảng tuần hoàn 3D — Three.js</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial}
+  body{background:linear-gradient(180deg,#070617 0%,#0b1633 70%);overflow:hidden;color:#fff}
+  #app{position:relative;width:100%;height:100vh}
+  canvas{display:block}
+  /* UI overlay */
+  .ui {
+    position:absolute; left:16px; top:16px; z-index:20;
+    display:flex; gap:8px; flex-direction:column;
+  }
+  .btn {
+    background:linear-gradient(180deg,#ff9bd6,#a46cff);
+    color:#080717; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:700;
+    box-shadow:0 6px 18px rgba(164,108,255,0.12);
+  }
+  .info {
+    position:absolute; right:20px; top:20px; z-index:30; width:320px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    border-radius:12px; padding:14px; border:1px solid rgba(255,255,255,0.06); backdrop-filter: blur(6px);
+    display:none; color:#fff;
+  }
+  .info h2{margin:0 0 6px 0;font-size:18px}
+  .info p{margin:6px 0;font-size:14px;color:#e9e6ff;}
+  .credit { position:absolute; left:12px; bottom:10px; font-size:12px; color:rgba(255,255,255,0.6); z-index:10; }
+  /* responsive */
+  @media (max-width:720px){
+    .info{width:86%;right:7%; top:auto; bottom:14px}
+    .ui{left:8px; top:8px}
+  }
+</style>
+</head>
+<body>
+  <div id="app"></div>
+  <div class="ui">
+    <button class="btn" id="resetBtn">Reset View</button>
+    <button class="btn" id="arrangeGrid">Xếp Grid</button>
+    <button class="btn" id="arrangeTable">Xếp Bảng</button>
+  </div>
+
+  <div class="info" id="infoBox">
+    <h2 id="infoTitle">Element</h2>
+    <p id="infoNum">Số nguyên tử: —</p>
+    <p id="infoName">Tên: —</p>
+    <p id="infoDesc">Mô tả: Click vào 1 ô để xem chi tiết.</p>
+  </div>
+
+  <div class="credit">Miền và code đc lm bởi PhanPhuc12300</div>
+
+  <!-- three.js -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+/* ---------- Dữ liệu mẫu (36 nguyên tố đầu) ----------
+ Đối tượng element có: number, symbol, name, group (1-18), period (1-7)
+ group = cột, period = hàng trong bảng tuần hoàn
+ Bạn có thể mở rộng mảng elements để thêm hết 118 nguyên tố
+*/
+const elements = [
+  {number:1,symbol:"H", name:"Hydrogen", group:1, period:1, desc:"Khí, nhẹ nhất."},
+  {number:2,symbol:"He", name:"Helium", group:18, period:1, desc:"Khí trơ, được dùng trong baloon."},
+  {number:3,symbol:"Li", name:"Lithium", group:1, period:2, desc:"Kim loại kiềm nhẹ."},
+  {number:4,symbol:"Be", name:"Beryllium", group:2, period:2, desc:"Kim loại kiềm thổ."},
+  {number:5,symbol:"B", name:"Boron", group:13, period:2, desc:"Bán kim loại."},
+  {number:6,symbol:"C", name:"Carbon", group:14, period:2, desc:"Cơ sở của hoá học hữu cơ."},
+  {number:7,symbol:"N", name:"Nitrogen", group:15, period:2, desc:"Khí làm tê."},
+  {number:8,symbol:"O", name:"Oxygen", group:16, period:2, desc:"Cần cho hô hấp."},
+  {number:9,symbol:"F", name:"Fluorine", group:17, period:2, desc:"Khí mạnh, rất phản ứng."},
+  {number:10,symbol:"Ne", name:"Neon", group:18, period:2, desc:"Khí trơ, dùng đèn neon."},
+
+  {number:11,symbol:"Na", name:"Sodium", group:1, period:3, desc:"Kim loại kiềm, trong muối ăn."},
+  {number:12,symbol:"Mg", name:"Magnesium", group:2, period:3, desc:"Kim loại nhẹ."},
+  {number:13,symbol:"Al", name:"Aluminium", group:13, period:3, desc:"Kim loại nhẹ, chống ăn mòn."},
+  {number:14,symbol:"Si", name:"Silicon", group:14, period:3, desc:"Chất bán dẫn."},
+  {number:15,symbol:"P", name:"Phosphorus", group:15, period:3, desc:"Đóng vai trò trong sinh học."},
+  {number:16,symbol:"S", name:"Sulfur", group:16, period:3, desc:"Mùi trứng thối khi có H2S."},
+  {number:17,symbol:"Cl", name:"Chlorine", group:17, period:3, desc:"Khí sát khuẩn."},
+  {number:18,symbol:"Ar", name:"Argon", group:18, period:3, desc:"Khí trơ trong đèn hồ quang."},
+
+  {number:19,symbol:"K", name:"Potassium", group:1, period:4, desc:"Quan trọng cho tế bào."},
+  {number:20,symbol:"Ca", name:"Calcium", group:2, period:4, desc:"Khoáng của xương."},
+  {number:21,symbol:"Sc", name:"Scandium", group:3, period:4, desc:"Kim loại hiếm."},
+  {number:22,symbol:"Ti", name:"Titanium", group:4, period:4, desc:"Rất nhẹ và bền."},
+  {number:23,symbol:"V", name:"Vanadium", group:5, period:4, desc:"Kim loại chuyển tiếp."},
+  {number:24,symbol:"Cr", name:"Chromium", group:6, period:4, desc:"Dùng mạ crôm."},
+  {number:25,symbol:"Mn", name:"Manganese", group:7, period:4, desc:"Hợp kim thép."},
+  {number:26,symbol:"Fe", name:"Iron", group:8, period:4, desc:"Sắt - cấu thành thép."},
+  {number:27,symbol:"Co", name:"Cobalt", group:9, period:4, desc:"Kim loại chuyển tiếp."},
+  {number:28,symbol:"Ni", name:"Nickel", group:10, period:4, desc:"Dùng trong hợp kim."},
+  {number:29,symbol:"Cu", name:"Copper", group:11, period:4, desc:"Dẫn điện tốt."},
+  {number:30,symbol:"Zn", name:"Zinc", group:12, period:4, desc:"Mạ kẽm chống rỉ."},
+
+  {number:31,symbol:"Ga", name:"Gallium", group:13, period:4, desc:"Thấp chảy gần nhiệt độ tay."},
+  {number:32,symbol:"Ge", name:"Germanium", group:14, period:4, desc:"Chất bán dẫn."},
+  {number:33,symbol:"As", name:"Arsenic", group:15, period:4, desc:"Độc tố, bán kim loại."},
+  {number:34,symbol:"Se", name:"Selenium", group:16, period:4, desc:"Vết bán dẫn."},
+  {number:35,symbol:"Br", name:"Bromine", group:17, period:4, desc:"Chất lỏng độc và ăn mòn."},
+  {number:36,symbol:"Kr", name:"Krypton", group:18, period:4, desc:"Khí trơ."}
+];
+
+/* ---------- Cấu hình Hiển thị ----------
+   Mỗi ô là một Plane với CanvasTexture hiển thị số, kí hiệu, tên.
+   Arrange modes: 'table' (vị trí bảng tuần hoàn theo group & period)
+                  'grid' (xếp lưới đều)
+*/
+const CONFIG = {
+  cardWidth: 1.6,
+  cardHeight: 1.8,
+  gapX: 0.28,
+  gapY: 0.28,
+  tableOffsetX: -14, // dịch vị trí bảng cho đẹp
+  tableOffsetY: 6,
+  gridCols: 9
+};
+
+/* ---------- THREE.JS SETUP ---------- */
+const container = document.getElementById('app');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x050317);
+
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 2000);
+camera.position.set(0, 8, 28);
+
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+container.appendChild(renderer.domElement);
+
+// lights
+const hemi = new THREE.HemisphereLight(0x8888ff, 0x220022, 0.8);
+scene.add(hemi);
+const dir = new THREE.DirectionalLight(0xffd1f7, 0.9);
+dir.position.set(5,20,10); dir.castShadow = true;
+scene.add(dir);
+
+// subtle ground
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(200,200),
+  new THREE.MeshStandardMaterial({color:0x020214, roughness:1})
+);
+ground.rotation.x = -Math.PI/2; ground.position.y = -3.6;
+scene.add(ground);
+
+// controls
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.minDistance = 6;
+controls.maxDistance = 80;
+
+/* ---------- Create Cards ---------- */
+const cardGroup = new THREE.Group();
+scene.add(cardGroup);
+
+const cardMeshes = []; // store for interactions
+
+function makeCardTexture(el) {
+  const cw = 512, ch = 640;
+  const canvas = document.createElement('canvas');
+  canvas.width = cw; canvas.height = ch;
+  const ctx = canvas.getContext('2d');
+
+  // background gradient
+  const g = ctx.createLinearGradient(0,0,cw,ch);
+  g.addColorStop(0, 'rgba(255,255,255,0.03)');
+  g.addColorStop(1, 'rgba(255,255,255,0.01)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,cw,ch);
+
+  // colored top strip by group (simple color mapping)
+  const colMap = {
+    1:'#FFB199',2:'#FFD29E',3:'#FFF59D',4:'#D0F2A7',5:'#A6E3E9',6:'#B5B4FF',
+    7:'#FFB4C6',8:'#FFC6FF',9:'#C2F0C2',10:'#E8E8E8',11:'#FFD1DC',12:'#DDEBFF'
+  };
+  const topColor = colMap[el.group] || '#C6C6FF';
+  ctx.fillStyle = topColor;
+  ctx.fillRect(0,0,cw,120);
+
+  // atomic number
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '28px Inter, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(el.number, 18, 40);
+
+  // big symbol
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 160px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(el.symbol, cw/2, 330);
+
+  // name
+  ctx.fillStyle = 'rgba(255,255,255,0.92)';
+  ctx.font = '26px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(el.name, cw/2, 480);
+
+  // small desc
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.font = '18px Inter, sans-serif';
+  wrapText(ctx, el.desc || '', cw*0.1, 520, cw*0.8, 22);
+
+  // subtle border
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 6;
+  roundRect(ctx,6,6,cw-12,ch-12,18);
+  return new THREE.CanvasTexture(canvas);
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+  ctx.stroke();
+}
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+  const words = text.split(' ');
+  let line = '', yy = y;
+  for(let n=0; n<words.length; n++){
+    const testLine = line + words[n] + ' ';
+    const metrics = ctx.measureText(testLine);
+    if(metrics.width > maxWidth && n > 0){
+      ctx.fillText(line, x + maxWidth/2, yy);
+      line = words[n] + ' ';
+      yy += lineHeight;
+    } else {
+      line = testLine;
+    }
+  }
+  ctx.fillText(line, x + maxWidth/2, yy);
+}
+
+/* create plane card */
+function createCard(el) {
+  const tex = makeCardTexture(el);
+  const mat = new THREE.MeshStandardMaterial({
+    map: tex,
+    roughness: 0.6,
+    metalness: 0.08,
+    transparent: false,
+    side: THREE.DoubleSide
+  });
+  const geom = new THREE.PlaneGeometry(CONFIG.cardWidth, CONFIG.cardHeight);
+  const mesh = new THREE.Mesh(geom, mat);
+  mesh.userData = el;
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+
+  // nice bevel via edge highlight (additional emissive plane)
+  const edgeMat = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0.02});
+  const edge = new THREE.Mesh(geom.clone(), edgeMat);
+  edge.position.z = -0.001;
+  mesh.add(edge);
+
+  cardGroup.add(mesh);
+  cardMeshes.push(mesh);
+  return mesh;
+}
+
+/* build cards */
+elements.forEach(e => createCard(e));
+
+/* Layout modes */
+function layoutTable() {
+  // place by group (column) and period (row)
+  cardMeshes.forEach(m => {
+    const el = m.userData;
+    // compute position: group (1..18) -> x; period (1..7) -> y
+    const x = ((el.group - 1) * (CONFIG.cardWidth + CONFIG.gapX)) + CONFIG.tableOffsetX;
+    const y = (-(el.period - 1) * (CONFIG.cardHeight + CONFIG.gapY)) + CONFIG.tableOffsetY;
+    // z slight random for 3D depth
+    const z = - ( ( (el.group % 3) - 1) * 0.08 );
+    // tween smoothly
+    tweenTo(m.position, {x,y,z}, 800);
+    tweenTo(m.rotation, {x:0, y:0, z:0}, 600);
+  });
+}
+
+function layoutGrid() {
+  cardMeshes.forEach((m,i) => {
+    const col = i % CONFIG.gridCols;
+    const row = Math.floor(i / CONFIG.gridCols);
+    const x = (col - (CONFIG.gridCols/2)) * (CONFIG.cardWidth + CONFIG.gapX) * 1.02;
+    const y = ( -row ) * (CONFIG.cardHeight + CONFIG.gapY) + 4;
+    const z = Math.sin(i*0.3) * 0.25;
+    tweenTo(m.position, {x,y,z}, 800);
+    tweenTo(m.rotation, {x:0.1 * Math.sin(i*0.15), y:0.2 * Math.cos(i*0.2), z:0}, 600);
+  });
+}
+
+function resetView(){
+  controls.reset();
+  // bring cards a bit closer
+  cardMeshes.forEach((m,i) => {
+    const z = 0;
+    tweenTo(m.position, {z}, 700);
+  });
+}
+
+/* Tiny tween util (no lib) */
+function tweenTo(obj, target, duration=600){
+  const start = {};
+  const delta = {};
+  for(const k in target){ start[k] = obj[k]; delta[k] = target[k] - start[k]; }
+  const t0 = performance.now();
+  function tick(now){
+    const p = Math.min(1, (now - t0)/duration);
+    const ease = (1 - Math.pow(1-p,3));
+    for(const k in target) obj[k] = start[k] + delta[k] * ease;
+    if(p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+/* initial layout */
+layoutTable();
+
+/* ---------- Interaction: raycast hover + click ---------- */
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+let hovered = null;
+const infoBox = document.getElementById('infoBox');
+
+function onPointerMove(event){
+  const rect = renderer.domElement.getBoundingClientRect();
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+}
+window.addEventListener('pointermove', onPointerMove);
+
+function onClick(event){
+  if(!hovered) return;
+  const el = hovered.userData;
+  // show info box
+  document.getElementById('infoTitle').textContent = el.symbol + ' — ' + el.name;
+  document.getElementById('infoNum').textContent = 'Số nguyên tử: ' + el.number;
+  document.getElementById('infoName').textContent = 'Tên: ' + el.name;
+  document.getElementById('infoDesc').textContent = el.desc || 'Không có mô tả.';
+  infoBox.style.display = 'block';
+}
+window.addEventListener('click', onClick);
+
+/* hide info on outside click */
+window.addEventListener('click', (e)=>{
+  const inside = e.target.closest('.info');
+  if(!inside && e.target.closest('.track') === null && infoBox.style.display === 'block') {
+    // do nothing; keep info until another click elsewhere intentionally?
+  }
+});
+
+/* animate & hover effect */
+function animate(){
+  requestAnimationFrame(animate);
+  controls.update();
+
+  // raycast
+  raycaster.setFromCamera(pointer, camera);
+  const hits = raycaster.intersectObjects(cardMeshes, false);
+  if(hits.length){
+    const top = hits[0].object;
+    if(hovered !== top){
+      if(hovered) {
+        // reset previous
+        hovered.material.emissive && (hovered.material.emissive.setHex(0x000000));
+        tweenTo(hovered.scale, {x:1,y:1,z:1}, 220);
+      }
+      hovered = top;
+      // highlight
+      if(hovered.material.emissive) hovered.material.emissive.setHex(0x3a00ff);
+      tweenTo(hovered.scale, {x:1.08,y:1.08,z:1.08}, 200);
+    }
+  } else {
+    if(hovered){
+      hovered.material.emissive && (hovered.material.emissive.setHex(0x000000));
+      tweenTo(hovered.scale, {x:1,y:1,z:1}, 220);
+      hovered = null;
+    }
+  }
+
+  renderer.render(scene, camera);
+}
+animate();
+
+/* UI binds */
+document.getElementById('arrangeGrid').addEventListener('click', layoutGrid);
+document.getElementById('arrangeTable').addEventListener('click', layoutTable);
+document.getElementById('resetBtn').addEventListener('click', resetView);
+
+/* resize */
+window.addEventListener('resize', ()=>{
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+/* ---------- Notes ----------
+- Mở rộng toàn bộ 118 nguyên tố: thêm đối tượng vào mảng `elements` với group & period đúng.
+- Muốn tớ bổ sung dữ liệu 118 nguyên tố (full) cho cậu thì nói, tớ sẽ cập nhật sẵn.
+- Có thể thay Plane bằng Box + chữ 3D cho đẹp hơn (dùng three.js FontLoader).
+- Muốn hiệu ứng bloom/lensflare thì báo tớ, tớ sẽ thêm EffectComposer.
+---------------------------------*/
+</script>
+</body>
+</html>
