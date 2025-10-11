@@ -1,342 +1,130 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Pi Typing — Chudnovsky (Demo màu mè)</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gõ số π kiểu ChatGPT 🌈</title>
 <style>
-  :root{
-    --bg:#0b1220;
-    --card:#0f1724cc;
-    --accent:#7c5cff;
-    --muted:#9aa4bf;
-    --green:#2dd4bf;
+  body {
+    background: #0d1117;
+    color: #e6edf3;
+    font-family: "Consolas", monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 20px;
   }
-  *{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;}
-  body{margin:0;background:linear-gradient(180deg,#020409 0%, #081025 100%);color:#e6eef8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
-  .wrap{width:100%;max-width:1100px;background:linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);border-radius:14px;padding:20px;box-shadow:0 10px 30px rgba(2,6,23,0.6);}
-  header{display:flex;align-items:center;gap:16px;margin-bottom:10px;}
-  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ff7ab6);display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:18px;box-shadow:0 6px 20px rgba(124,92,255,0.18);}
-  h1{margin:0;font-size:18px;}
-  p.lead{margin:0;color:var(--muted);font-size:13px;}
-  .controls{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;}
-  input[type="number"]{width:220px;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit;font-size:14px;}
-  .btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600;}
-  .btn.primary{background:linear-gradient(90deg,var(--accent),#ff7ab6);color:#05102a;box-shadow:0 8px 24px rgba(124,92,255,0.18);}
-  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);}
-  .panel{display:grid;grid-template-columns:1fr 420px;gap:18px;margin-top:18px;}
-  .viewer{background:var(--card);padding:14px;border-radius:10px;height:520px;overflow:auto;border:1px solid rgba(255,255,255,0.03);}
-  .side{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:10px;height:520px;display:flex;flex-direction:column;gap:12px;}
-  .status{font-size:13px;color:var(--muted);}
-  .typing {font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Roboto Mono,monospace;background:linear-gradient(90deg,#071024,#0e1730);padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);height:200px;overflow:auto;}
-  .pi-chunk{white-space:pre-wrap;word-break:break-all;font-family:ui-monospace,monospace;font-size:13px;line-height:1.45;}
-  .controls-row{display:flex;gap:8px;align-items:center;}
-  footer{margin-top:12px;color:var(--muted);font-size:13px;}
-  .warn{color:#ffb86b;background:rgba(255,184,107,0.04);padding:8px;border-radius:8px;font-size:13px;}
-  .small{font-size:12px;color:var(--muted);}
-  .input-label{font-size:12px;color:var(--muted);margin-bottom:6px;}
+  h1 {
+    color: #ff79c6;
+  }
+  button {
+    background: #1f6feb;
+    border: none;
+    padding: 10px 20px;
+    color: white;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: 0.2s;
+  }
+  button:hover {
+    background: #388bfd;
+  }
+  #pi-container {
+    background: #161b22;
+    border-radius: 10px;
+    padding: 20px;
+    width: 90%;
+    max-width: 800px;
+    font-size: 18px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-y: auto;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  }
+  #progress {
+    width: 90%;
+    max-width: 800px;
+    height: 10px;
+    border-radius: 5px;
+    background: #30363d;
+    margin-top: 15px;
+    overflow: hidden;
+  }
+  #progress-bar {
+    height: 10px;
+    width: 0%;
+    background: linear-gradient(90deg, #ff79c6, #8be9fd, #50fa7b);
+    transition: width 0.2s;
+  }
 </style>
 </head>
 <body>
-  <div class="wrap" role="main">
-    <header>
-      <div class="logo">π</div>
-      <div>
-        <h1>Pi Typing — Chudnovsky (demo)</h1>
-        <p class="lead">In π theo kiểu gõ, màu mè. Lưu ý: 1,000,000,000 chữ số rất lớn — xem phần hướng dẫn.</p>
-      </div>
-    </header>
-
-    <div class="controls">
-      <div>
-        <label class="input-label">Số chữ số muốn in (nhập số nguyên, mặc định 1000000000)</label><br>
-        <input id="digits" type="number" min="1" step="1" value="1000000000" />
-      </div>
-
-      <div class="controls-row">
-        <button id="startBtn" class="btn primary">Bắt đầu</button>
-        <button id="stopBtn" class="btn ghost">Dừng</button>
-        <button id="downloadBtn" class="btn ghost">Tải về .txt</button>
-      </div>
-
-      <div style="margin-left:auto;text-align:right;">
-        <div class="small">Cỡ chunk xuất: <span id="chunkSizeLabel">1000</span> chữ số / lần gõ</div>
-        <input id="chunkSize" type="range" min="100" max="20000" step="100" value="1000" style="width:220px;">
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="viewer" id="viewer">
-        <div class="typing">
-          <div class="pi-chunk" id="piContainer">Ấn "Bắt đầu" để bắt đầu tính π và hiển thị theo kiểu gõ...</div>
-        </div>
-      </div>
-
-      <aside class="side">
-        <div class="status" id="status">Trạng thái: chuẩn bị</div>
-        <div class="warn">
-          Cảnh báo: <strong>1,000,000,000</strong> chữ số cần rất nhiều thời gian & bộ nhớ. Thử trước <strong>1000 — 100000</strong>.
-        </div>
-
-        <div>
-          <div class="small">Progress</div>
-          <progress id="progress" value="0" max="100" style="width:100%;"></progress>
-        </div>
-
-        <div>
-          <div class="small">Log</div>
-          <div id="log" style="font-size:12px;color:var(--muted);height:160px;overflow:auto;background:rgba(255,255,255,0.01);padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);"></div>
-        </div>
-
-        <div class="small">Gợi ý: nếu cậu thực sự cần 1 tỉ chữ số, tốt nhất là tải bộ dữ liệu π đã tính sẵn trên server chuyên dụng hoặc chạy chương trình C/Python trên máy chủ mạnh. Trình duyệt chỉ phù hợp cho demo vài chục nghìn chữ số.</div>
-      </aside>
-    </div>
-
-    <footer>
-      <div class="small">Tớ (GPT) đã chuẩn bị mã Chudnovsky + decimal.js để xử lý số lớn. Thử 1000 trước nhé — nếu ổn cậu tăng dần.</div>
-    </footer>
-  </div>
+  <h1>π Typing Demo ✨</h1>
+  <p>Nhấn "Bắt đầu" để tính π và hiển thị dần theo kiểu gõ 👇</p>
+  <button id="start">Bắt đầu</button>
+  <div id="progress"><div id="progress-bar"></div></div>
+  <pre id="pi-container">Ấn "Bắt đầu" để khởi động...</pre>
 
 <script>
-/*
-  Pi Typing — frontend + worker.
-  Thao tác:
-    - tạo WebWorker nội tuyến bằng Blob
-    - worker dùng decimal.js (được import via importScripts CDN)
-    - worker tính pi theo Chudnovsky với độ chính xác getcontext.prec = digits + guard
-    - worker gửi về main thread chuỗi pi khi hoàn tất; main hiển thị theo chunk "typing"
-  NOTE: Tính 1e9 chữ số trong trình duyệt gần như không khả thi. Thử small values.
-*/
-
-// CDN cho decimal.js (phiên bản phổ biến). Nếu CDN bị chặn, cần thay bằng local file.
-const DECIMAL_CDN = "https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.4.3/decimal.min.js";
-
-const startBtn = document.getElementById('startBtn');
-const stopBtn = document.getElementById('stopBtn');
-const downloadBtn = document.getElementById('downloadBtn');
-const piContainer = document.getElementById('piContainer');
-const statusEl = document.getElementById('status');
-const progressEl = document.getElementById('progress');
-const logEl = document.getElementById('log');
-const digitsInput = document.getElementById('digits');
-const chunkSlider = document.getElementById('chunkSize');
-const chunkSizeLabel = document.getElementById('chunkSizeLabel');
-
-let worker = null;
-let typingTimer = null;
-let cancelTyping = false;
-let generatedText = ""; // accumulate for download
-
-chunkSlider.addEventListener('input', ()=> {
-  chunkSizeLabel.textContent = chunkSlider.value;
-});
-
-// inline worker code as blob
-function makeWorkerBlob() {
-  const workerCode = `
-    importScripts("${DECIMAL_CDN}");
-    // worker scope
-    self.onmessage = async function(e){
-      const {cmd, digits} = e.data;
-      if(cmd === 'start'){
-        try{
-          const D = Math.max(10, Math.floor(digits));
-          // guard digits + extra
-          const prec = D + 20;
-          Decimal.set({ precision: prec, toExpNeg: -1e9, toExpPos: 1e9 });
-          function factorialBig(n){
-            // not used: rely on binary splitting
-            let r = new Decimal(1);
-            for(let i=2;i<=n;i++) r = r.times(i);
-            return r;
-          }
-
-          // Binary splitting implementation for Chudnovsky (using Decimal)
-          // We'll do naive Chudnovsky summation loop until enough precision,
-          // because implementing full fast binary-splitting with integer arithmetic
-          // is long. For moderate digits (<= ~20000) this is fine.
-          const C = new Decimal(426880).times(new Decimal(10005).sqrt());
-          let M = new Decimal(1);
-          let L = new Decimal(13591409);
-          let X = new Decimal(1);
-          let K = new Decimal(6);
-          let S = new Decimal(L);
-
-          // estimate how many terms needed roughly: each term ~14 digits
-          const termsNeeded = Math.ceil(D / 14) + 2;
-          let lastPiStr = '';
-          for(let k=1;k<=termsNeeded;k++){
-            // M = M * (K^3 - 16*K) / (k^3)
-            M = M.times(K.times(K).times(K).minus(new Decimal(16).times(K))).dividedBy(new Decimal(k).times(k).times(k));
-            L = L.plus(new Decimal(545140134));
-            X = X.times(new Decimal(-262537412640768000));
-            S = S.plus(M.times(L).dividedBy(X));
-            K = K.plus(new Decimal(12));
-
-            if(k % 1 === 0){
-              // compute intermediate pi to check progress
-              const pi = C.dividedBy(S);
-              // convert to string with required digits (we'll ask Decimal toPrecision)
-              const piStr = pi.toPrecision(D + 1); // includes leading "3.xxxxxx"
-              // send progress update
-              self.postMessage({type:'progress', k, termsNeeded, piStr});
-              lastPiStr = piStr;
-            }
-          }
-
-          // final pi value
-          const piFinal = C.dividedBy(S);
-          // Use toFixed to get D digits after decimal point (but Decimal.toFixed supports big precision)
-          // We want whole digits: "3" + "." + D digits
-          let piFull;
-          // toFixed may produce rounding issues; we ensure precision set earlier
-          try {
-            piFull = piFinal.toFixed(D); // returns string with D decimals
-          } catch(err) {
-            // fallback to toPrecision then pad
-            piFull = piFinal.toPrecision(D+1);
-          }
-
-          self.postMessage({type:'done', pi: piFull});
-        } catch(err){
-          self.postMessage({type:'error', message: String(err)});
-        }
-      }
-    };
-  `;
-  return new Blob([workerCode], {type: 'application/javascript'});
-}
-
-function log(msg){
-  const now = new Date().toLocaleTimeString();
-  logEl.innerHTML = (logEl.innerHTML ? logEl.innerHTML + "<br>" : "") + "<span style='color:var(--muted)'>[" + now + "]</span> " + msg;
-  logEl.scrollTop = logEl.scrollHeight;
-}
-
-function startCompute(){
-  if(worker) {
-    log("Đã có worker đang chạy. Dừng nó trước khi bắt đầu lại.");
-    return;
+// ----------------------
+// Tính gần đúng số π
+// ----------------------
+function calculatePi(terms = 2000) {
+  let pi = 0;
+  let n = 1;
+  for (let i = 0; i < terms; i++) {
+    pi += 4 / n - 4 / (n + 2);
+    n += 4;
   }
+  return pi.toFixed(terms > 10 ? 1000 : terms);
+}
 
-  const digits = Number(digitsInput.value) || 1000;
-  piContainer.textContent = "Chuẩn bị... (đang khởi worker)";
-  statusEl.textContent = "Trạng thái: khởi tạo worker...";
-  progressEl.value = 0;
-  generatedText = "";
+// ----------------------
+// Hiệu ứng gõ từng ký tự
+// ----------------------
+async function displayTyping(piText) {
+  const piContainer = document.getElementById("pi-container");
+  const progressBar = document.getElementById("progress-bar");
+  piContainer.innerHTML = "";
+  
+  let i = 0;
+  const delay = 5; // ms giữa mỗi ký tự
+  const total = piText.length;
 
-  // create worker
-  const blob = makeWorkerBlob();
-  const url = URL.createObjectURL(blob);
-  worker = new Worker(url);
-
-  worker.onmessage = function(e){
-    const msg = e.data;
-    if(msg.type === 'progress'){
-      statusEl.textContent = `Trạng thái: đang tính (term ${msg.k} / ${msg.termsNeeded})`;
-      const percent = Math.min(98, Math.round((msg.k / msg.termsNeeded) * 100));
-      progressEl.value = percent;
-
-      // show a preview of current pi to some digits (avoid huge)
-      const preview = msg.piStr;
-      piContainer.textContent = preview.slice(0, 2000) + (preview.length > 2000 ? "\\n\\n... (preview) ..." : "");
-    } else if(msg.type === 'done'){
-      statusEl.textContent = "Trạng thái: hoàn thành (chuẩn bị hiển thị theo kiểu gõ)";
-      progressEl.value = 100;
-      const pi = msg.pi;
-      log("Worker trả về pi — tổng độ dài: " + pi.length + " ký tự (bao gồm dấu chấm).");
-      // begin typing display in chunks
-      displayTyping(pi);
-      // keep generatedText for download
-      generatedText = pi;
-      // terminate worker
-      worker.terminate();
-      worker = null;
-    } else if(msg.type === 'error'){
-      statusEl.textContent = "Lỗi: " + msg.message;
-      log("Worker lỗi: " + msg.message);
-      if(worker){ worker.terminate(); worker=null; }
+  async function type() {
+    if (i < total) {
+      const color = `hsl(${(i * 3) % 360}, 70%, 65%)`;
+      piContainer.innerHTML += `<span style="color:${color}">${piText[i]}</span>`;
+      i++;
+      progressBar.style.width = ((i / total) * 100) + "%";
+      await new Promise(r => setTimeout(r, delay));
+      requestAnimationFrame(type);
+    } else {
+      progressBar.style.width = "100%";
     }
-  };
+  }
 
-  worker.onerror = function(ev){
-    statusEl.textContent = "Worker error: " + ev.message;
-    log("Worker exception: " + ev.message);
-    if(worker){ worker.terminate(); worker=null; }
-  };
-
-  worker.postMessage({cmd:'start', digits: digits});
-  statusEl.textContent = "Đã gửi lệnh start lên worker.";
-  log("Gửi lệnh tính " + digits + " chữ số lên worker (xài decimal.js).");
+  type();
 }
 
-function stopCompute(){
-  if(worker){
-    worker.terminate();
-    worker = null;
-    statusEl.textContent = "Trạng thái: worker đã bị dừng thủ công.";
-    log("Worker bị dừng.");
-  }
-  cancelTyping = true;
-}
+// ----------------------
+// Nút bắt đầu
+// ----------------------
+document.getElementById("start").addEventListener("click", async () => {
+  const piContainer = document.getElementById("pi-container");
+  piContainer.textContent = "Đang tính số π...";
 
-function displayTyping(fullStr){
-  cancelTyping = false;
-  piContainer.textContent = ""; // clear
-  const chunk = Number(chunkSlider.value) || 1000;
-  let pos = 0;
+  // Tính π (dùng thuật toán Leibniz đơn giản để demo)
+  const pi = calculatePi(50000); // có thể tăng/giảm số vòng lặp
+  piContainer.textContent = "Đang in theo kiểu gõ...";
+  await new Promise(r => setTimeout(r, 500));
 
-  // If string is extremely long, avoid storing entire DOM; append in pieces and keep scroll bottom
-  function step(){
-    if(cancelTyping) {
-      statusEl.textContent = "Trạng thái: hiển thị bị dừng.";
-      return;
-    }
-    if(pos >= fullStr.length){
-      statusEl.textContent = "Trạng thái: hoàn tất hiển thị.";
-      return;
-    }
-    const next = fullStr.slice(pos, pos + chunk);
-    // append with some styling: highlight digits in gradient
-    const span = document.createElement('span');
-    span.textContent = next;
-    // simple color cycling for fun
-    span.style.background = "linear-gradient(90deg, rgba(124,92,255,0.06), rgba(255,122,182,0.04))";
-    span.style.borderRadius = "4px";
-    span.style.padding = "0 0";
-    piContainer.appendChild(span);
-    pos += chunk;
-    // auto-scroll
-    piContainer.parentElement.scrollTop = piContainer.parentElement.scrollHeight;
-    // tiny random delay to feel like typing
-    const delay = Math.max(1, 5 + Math.round(Math.random()*20));
-    setTimeout(step, delay);
-  }
-  step();
-}
-
-startBtn.addEventListener('click', ()=>{
-  startCompute();
-});
-
-stopBtn.addEventListener('click', ()=>{
-  stopCompute();
-});
-
-downloadBtn.addEventListener('click', ()=>{
-  if(!generatedText){
-    alert("Chưa có dữ liệu pi để tải. Chạy tính trước ít nhất 1 lần với số chữ số nhỏ.");
-    return;
-  }
-  const blob = new Blob([generatedText], {type: 'text/plain;charset=utf-8'});
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  const digits = Number(digitsInput.value) || generatedText.length;
-  link.download = 'pi_' + digits + '_digits.txt';
-  link.click();
-  URL.revokeObjectURL(link.href);
-  log("Tải về: pi_" + digits + "_digits.txt (kích thước ~ " + blob.size + " bytes)");
+  // Gõ từng ký tự
+  displayTyping(pi);
 });
 </script>
 </body>
