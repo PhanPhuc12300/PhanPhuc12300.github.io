@@ -119,7 +119,7 @@ document.getElementById("start").addEventListener("click", async () => {
   piContainer.textContent = "Đang tính số π...";
 
   // Tính π (dùng thuật toán Leibniz đơn giản để demo)
-  const pi = calculatePi(50000); // có thể tăng/giảm số vòng lặp
+  const pi = calculatePi(500); // có thể tăng/giảm số vòng lặp
   piContainer.textContent = "Đang in theo kiểu gõ...";
   await new Promise(r => setTimeout(r, 500));
 
