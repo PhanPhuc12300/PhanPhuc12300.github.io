@@ -234,7 +234,7 @@ function startCompute(){
   worker.onmessage = function(e){
     const msg = e.data;
     if(msg.type === 'progress'){
-      statusEl.textContent = \`Trạng thái: đang tính (term \${msg.k} / \${msg.termsNeeded})\`;
+      statusEl.textContent = `Trạng thái: đang tính (term ${msg.k} / ${msg.termsNeeded})`;
       const percent = Math.min(98, Math.round((msg.k / msg.termsNeeded) * 100));
       progressEl.value = percent;
 
