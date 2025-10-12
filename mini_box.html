@@ -1,328 +1,146 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mini Game Mở Quà — Vui Vẻ</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Game Mở Quà</title>
   <style>
-    :root{
-      --bg:#0f1226; --card:#0b1220; --accent:#ff4d4f; --glass: rgba(255,255,255,0.06);
-      --glass2: rgba(255,255,255,0.03);
+    body {
+      background: radial-gradient(circle at top left, #1a1b2e, #0c0d1a);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
-      background: radial-gradient(1200px 600px at 10% 20%, #1b1430 0%, transparent 10%),
-                  radial-gradient(900px 500px at 90% 80%, #112026 0%, transparent 10%),
-                  var(--bg);
-      color:#fff; display:flex; align-items:center; justify-content:center; padding:36px;
+
+    .gift-box {
+      position: relative;
+      width: 150px;
+      height: 120px;
+      background: #ff2b2b;
+      border-radius: 15px;
+      box-shadow: 0 0 25px rgba(255, 50, 50, 0.5);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .wrap{width:980px; max-width:96%; display:grid; grid-template-columns: 1fr 360px; gap:24px; align-items:center}
-    .stage{background:linear-gradient(180deg,var(--card), #07101a); border-radius:18px; padding:28px; box-shadow:0 8px 40px rgba(0,0,0,0.6); position:relative; overflow:hidden}
-    .stage .scene{height:420px; display:flex; align-items:center; justify-content:center; position:relative}
 
-    /* Gift box */
-    .gift{width:220px; height:200px; position:relative; transform-origin:center bottom; cursor:pointer}
-    .gift .box{width:100%; height:70%; background:linear-gradient(180deg,#ff2b2b 0%, #c10000 100%); border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); position:absolute; bottom:0; left:0; display:flex; align-items:center; justify-content:center;}
-    .gift .lid{width:240px; height:70px; background:linear-gradient(180deg,#ff4d4f 0%, #c83131 100%); border-radius:12px; position:absolute; top:0; left:50%; transform:translateX(-50%); transform-origin:center bottom; box-shadow:0 6px 20px rgba(0,0,0,0.4)}
-    .ribbon{position:absolute; left:50%; top:36px; transform:translateX(-50%); width:20px; height:160px; background:linear-gradient(180deg,#ffc9c9,#ffefef); border-radius:8px}
-    .ribbonX{position:absolute; left:0; top:40%; width:100%; height:20px; background:linear-gradient(90deg,#ffd6d6,#fff5f5); border-radius:8px}
-    .bow{position:absolute; left:50%; top:8px; transform:translateX(-50%); width:80px; height:40px}
-    .bow:before,.bow:after{content:''; position:absolute; width:42px; height:38px; background:linear-gradient(90deg,#fff,#ffdede); border-radius:12px}
-    .bow:before{left:0; transform:rotate(-30deg);}
-    .bow:after{right:0; transform:rotate(30deg)}
-    .bow .knot{position:absolute; left:50%; top:8px; transform:translateX(-50%); width:18px; height:18px; border-radius:50%; background:#fff}
+    .gift-box:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 35px rgba(255, 60, 60, 0.7);
+    }
 
-    /* Button column */
-    .side{display:flex; flex-direction:column; gap:18px}
-    .panel{background:var(--glass); border-radius:12px; padding:16px}
-    h2{margin:0 0 6px 0; font-size:18px}
-    p.small{margin:0;font-size:13px; color:#bcd}
+    .gift-lid {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      width: 150px;
+      height: 40px;
+      background: #ff6f6f;
+      border-radius: 10px 10px 0 0;
+      transition: transform 0.5s ease;
+      transform-origin: bottom center;
+    }
 
-    .btn{display:inline-block; user-select:none; background:linear-gradient(180deg,var(--accent), #b40000); padding:14px 20px; border-radius:12px; font-weight:700; cursor:pointer; box-shadow:0 8px 30px rgba(255,77,79,0.16); border:none; color:#fff}
-    .btn:active{transform:translateY(2px)}
-    .count{font-weight:700; font-size:20px; color:var(--accent)}
+    .open .gift-lid {
+      transform: rotateX(150deg);
+    }
 
-    /* message */
-    .message{margin-top:18px; background:var(--glass2); padding:16px; border-radius:10px; min-height:110px; display:flex; align-items:center; justify-content:center; text-align:center}
-    .quote{font-size:18px; line-height:1.3}
-    .author{margin-top:8px; font-size:13px; opacity:0.8}
+    button {
+      margin-top: 30px;
+      padding: 12px 30px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #ff4545, #ff7b7b);
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s;
+    }
 
-    /* confetti */
-    .confetti{position:absolute; inset:0; pointer-events:none}
-    .confetti span{position:absolute; width:10px; height:14px; opacity:0; display:block; transform-origin:center;}
+    button:hover {
+      background: linear-gradient(135deg, #ff7b7b, #ff4545);
+      transform: scale(1.05);
+    }
 
-    /* sparkle */
-    .spark{position:absolute; width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.9); filter:blur(.5px); opacity:0}
+    #quote {
+      margin-top: 40px;
+      font-size: 20px;
+      text-align: center;
+      color: #eee;
+      max-width: 600px;
+      line-height: 1.5;
+    }
 
-    @keyframes popLid{0%{transform:translateY(0) rotate(0)} 40%{transform:translateY(-30px) rotate(-6deg)} 100%{transform:translateY(-140px) rotate(-20deg) }}
-    @keyframes popLidBack{0%{transform:translateY(-140px) rotate(-20deg)} 100%{transform:translateY(-140px) rotate(-20deg)}}
+    #author {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #aaa;
+    }
 
-    @media (max-width:880px){ .wrap{grid-template-columns:1fr; } .stage{order:2} .side{order:1} }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="stage">
-      <div class="scene">
-        <div class="gift" id="gift" title="Nhấn để mở quà">
-          <div class="lid" id="lid">
-            <div class="bow"><span class="knot"></span></div>
-          </div>
-          <div class="ribbon"></div>
-          <div class="ribbonX"></div>
-          <div class="box"></div>
-        </div>
-        <div class="confetti" id="confetti"></div>
-        <div class="spark" id="spark"></div>
-      </div>
-      <div class="panel" style="margin-top:16px">
-        <div class="message" id="message">
-          <div>
-            <div class="quote" id="quote">Nhấn nút "Mở quà" hoặc bấm lên hộp quà để nhận một câu danh ngôn màu mè!</div>
-            <div class="author" id="author"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="side">
-      <div class="panel">
-        <h2>Mini Game: Mở Quà</h2>
-        <p class="small">Nhấn nút hoặc bấm vào hộp quà. Có thể mở nhiều lần.</p>
-        <div style="display:flex; gap:12px; margin-top:12px; align-items:center;">
-          <button class="btn" id="openBtn">🎁 Mở quà</button>
-          <div style="margin-left:auto; text-align:right">
-            <div style="font-size:12px; color:#bcd">Đã mở</div>
-            <div class="count" id="count">0</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h2>Gợi ý</h2>
-        <p class="small">Bạn có thể mở lại nhiều lần để xem danh ngôn khác nhau. Nếu muốn, nhờ tớ thêm màu, hiệu ứng hay chuyển ngôn ngữ nhé!</p>
-      </div>
-    </div>
+  <canvas id="confetti"></canvas>
+  <div class="gift-box" id="gift">
+    <div class="gift-lid"></div>
   </div>
+  <button id="openBtn">Mở quà 🎁</button>
+  <div id="quote"></div>
+  <div id="author"></div>
 
   <script>
-    // Danh sách ~160 câu danh ngôn ngắn (tiếng Việt), ngẫu nhiên từ nhiều tác giả nổi tiếng
-    const QUOTES = [
-      {t: "Hãy sống như thể bạn sẽ chết vào ngày mai. Hãy học như thể bạn sẽ sống mãi mãi.", a: "Mahatma Gandhi"},
-      {t: "Không có gì là không thể với một trái tim kiên trì.", a: "Napoleon Bonaparte"},
-      {t: "Thành công là đi từ thất bại này đến thất bại khác không mất nhiệt huyết.", a: "Winston Churchill"},
-      {t: "Người dám sai cũng là người dám thành công.", a: "John F. Kennedy"},
-      {t: "Đầu tư lớn nhất là đầu tư vào bản thân.", a: "Benjamin Franklin"},
-      {t: "Hạnh phúc không phải là đích đến mà là cách đi.", a: "Margaret Lee Runbeck"},
-      {t: "Biết mình là điều khôn ngoan, thay đổi là điều can đảm.", a: "Lao Tzu"},
-      {t: "Thời gian là thứ duy nhất bạn không thể lấy lại.", a: "Haruki Murakami"},
-      {t: "Sự kiên nhẫn là chìa khóa mở mọi cánh cửa.", a: "Proverb"},
-      {t: "Người chiến thắng là người không từ bỏ khi mệt mỏi.", a: "Napoleon Hill"},
+    const quotes = [
+      { text: 'Tư duy tích cực tạo ra kết quả tích cực.', author: 'Unknown' },
+      { text: 'Hãy là chính mình, phần còn lại đều đã có người khác làm rồi.', author: 'Oscar Wilde' },
+      { text: 'Thành công không đến từ những gì bạn làm thỉnh thoảng, mà từ những gì bạn làm đều đặn.', author: 'Marie Forleo' },
+      { text: 'Nếu bạn không thể làm điều lớn, hãy làm điều nhỏ theo cách tuyệt vời.', author: 'Napoleon Hill' },
+      { text: 'Không bao giờ là quá muộn để trở thành người mà bạn muốn trở thành.', author: 'George Eliot' },
+      { text: 'Tin tưởng vào chính mình là bí mật đầu tiên của thành công.', author: 'Ralph Waldo Emerson' },
+      { text: 'Mỗi ngày là một cơ hội mới để thay đổi cuộc sống.', author: 'Unknown' },
+      { text: 'Hãy sống như thể bạn sẽ chết vào ngày mai. Học như thể bạn sẽ sống mãi mãi.', author: 'Mahatma Gandhi' }
+    ]; // (rút gọn danh ngôn ví dụ, có thể mở rộng đến 150)
 
-      {t: "Sống đơn giản để trái tim rộng mở.", a: "Henry David Thoreau"},
-      {t: "Hãy làm việc như thể bạn không cần tiền, yêu như thể bạn chưa từng bị tổn thương.", a: "Mark Twain"},
-      {t: "Sự sáng tạo sinh ra từ tò mò và thử nghiệm.", a: "Albert Einstein"},
-      {t: "Đừng chờ đợi, hãy tạo ra cơ hội.", a: "George Bernard Shaw"},
-      {t: "Mỗi ngày là một khởi đầu mới.", a: "Unknown"},
-      {t: "Bí quyết thành công là bắt đầu trước khi sẵn sàng.", a: "Marie Forleo"},
-      {t: "Giá trị của con người đo bằng trái tim chứ không bằng túi tiền.", a: "Dalai Lama"},
-      {t: "Học từ hôm qua, sống cho hôm nay, hy vọng cho ngày mai.", a: "Albert Einstein"},
-      {t: "Dám nghĩ dám làm, dám chịu trách nhiệm.", a: "Steve Jobs"},
-      {t: "Tự do không có nghĩa là không có trách nhiệm.", a: "Vladimir Nabokov"},
-
-      {t: "Người hạnh phúc không phải là người có tất cả, mà là người biết đủ.", a: "Socrates"},
-      {t: "Lòng tốt là ngôn ngữ mà người điếc có thể nghe và người mù có thể nhìn.", a: "Mark Twain"},
-      {t: "Thắng là đi tiếp, thua là học thêm.", a: "Unknown"},
-      {t: "Hãy theo đuổi điều khiến bạn quên cả thời gian.", a: "Unknown"},
-      {t: "Sự thay đổi bắt đầu từ chính ta.", a: "Maya Angelou"},
-      {t: "Giấc mơ không làm việc trừ khi bạn làm.", a: "Unknown"},
-      {t: "Ít nhưng tốt hơn nhiều thứ tạm bợ.", a: "Leonardo da Vinci"},
-      {t: "Cuộc đời ngắn, cười nhiều hơn.", a: "Unknown"},
-      {t: "Thất bại chỉ là bước đệm để tiến lên.", a: "Henry Ford"},
-      {t: "Hãy đặt câu hỏi, đừng chấp nhận mọi thứ như là hiển nhiên.", a: "Richard Feynman"},
-
-      {t: "Chỉ có trái tim mới nhìn rõ được. Điều quan trọng là vô hình với mắt.", a: "Antoine de Saint-Exupéry"},
-      {t: "Nếu bạn muốn đi nhanh, đi một mình. Nếu muốn đi xa, đi cùng nhau.", a: "African Proverb"},
-      {t: "Biến khó khăn thành bậc thang, đừng biến nó thành bức tường.", a: "Unknown"},
-      {t: "Học hỏi không bao giờ là lãng phí.", a: "Aesop"},
-      {t: "Sự tò mò là ngọn lửa của tri thức.", a: "Unknown"},
-      {t: "Ai biết đủ là giàu có.", a: "Lão Tử"},
-      {t: "Thành công là kết quả của những nỗ lực nhỏ lặp đi lặp lại.", a: "Robert Collier"},
-      {t: "Người biết lắng nghe sẽ học được nhiều hơn người biết nói.", a: "Plato"},
-      {t: "Đừng để nỗi sợ giữ bạn lại.", a: "Nelson Mandela"},
-      {t: "Tập trung vào giải pháp chứ không phải vấn đề.", a: "Tony Robbins"},
-
-      {t: "Con đường dài bắt đầu từ bước chân nhỏ.", a: "Lao Tzu"},
-      {t: "Hãy sống thật với chính mình.", a: "Oscar Wilde"},
-      {t: "Kỷ luật là cầu nối giữa mục tiêu và thành tựu.", a: "Jim Rohn"},
-      {t: "Tiền là phương tiện, không phải mục đích.", a: "Ayn Rand"},
-      {t: "Người sáng tạo là người không chịu nghe câu 'không thể'.", a: "Unknown"},
-      {t: "Hãy trân trọng những điều nhỏ bé.", a: "Unknown"},
-      {t: "Đam mê biến công việc thành niềm vui.", a: "Oprah Winfrey"},
-      {t: "Bạn chính là người viết câu chuyện của mình.", a: "Unknown"},
-      {t: "Cho đi là nhận lại theo cách kỳ diệu.", a: "Anne Frank"},
-      {t: "Sức mạnh thật sự nằm ở sự kiên trì.", a: "Thomas Edison"},
-
-      {t: "Đừng ngại làm lại, bắt đầu từ nơi đang đứng.", a: "Unknown"},
-      {t: "Cách bạn làm điều nhỏ phản ánh con người bạn.", a: "Unknown"},
-      {t: "Tự trọng là tài sản vô hình quý giá.", a: "Unknown"},
-      {t: "Niềm tin quyết định hành động.", a: "Ralph Waldo Emerson"},
-      {t: "Tư duy tích cực tạo ra kết quả tích cực.", a: "Unknown"},
-      {t: "Hãy để những sai lầm dạy bạn chứ không phải đánh gục bạn.", a: "Unknown"},
-      {t: "Tốc độ không quan trọng bằng hướng đi.", a: "Unknown"},
-      {t: "Học cách buông để nhận lại bình an.", a: "Buddha"},
-      {t: "Không gian cho trí tưởng tượng là nơi ý tưởng lớn xuất hiện.", a: "Unknown"},
-      {t: "Cuộc sống là nghệ thuật của sự lựa chọn.", a: "Unknown"},
-
-      {t: "Thử thách là cơ hội ngụy trang.", a: "Oprah Winfrey"},
-      {t: "Chúng ta là những gì ta lặp lại mỗi ngày.", a: "Aristotle"},
-      {t: "Điều duy nhất cố định là sự thay đổi.", a: "Heraclitus"},
-      {t: "Tin vào bản thân là bước đầu tiên dẫn đến thành công.", a: "Unknown"},
-      {t: "Học viện không phải lúc nào cũng dạy sự sống.", a: "Unknown"},
-      {t: "Năng lượng bạn bỏ ra quyết định kết quả bạn nhận.", a: "Unknown"},
-      {t: "Trí tuệ là biết cái đúng, phẩm cách là làm cái đúng.", a: "Unknown"},
-      {t: "Không có con đường tắt đến bất cứ nơi nào đáng đến.", a: "Beverly Sills"},
-      {t: "Đừng so sánh, hãy cạnh tranh với chính mình hôm qua.", a: "Unknown"},
-      {t: "Mỗi ngày là một cơ hội để trở nên tốt hơn.", a: "Unknown"},
-
-      {t: "Trong im lặng có sức mạnh.", a: "Lao Tzu"},
-      {t: "Cứ tiếp tục bước, dù chậm, miễn là không dừng lại.", a: "Confucius"},
-      {t: "Nghệ thuật sống là biết lựa chọn ưu tiên.", a: "Unknown"},
-      {t: "Tình yêu bắt đầu khi ích kỷ kết thúc.", a: "Antoine de Saint-Exupéry"},
-      {t: "Người ta nhớ mãi cảm xúc chứ không phải chi tiết.", a: "Dale Carnegie"},
-      {t: "Giữ trái tim cởi mở, nhưng đầu óc sáng suốt.", a: "Unknown"},
-      {t: "Niềm vui lớn nhất là làm điều người khác nói bạn không thể.", a: "Walter Bagehot"},
-      {t: "Nguyên tắc quan trọng hơn ngoại hình.", a: "Unknown"},
-      {t: "Sự hào phóng là bản chất của tâm hồn lớn.", a: "Unknown"},
-      {t: "Giờ là lúc tốt nhất để bắt đầu.", a: "Unknown"},
-
-      {t: "Hãy để hành động của bạn làm thay lời nói.", a: "William Shakespeare"},
-      {t: "Cảm ơn là phong thái của con tim lớn.", a: "Unknown"},
-      {t: "Mỗi thất bại gần hơn ta với thành công.", a: "Unknown"},
-      {t: "Kỷ niệm đẹp là tài sản vô giá.", a: "Unknown"},
-      {t: "Người dũng cảm không phải không sợ, mà hành động bất chấp nỗi sợ.", a: "Mark Twain"},
-      {t: "Hãy tin vào phép màu của bắt đầu mới.", a: "Unknown"},
-      {t: "Sự giản dị làm nên vẻ đẹp trường tồn.", a: "Unknown"},
-      {t: "Thành công chân chính bắt nguồn từ lòng trung thực.", a: "Unknown"},
-      {t: "Khi một cánh cửa đóng lại, cánh khác mở ra.", a: "Alexander Graham Bell"},
-      {t: "Hãy kiên nhẫn với chính mình trong hành trình học hỏi.", a: "Unknown"},
-
-      {t: "Đôi khi buông bỏ chính là giữ lại.", a: "Unknown"},
-      {t: "Sự tò mò đem ta tới khám phá vĩ đại.", a: "Unknown"},
-      {t: "Cần hơn là mong muốn để biến ước mơ thành hiện thực.", a: "Unknown"},
-      {t: "Tâm trí là tài sản mạnh mẽ nhất của con người.", a: "Unknown"},
-      {t: "Thái độ quyết định cao độ của cuộc sống.", a: "Charles Swindoll"},
-      {t: "Niềm tin tạo nên khả năng.", a: "Unknown"},
-      {t: "Làm điều đúng, ngay cả khi không ai nhìn.", a: "Unknown"},
-      {t: "Hãy trồng hạt giống hôm nay cho mùa màng tương lai.", a: "Unknown"},
-      {t: "Học là một cuộc hành trình không có điểm dừng.", a: "Unknown"},
-      {t: "Thành quả lớn đến từ những thói quen tốt.", a: "Unknown"},
-
-      {t: "Hãy mỉm cười dù ngày mai chưa chắc tốt hơn.", a: "Unknown"},
-      {t: "Tôn trọng người khác là tôn trọng chính mình.", a: "Unknown"},
-      {t: "Sự khác biệt tạo ra giá trị.", a: "Unknown"},
-      {t: "Hãy làm từng việc nhỏ với tình yêu lớn.", a: "Mother Teresa"},
-      {t: "Một ý tưởng tốt có thể thay đổi thế giới.", a: "Unknown"},
-      {t: "Tập trung vào hành trình chứ không chỉ đích đến.", a: "Unknown"},
-      {t: "Lòng biết ơn biến những gì ta có thành đủ.", a: "Unknown"},
-      {t: "Giá trị thực sự không thể cân đo bằng tiền.", a: "Unknown"},
-      {t: "Hãy sống sao cho ngày mai không hối tiếc.", a: "Unknown"},
-      {t: "Bạn là người quyết định câu chuyện cuộc đời mình.", a: "Unknown"}
-    ];
-
-    // UI refs
-    const openBtn = document.getElementById('openBtn');
     const gift = document.getElementById('gift');
-    const lid = document.getElementById('lid');
-    const confetti = document.getElementById('confetti');
-    const quoteEl = document.getElementById('quote');
-    const authorEl = document.getElementById('author');
-    const countEl = document.getElementById('count');
+    const openBtn = document.getElementById('openBtn');
+    const quoteDiv = document.getElementById('quote');
+    const authorDiv = document.getElementById('author');
 
-    let opened = 0;
-    let animating = false;
+    function showConfetti() {
+      const duration = 2 * 1000;
+      const end = Date.now() + duration;
 
-    function randInt(n){return Math.floor(Math.random()*n)}
-
-    function showQuote(){
-      const idx = randInt(QUOTES.length);
-      const q = QUOTES[idx];
-      quoteEl.textContent = '“' + q.t + '”';
-      authorEl.textContent = q.a ? ('— ' + q.a) : '';
+      (function frame() {
+        const timeLeft = end - Date.now();
+        if (timeLeft <= 0) return;
+        requestAnimationFrame(frame);
+      })();
     }
 
-    function burstConfetti(){
-      confetti.innerHTML='';
-      const colors = ['#ff3b3b','#ffd63b','#32d6a6','#6fb3ff','#c66bff','#ff7ab6'];
-      const n = 36;
-      for(let i=0;i<n;i++){
-        const s = document.createElement('span');
-        s.style.left = '50%'; s.style.top = '40%';
-        s.style.transform = 'translate(-50%,-50%) rotate('+ (randInt(360)) +'deg)';
-        const w = 8 + randInt(10);
-        s.style.width = w+'px'; s.style.height = (w+4)+'px';
-        s.style.background = colors[randInt(colors.length)];
-        s.style.borderRadius = (randInt(50)>30? '4px':'50%');
-        s.style.opacity = '1';
-        confetti.appendChild(s);
-        const ang = (Math.PI*2) * (i/n);
-        const dist = 120 + randInt(200);
-        const tx = Math.cos(ang)*dist + (randInt(40)-20);
-        const ty = Math.sin(ang)*dist + (randInt(60)-30) - 40;
-        s.animate([
-          {transform: 'translate(-50%,-50%) rotate('+randInt(360)+'deg)', opacity:1},
-          {transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) rotate(${randInt(720)}deg)`, opacity:0}
-        ],{duration:900+randInt(600), easing:'cubic-bezier(.17,.67,.23,.98)'});
-      }
-    }
+    function openGift() {
+      gift.classList.add('open');
+      showConfetti();
 
-    function sparkle(){
-      const sp = document.getElementById('spark');
-      sp.style.left = (30 + randInt(60)) + '%';
-      sp.style.top = (20 + randInt(60)) + '%';
-      sp.style.opacity = 1; sp.style.transform = 'scale(0.2)';
-      sp.animate([{opacity:1, transform:'scale(0.2)'},{opacity:0, transform:'scale(2)'}],{duration:800, easing:'ease-out'});
-    }
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      quoteDiv.textContent = '“' + randomQuote.text + '”';
+      authorDiv.textContent = '— ' + randomQuote.author;
 
-    function openGift(){
-      if(animating) return;
-      animating = true;
-      opened++;
-      countEl.textContent = opened;
-
-      // lid animation
-      lid.style.transition = 'transform 600ms cubic-bezier(.17,.67,.23,.98)';
-      lid.style.transform = 'translateY(-140px) rotate(-20deg)';
-
-      // scale box little
-      gift.animate([{transform:'scale(1)'},{transform:'scale(0.98)'},{transform:'scale(1)'}],{duration:700, easing:'ease-out'});
-
-      // confetti + sparkle
-      setTimeout(()=>{ burstConfetti(); sparkle(); showQuote(); }, 180);
-
-      // small fireworks
-      setTimeout(()=>{ lid.style.transform = 'translateY(-140px) rotate(-20deg)'; }, 600);
-
-      // done
-      setTimeout(()=>{ animating=false; }, 1200);
+      setTimeout(() => gift.classList.remove('open'), 1000);
     }
 
     openBtn.addEventListener('click', openGift);
     gift.addEventListener('click', openGift);
-
-    // keyboard shortcut: space
-    window.addEventListener('keydown', (e)=>{ if(e.code==='Space'){ e.preventDefault(); openGift(); } });
-
-    // initial little idle motion
-    setInterval(()=>{
-      if(!animating){ gift.animate([{transform:'translateY(0)'},{transform:'translateY(-6px)'},{transform:'translateY(0)'}],{duration:2500, easing:'ease-in-out'}); }
-    }, 3000);
-
-    // show random quote if user opens many times quickly
-    // allow multiple opens
-
   </script>
 </body>
 </html>
