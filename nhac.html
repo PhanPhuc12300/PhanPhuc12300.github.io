@@ -1,305 +1,137 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>YouTube Loop Player</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg1: linear-gradient(135deg,#0b1028,#1a1338 60%);
-    --accent1:#ff6fb5;
-    --accent2:#9b59ff;
-    --card: rgba(255,255,255,0.03);
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0; min-height:100vh; font-family:'Nunito',system-ui,Arial;
-    background: var(--bg1); color:#fff; display:flex; align-items:center; justify-content:center; padding:24px;
-  }
+<script>
+// ==============================
+// YouTube Loop Player – by Thỏ Ngọc 💫
+// ==============================
 
-  .wrap{
-    width:100%; max-width:980px; border-radius:16px; padding:18px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    box-shadow: 0 12px 40px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.04);
-  }
+let player = null;
+let playerReady = false;
+let ytApiLoaded = false;
+let currentVideoId = null;
 
-  .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-  .brand{display:flex;gap:12px;align-items:center}
-  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#fff}
-  h1{margin:0;font-size:20px}
-  p.small{margin:0;color:rgba(255,255,255,0.8);font-size:13px}
-
-  .controls{display:flex;gap:10px;align-items:center}
-  .btn{padding:10px 14px;border-radius:12px;border:none;cursor:pointer;font-weight:700;background:linear-gradient(180deg,var(--accent1),var(--accent2));color:#111}
-  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;padding:8px 12px}
-  .btn:active{transform:translateY(1px) scale(.997)}
-
-  .content{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
-  .playlist{flex:1 1 360px;background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);min-width:260px}
-  .track{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;margin-bottom:10px;transition:background .12s,transform .08s}
-  .track:hover{background:rgba(255,255,255,0.02);transform:translateY(-3px)}
-  .thumb{width:64px;height:48px;border-radius:8px;background:#111;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:12px;flex-shrink:0}
-  .meta{flex:1}
-  .meta .t{font-weight:700;font-size:15px;margin-bottom:4px}
-  .meta .a{font-size:13px;color:rgba(255,255,255,0.78)}
-  .playBtn{padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700;background:linear-gradient(90deg,#ffd1ec,#ffd4ff);color:#111}
-  .playing{outline:2px solid rgba(155,89,255,0.18);box-shadow:0 6px 18px rgba(155,89,255,0.06)}
-
-  .visual{width:320px;min-width:260px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center}
-  .status{font-size:14px;color:#fff;text-align:center;min-height:34px}
-  .meter{width:100%;height:8px;background:rgba(255,255,255,0.04);border-radius:8px;overflow:hidden;margin-top:6px}
-  .meter > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent1),var(--accent2));transition:width .25s linear}
-  .footer{margin-top:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%}
-  .credit{color:rgba(255,255,255,0.6);font-size:12px}
-
-  @media (max-width:760px){
-    .content{flex-direction:column-reverse;align-items:stretch}
-    .visual{width:100%}
-  }
-</style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="top">
-      <div class="brand">
-        <div class="logo">YT</div>
-        <div>
-          <h1>Loop Player — YouTube</h1>
-          <p class="small">Paste link YouTube (hoặc video ID). Chọn 1 bài để play.</p>
-        </div>
-      </div>
-
-      <div class="controls">
-        <button id="pauseAll" class="btn ghost">⏸ Pause</button>
-        <button id="stopAll" class="btn ghost">⏹ Stop</button>
-      </div>
-    </div>
-
-    <div class="content">
-      <div class="playlist" id="playlist">
-        <!-- Thêm / sửa tracks ở đây bằng data-src (link YouTube or videoID) -->
-        <div class="track" data-src="https://www.youtube.com/watch?v=GBWweGBEUxU">
-          <div class="thumb">0</div>
-          <div class="meta"><div class="t">Anh Vui x Địa Ngục Trần Gian - Phạm Kỳ x DJ Trang Moon</div><div class="a"></div></div>
-          <button class="playBtn">Play</button>
-        </div>
-        
-        <div class="track" data-src="https://www.youtube.com/watch?v=XkTeWGozEQA">
-          <div class="thumb">1</div>
-          <div class="meta"><div class="t">Phép Màu (Đàn Cá Gỗ OST)</div><div class="a"></div></div>
-          <button class="playBtn">Play</button>
-        </div>
-
-        <div class="track" data-src="https://www.youtube.com/watch?v=S_ecpx7jLt4">
-          <div class="thumb">2</div>
-          <div class="meta"><div class="t">Night Dancer - Imase</div><div class="a"></div></div>
-          <button class="playBtn">Play</button>
-        </div>
-
-        <div class="track" data-src="https://www.youtube.com/watch?v=zbXmqb7hETY">
-          <div class="thumb">3</div>
-          <div class="meta"><div class="t">TheFatRat - Unity | Huyền Thoại EDM 2017</div><div class="a"></div></div>
-          <button class="playBtn">Play</button>
-        </div>
-        
-        <div class="track" data-src="https://www.youtube.com/watch?v=1-wcMYSUBgk">
-          <div class="thumb">4</div>
-          <div class="meta"><div class="t">Muộn Rồi Mà Sao Còn - Sơn Tùng M-TP</div><div class="a"></div></div>
-          <button class="playBtn">Play</button>
-        </div>
-
-        <div class="track" data-src="https://www.youtube.com/watch?v=OeWjTMD-zs4">
-          <div class="thumb">5</div>
-          <div class="meta"><div class="t">Đừng Làm Trái Tim Anh Đau - Sơn Tùng M-TP</div><div class="a"></div></div>
-          <button class="playBtn">Play</button>
-        </div>
-        
-        <div class="track" data-src="https://www.youtube.com/watch?v=dp6zsliTuVM">
-          <div class="thumb">6</div>
-          <div class="meta"><div class="t">Có Chắc Yêu Là Đây - Sơn Tùng M-TP</div><div class="a"></div></div>
-          <button class="playBtn">Play</button>
-        </div>
-
-        <div class="track" data-src="https://www.youtube.com/watch?v=1NIAZZcb6tU">
-          <div class="thumb">7</div>
-          <div class="meta"><div class="t">Chúng Ta Không Thuộc Về Nhau - Sơn Tùng M-TP</div><div class="a"></div></div>
-          <button class="playBtn">Play</button>
-        </div>
-        
-        <div class="track" data-src="https://www.youtube.com/watch?v=d09euum-E3I">
-          <div class="thumb">8</div>
-          <div class="meta"><div class="t">'MENTE MÁ' DÂN LÀNG TÔ MÀ HAI TRÁI TÁO RelaxFilming</div><div class="a"></div></div>
-          <button class="playBtn">Play</button>
-        </div>
-
-        <div class="track" data-src="https://www.youtube.com/watch?v=eYintQv9Hl4">
-          <div class="thumb">9</div>
-          <div class="meta"><div class="t">'TRÌNH (LÀNG)' - Nhạc Chế Minecraft - RelaxFilming</div><div class="a"></div></div>
-          <button class="playBtn">Play</button>
-        </div>
-        
-        <div class="track" data-src="https://www.youtube.com/watch?v=YmJJijvKdg0">
-          <div class="thumb">10</div>
-          <div class="meta"><div class="t">100 Years Love - NamDuc</div><div class="a"></div></div>
-          <button class="playBtn">Play</button>
-        </div>
-
-        <div class="track" data-src="https://www.youtube.com/watch?v=bYshTdKeX6s">
-          <div class="thumb">11</div>
-          <div class="meta"><div class="t">05 (Không Phai) - Tăng Duy Tân x Phong Max x T.R.I</div><div class="a"></div></div>
-          <button class="playBtn">Play</button>
-        </div>
-
-        <div class="track" data-src="https://www.youtube.com/watch?v=FA6o31DKjmg">
-          <div class="thumb">12</div>
-          <div class="meta"><div class="t">2 Phút Hơn - Pháo × KAIZ Remix</div><div class="a"></div></div>
-          <button class="playBtn">Play</button>
-        </div>
-
-        <div class="track" data-src="https://www.youtube.com/watch?v=Pr9PW6F6Fgk">
-          <div class="thumb">13</div>
-          <div class="meta"><div class="t">Tâm Trí Lang Thang Remix</div><div class="a"></div></div>
-          <button class="playBtn">Play</button>
-        </div>
-
-        <div class="track" data-src="https://www.youtube.com/watch?v=KBy8YqVhFmw">
-          <div class="thumb">14</div>
-          <div class="meta"><div class="t">Địa Ngục Trần Gian Remix - Phạm Kỳ</div><div class="a"></div></div>
-          <button class="playBtn">Play</button>
-        </div>
-        
-        <!-- Cho phép user paste link mới nhanh -->
-        <div style="margin-top:8px;padding-top:8px;border-top:1px dashed rgba(255,255,255,0.04);">
-          <input id="newLink" placeholder="Paste YouTube link hoặc ID rồi Enter" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff" />
-        </div>
-      </div>
-
-      <div class="visual">
-        <div class="status" id="status">Không có bài nào đang phát</div>
-        <div class="meter"><i id="meterBar"></i></div>
-        <div class="footer">
-          <div class="credit">Make by GitPages</div>
-          <!-- <div style="font-size:13px;color:rgba(255,255,255,0.8)">Loop: vô hạn</div> -->
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- hidden container cho iframe API -->
-  <div id="yt-player" style="display:none"></div>
-
-  <!-- YouTube IFrame API -->
-  <script src="https://www.youtube-nocookie.com/iframe_api"></script>
-
-  <script>
-  // ==============================
-  // YouTube Loop Player – by Thỏ Ngọc 💫
-  // ==============================
-
-  let player = null;
-  let playerReady = false;
-  let ytApiLoaded = false;
-  let currentVideoId = null;
-
-  // Kiểm tra API có load chưa, nếu chưa thì load lại
-  const ensureYouTubeAPI = () => {
-    if (!ytApiLoaded && typeof YT === "undefined") {
-      console.warn("⚠️ YouTube API chưa sẵn sàng, đang nạp lại...");
-      const tag = document.createElement('script');
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.body.appendChild(tag);
-    }
-  };
-
-  // Gọi khi API sẵn sàng
-  function onYouTubeIframeAPIReady() {
-    ytApiLoaded = true;
-    console.log("🎬 YouTube API đã sẵn sàng");
-
-    player = new YT.Player('yt-player', {
-      height: '0',
-      width: '0',
-      videoId: '',
-      playerVars: {
-        autoplay: 0,
-        controls: 0,
-        rel: 0,
-        modestbranding: 1,
-        loop: 1,
-        playlist: ''
-      },
-      events: {
-        onReady: (e) => {
-          playerReady = true;
-          console.log("✅ Player đã sẵn sàng");
-          updateStatus('Player đã sẵn sàng 🎧');
-        },
-        onStateChange: onPlayerStateChange
-      }
-    });
-  }
-
-  // Khi trạng thái player thay đổi
-  function onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.ENDED) {
-      player.playVideo(); // tự loop lại
-    }
-  }
-
-  // Cập nhật trạng thái hiển thị
-  function updateStatus(text) {
-    const el = document.querySelector('.status');
-    if (el) el.textContent = text;
-  }
-
-  // Gọi khi click "Play" một bài
-  async function playVideo(videoId) {
-    if (!playerReady) {
-      updateStatus('⏳ Đang khởi tạo player...');
-      console.warn("Player chưa sẵn sàng, thử lại sau...");
-      return;
-    }
-
-    if (videoId === currentVideoId) {
-      player.playVideo();
-      updateStatus('▶️ Đang phát lại');
-      return;
-    }
-
-    currentVideoId = videoId;
-    player.loadVideoById(videoId);
-    updateStatus('🎶 Đang phát nhạc...');
-  }
-
-  // Tạm dừng
-  function pauseVideo() {
-    if (playerReady) {
-      player.pauseVideo();
-      updateStatus('⏸️ Đã tạm dừng');
-    }
-  }
-
-  // Dừng hẳn
-  function stopVideo() {
-    if (playerReady) {
-      player.stopVideo();
-      updateStatus('⏹️ Đã dừng phát');
-    }
-  }
-
-  // Khi trang vừa load
-  window.addEventListener('load', () => {
-    // Nạp API YouTube
+// Kiểm tra API có load chưa, nếu chưa thì load lại
+const ensureYouTubeAPI = () => {
+  if (!ytApiLoaded && typeof YT === "undefined") {
+    console.warn("⚠️ YouTube API chưa sẵn sàng, đang nạp lại...");
     const tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
     document.body.appendChild(tag);
+  }
+};
 
-    // Kiểm tra lại sau 3s nếu chưa sẵn sàng
-    setTimeout(ensureYouTubeAPI, 3000);
+// Gọi khi API sẵn sàng
+function onYouTubeIframeAPIReady() {
+  ytApiLoaded = true;
+  console.log("🎬 YouTube API đã sẵn sàng");
 
-    updateStatus('⏳ Đang khởi tạo player...');
+  player = new YT.Player('yt-player', {
+    height: '0',
+    width: '0',
+    videoId: '',
+    playerVars: {
+      autoplay: 0,
+      controls: 0,
+      rel: 0,
+      modestbranding: 1,
+      loop: 1,
+      playlist: ''
+    },
+    events: {
+      onReady: (e) => {
+        playerReady = true;
+        console.log("✅ Player đã sẵn sàng");
+        updateStatus('Player đã sẵn sàng 🎧');
+        bindPlaylistButtons(); // Gắn sự kiện Play sau khi player sẵn sàng
+      },
+      onStateChange: onPlayerStateChange
+    }
   });
-</script>
+}
 
-</body>
-</html>
+// Khi trạng thái player thay đổi
+function onPlayerStateChange(event) {
+  if (event.data === YT.PlayerState.ENDED) {
+    player.playVideo(); // tự loop lại
+  }
+}
+
+// Cập nhật trạng thái hiển thị
+function updateStatus(text) {
+  const el = document.querySelector('.status');
+  if (el) el.textContent = text;
+}
+
+// Tách videoId từ link
+function extractVideoId(url) {
+  const match = url.match(/(?:v=|\.be\/)([a-zA-Z0-9_-]{11})/);
+  return match ? match[1] : url;
+}
+
+// Gọi khi click "Play" một bài
+async function playVideo(videoId) {
+  if (!playerReady) {
+    updateStatus('⏳ Đang khởi tạo player...');
+    console.warn("Player chưa sẵn sàng, thử lại sau...");
+    return;
+  }
+
+  if (videoId === currentVideoId) {
+    player.playVideo();
+    updateStatus('▶️ Đang phát lại');
+    return;
+  }
+
+  currentVideoId = videoId;
+  player.loadVideoById(videoId);
+  updateStatus('🎶 Đang phát nhạc...');
+}
+
+// Tạm dừng
+function pauseVideo() {
+  if (playerReady) {
+    player.pauseVideo();
+    updateStatus('⏸️ Đã tạm dừng');
+  }
+}
+
+// Dừng hẳn
+function stopVideo() {
+  if (playerReady) {
+    player.stopVideo();
+    updateStatus('⏹️ Đã dừng phát');
+  }
+}
+
+// Gắn sự kiện cho các nút Play trong danh sách
+function bindPlaylistButtons() {
+  const tracks = document.querySelectorAll('.track');
+  tracks.forEach(track => {
+    const btn = track.querySelector('.playBtn');
+    btn.addEventListener('click', () => {
+      const src = track.getAttribute('data-src');
+      const id = extractVideoId(src);
+      playVideo(id);
+
+      // Đổi trạng thái hiển thị
+      document.querySelectorAll('.track').forEach(t => t.classList.remove('playing'));
+      track.classList.add('playing');
+    });
+  });
+
+  // Gắn sự kiện cho Pause/Stop
+  document.getElementById('pauseAll').addEventListener('click', pauseVideo);
+  document.getElementById('stopAll').addEventListener('click', stopVideo);
+}
+
+// Khi trang vừa load
+window.addEventListener('load', () => {
+  // Nạp API YouTube
+  const tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.body.appendChild(tag);
+
+  // Kiểm tra lại sau 3s nếu chưa sẵn sàng
+  setTimeout(ensureYouTubeAPI, 3000);
+
+  updateStatus('⏳ Đang khởi tạo player...');
+});
+</script>
