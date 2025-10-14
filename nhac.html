@@ -189,14 +189,13 @@
   <div id="yt-player" style="display:none"></div>
 
   <!-- YouTube IFrame API -->
+    <!-- YouTube IFrame API -->
   <script src="https://www.youtube.com/iframe_api"></script>
   <script>
-  // Extract YouTube ID từ nhiều dạng URL
+  // === Helper: Tách ID YouTube từ URL ===
   function extractYouTubeID(url){
     if(!url) return null;
-    // nếu chỉ là ID
     if(/^[A-Za-z0-9_-]{6,}$/.test(url)) return url;
-    // patterns
     const patterns = [
       /(?:youtube\.com\/.*v=|youtube\.com\/embed\/|youtu\.be\/)([A-Za-z0-9_-]{6,})/,
       /youtube\.com\/shorts\/([A-Za-z0-9_-]{6,})/
@@ -208,11 +207,12 @@
     return null;
   }
 
-  // YT player
+  // === Biến toàn cục ===
   let player = null;
   let playerReady = false;
   let currentVideoId = null;
 
+  // === Khi API YouTube sẵn sàng ===
   function onYouTubeIframeAPIReady(){
     player = new YT.Player('yt-player', {
       height: '0',
@@ -223,17 +223,21 @@
         controls: 0,
         rel: 0,
         modestbranding: 1,
-        loop: 1,        // bật loop (kết hợp với playlist khi load)
-        playlist: ''    // sẽ set động khi load bài
+        loop: 1,
+        playlist: ''
       },
       events: {
-        onReady: (e) => { playerReady = true; },
+        onReady: (e) => {
+          playerReady = true;
+          console.log("✅ Player đã sẵn sàng!");
+          statusEl.textContent = 'Player đã sẵn sàng 🎶';
+        },
         onStateChange: onPlayerStateChange
       }
     });
   }
 
-  // UI logic
+  // === Các phần tử UI ===
   const tracks = Array.from(document.querySelectorAll('.track'));
   const pauseAllBtn = document.getElementById('pauseAll');
   const stopAllBtn = document.getElementById('stopAll');
@@ -241,136 +245,127 @@
   const meterBar = document.getElementById('meterBar');
   const newLinkInput = document.getElementById('newLink');
 
-  // bind existing tracks
+  // === Hiển thị trạng thái tải ===
+  statusEl.textContent = '🔄 Đang khởi tạo player...';
+
+  // === Gắn sự kiện cho mỗi track ===
   function bindTrack(el){
     const btn = el.querySelector('.playBtn');
-    btn.addEventListener('click', async ()=>{
+    btn.addEventListener('click', ()=>{
       const src = el.getAttribute('data-src');
       const id = extractYouTubeID(src);
       if(!id){ alert('Không đọc được ID YouTube từ: ' + src); return; }
-      if(!playerReady){ alert('Player chưa sẵn sàng, chờ 1 chút.'); return; }
-      // nếu đang phát cùng id => toggle play/pause
+
+      if(!playerReady){
+        statusEl.textContent = '⏳ Player chưa sẵn sàng, chờ một chút...';
+        return;
+      }
+
+      // Nếu đang phát cùng video thì toggle
       if(currentVideoId === id){
         const state = player.getPlayerState();
         if(state === YT.PlayerState.PLAYING) player.pauseVideo();
         else player.playVideo();
         return;
       }
-      // load playlist chứa 1 video (để loop hoạt động): loadPlaylist([id])
-      // set playlist param first (so that loop works)
-      player.cuePlaylist([id], 0, 0);
-      // need to update playerVars playlist? cuePlaylist already handled
-      // play
-      player.playVideo();
+
+      // Load và play video mới
       currentVideoId = id;
+      player.loadVideoById(id);
+      player.setLoop(true);
       updatePlayingUI(id);
     });
   }
-
   tracks.forEach(bindTrack);
 
-  // thêm link mới bằng input
+  // === Thêm link mới từ input ===
   newLinkInput.addEventListener('keydown', (e)=>{
     if(e.key === 'Enter'){
       const v = newLinkInput.value.trim();
       const id = extractYouTubeID(v);
       if(!id){ alert('Không đọc được ID từ input.'); return; }
-      // tạo track mới ở trên cùng
+
       const track = document.createElement('div');
       track.className = 'track';
       track.setAttribute('data-src', v);
-      track.innerHTML = `<div class="thumb">New</div>
-                         <div class="meta"><div class="t">Video mới</div><div class="a">${v}</div></div>
-                         <button class="playBtn">Play</button>`;
-      document.getElementById('playlist').insertBefore(track, document.getElementById('playlist').children[0]);
+      track.innerHTML = `
+        <div class="thumb">+</div>
+        <div class="meta"><div class="t">Video mới</div><div class="a">${v}</div></div>
+        <button class="playBtn">Play</button>`;
+      document.getElementById('playlist').prepend(track);
       bindTrack(track);
       newLinkInput.value = '';
     }
   });
 
-  // Pause / Stop buttons
+  // === Nút Pause / Stop ===
   pauseAllBtn.addEventListener('click', ()=>{
-    if(player && playerReady){
-      player.pauseVideo();
-      statusEl.textContent = 'Tạm dừng';
-      clearPlayingUI();
-    }
+    if(playerReady){ player.pauseVideo(); statusEl.textContent = '⏸ Đã tạm dừng'; clearPlayingUI(); }
   });
+
   stopAllBtn.addEventListener('click', ()=>{
-    if(player && playerReady){
+    if(playerReady){
       player.stopVideo();
-      statusEl.textContent = 'Đã dừng';
-      currentVideoId = null;
+      statusEl.textContent = '⏹ Đã dừng';
       clearPlayingUI();
+      currentVideoId = null;
       meterBar.style.width = '0%';
     }
   });
 
-  // Player state change
+  // === Khi trạng thái Player thay đổi ===
   function onPlayerStateChange(e){
-    const state = e.data;
-    if(state === YT.PlayerState.PLAYING){
-      statusEl.textContent = 'Đang phát';
-      startMeter();
-    } else if(state === YT.PlayerState.PAUSED){
-      statusEl.textContent = 'Tạm dừng';
-      stopMeter();
-    } else if(state === YT.PlayerState.ENDED){
-      // shouldn't reach if loop works, but fallback
-      statusEl.textContent = 'Kết thúc';
-      stopMeter();
-      currentVideoId = null;
-      clearPlayingUI();
-    } else if(state === YT.PlayerState.BUFFERING){
-      statusEl.textContent = 'Đang tải...';
-    } else if(state === YT.PlayerState.UNSTARTED){
-      statusEl.textContent = 'Sẵn sàng';
-    }
+    const s = e.data;
+    if(s === YT.PlayerState.PLAYING){ statusEl.textContent = '🎵 Đang phát'; startMeter(); }
+    else if(s === YT.PlayerState.PAUSED){ statusEl.textContent = '⏸ Đã tạm dừng'; stopMeter(); }
+    else if(s === YT.PlayerState.ENDED){ statusEl.textContent = '🔁 Loop lại'; }
+    else if(s === YT.PlayerState.BUFFERING){ statusEl.textContent = '⏳ Đang tải...'; }
     highlightTrack(currentVideoId);
   }
 
-  function updatePlayingUI(videoId){
-    statusEl.textContent = 'Đang phát: ' + videoId;
-    highlightTrack(videoId);
+  // === UI cập nhật khi đang phát ===
+  function updatePlayingUI(id){
+    highlightTrack(id);
+    statusEl.textContent = '▶️ Đang phát: ' + id;
   }
-  function highlightTrack(videoId){
-    const all = Array.from(document.querySelectorAll('.track'));
-    all.forEach(t=>{
-      const id = extractYouTubeID(t.getAttribute('data-src'));
-      if(id && id === videoId){
+
+  function highlightTrack(id){
+    document.querySelectorAll('.track').forEach(t=>{
+      const vid = extractYouTubeID(t.dataset.src);
+      const btn = t.querySelector('.playBtn');
+      if(vid === id){
         t.classList.add('playing');
-        t.querySelector('.playBtn').textContent = 'Playing';
+        btn.textContent = 'Playing';
       } else {
         t.classList.remove('playing');
-        t.querySelector('.playBtn').textContent = 'Play';
+        btn.textContent = 'Play';
       }
     });
   }
+
   function clearPlayingUI(){
-    const all = Array.from(document.querySelectorAll('.track'));
-    all.forEach(t=>{
+    document.querySelectorAll('.track').forEach(t=>{
       t.classList.remove('playing');
       t.querySelector('.playBtn').textContent = 'Play';
     });
   }
 
-  // simple meter animation
+  // === Hiệu ứng thanh meter ===
   let meterInterval = null;
   function startMeter(){
     stopMeter();
     let pct = 0;
     meterInterval = setInterval(()=>{
-      pct += Math.random()*6 + 2;
-      if(pct > 100) pct = 20 + Math.random()*20;
+      pct += Math.random() * 10 + 5;
+      if(pct > 100) pct = Math.random() * 40;
       meterBar.style.width = pct + '%';
-    }, 220);
+    }, 180);
   }
-  function stopMeter(){ if(meterInterval) clearInterval(meterInterval); meterInterval = null; }
-
-  // note: some mobile browsers block autoplay until user interacts.
-  // solution: clicking a Play button counts as user gesture and will allow sound.
-
-  // End script
+  function stopMeter(){
+    if(meterInterval) clearInterval(meterInterval);
+    meterInterval = null;
+  }
   </script>
+
 </body>
 </html>
