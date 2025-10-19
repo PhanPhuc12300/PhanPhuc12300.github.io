@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Thiệp 20/10 — Màu mè</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --pink-1:#ffe9f0;
+      --pink-2:#ffd3e6;
+      --accent:#ff84b8;
+      --paper:#fffdf6;
+      --shadow: rgba(0,0,0,0.12);
+    }
+    html,body{height:100%;margin:0;font-family:'Poppins',system-ui,Arial}
+    body{
+      background: radial-gradient(circle at 20% 20%, var(--pink-1), var(--pink-2) 50%);
+      display:flex;align-items:center;justify-content:center;overflow:hidden;
+    }
+
+    /* Scene */
+    .stage{position:relative;width:900px;max-width:95vw;height:620px;border-radius:24px;box-shadow:0 12px 40px var(--shadow);background:linear-gradient(180deg,rgba(255,255,255,0.22),transparent);display:flex;align-items:center;justify-content:center}
+
+    /* Floating flower */
+    .flower{
+      position:absolute;left:50%;transform:translateX(-50%);top:70px;z-index:5;pointer-events:none;
+      animation:float 4s ease-in-out infinite;
+    }
+    @keyframes float{0%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-10px)}100%{transform:translateX(-50%) translateY(0)}}
+
+    /* Envelope area */
+    .card-wrap{position:relative;display:flex;flex-direction:column;align-items:center;gap:18px}
+
+    .hint{font-size:18px;color:#7a3a59;font-weight:500}
+
+    /* Envelope */
+    .envelope{width:360px;height:220px;position:relative;cursor:pointer;transition:transform .35s ease;transform-origin:center}
+    .envelope.open{transform:translateY(-10px)}
+
+    /* body of envelope */
+    .env-body{width:100%;height:100%;background:linear-gradient(180deg,#fff,#fff4f8);border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,0.12);position:relative;overflow:hidden}
+
+    /* flap */
+    .flap{position:absolute;top:-2px;left:0;width:100%;height:60%;background:linear-gradient(180deg,#ffd8ea,#ffc9de);clip-path:polygon(50% 0,100% 40%,100% 100%,0% 100%,0% 40%);transition:transform .6s cubic-bezier(.2,.9,.3,1)}
+    .envelope.open .flap{transform:rotateX(180deg) translateY(-36%)}
+
+    /* paper inside */
+    .paper{position:absolute;left:6%;top:30%;width:88%;height:70%;background:var(--paper);border-radius:6px;padding:24px;box-shadow:0 6px 16px rgba(0,0,0,0.06);transform-origin:top center;transition:transform .45s ease,opacity .3s ease;opacity:0;transform:translateY(12px)}
+    .envelope.open .paper{opacity:1;transform:translateY(0)}
+
+    .paper .title{font-family:'Dancing Script',cursive;font-size:28px;color:#b0346b;margin:0}
+    .paper .content{margin-top:10px;font-size:16px;line-height:1.45;color:#6b3a46;min-height:120px}
+    .paper .content[contenteditable]{outline:none}
+
+    /* Buttons */
+    .controls{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:6px}
+    .btn{background:linear-gradient(180deg,var(--accent),#ff5aa8);border:none;color:white;padding:10px 16px;border-radius:999px;font-weight:600;cursor:pointer;box-shadow:0 6px 14px rgba(255,132,184,0.18)}
+    .btn.secondary{background:transparent;color:#7a3a59;border:2px solid rgba(122,58,89,0.06);box-shadow:none}
+
+    /* decorative confetti */
+    .confetti{position:absolute;inset:0;pointer-events:none}
+    .confetti span{position:absolute;width:8px;height:14px;border-radius:2px;opacity:0.95;transform-origin:center;animation:fall 4.5s linear infinite}
+    @keyframes fall{0%{transform:translateY(-30vh) rotate(0) }100%{transform:translateY(100vh) rotate(360deg)}}
+
+    /* Footer note */
+    .note{position:absolute;left:12px;bottom:12px;font-size:13px;color:#7a3a59}
+
+    /* Responsive */
+    @media (max-width:520px){.envelope{width:300px;height:180px}.stage{height:75vh}}
+  </style>
+</head>
+<body>
+  <div class="stage" role="application" aria-label="Thiệp 20/10">
+
+    <!-- Flower (simple SVG) -->
+    <svg class="flower" width="220" height="120" viewBox="0 0 220 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+      <g transform="translate(0,10)">
+        <ellipse cx="110" cy="70" rx="36" ry="12" fill="#b22b6a" opacity="0.14" />
+        <g transform="translate(110,36)">
+          <circle r="14" fill="#ffdfef" />
+          <g transform="rotate(0)">
+            <ellipse rx="18" ry="36" fill="#ff8fb8" transform="rotate(36)"/>
+            <ellipse rx="18" ry="36" fill="#ffd1e8" transform="rotate(108)"/>
+            <ellipse rx="18" ry="36" fill="#ffb8da" transform="rotate(180)"/>
+            <ellipse rx="18" ry="36" fill="#ffcbe6" transform="rotate(252)"/>
+          </g>
+        </g>
+      </g>
+    </svg>
+
+    <div class="card-wrap">
+      <div class="hint">Click vào thư để đọc — hoặc click bất kỳ đâu để bật nhạc</div>
+
+      <div class="envelope" id="envelope" tabindex="0" title="Click để mở thư">
+        <div class="env-body">
+          <div class="flap"></div>
+          <div class="paper" id="paper">
+            <h3 class="title">Gửi tới người đặc biệt</h3>
+            <!-- contenteditable so user can click and type -->
+            <div class="content" id="letter" contenteditable="true" spellcheck="false">Viết nội dung thư ở đây — click vào để sửa. Chúc mừng 20/10!</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="toggleBtn">Đọc thư</button>
+        <label class="btn secondary" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">
+          Chọn nhạc
+          <input id="audioFile" type="file" accept="audio/*" style="display:none">
+        </label>
+      </div>
+
+    </div>
+
+    <!-- hidden audio element; user can replace src or pick file -->
+    <audio id="bgAudio" loop preload="none"></audio>
+
+    <!-- confetti elements (generated by JS) -->
+    <div class="confetti" id="confetti"></div>
+
+    <div class="note">Font: Poppins + Dancing Script. Mở tệp .html trong trình duyệt để xem.</div>
+
+  </div>
+
+  <script>
+    // Elements
+    const envelope = document.getElementById('envelope');
+    const toggleBtn = document.getElementById('toggleBtn');
+    const paper = document.getElementById('paper');
+    const letter = document.getElementById('letter');
+    const audio = document.getElementById('bgAudio');
+    const audioInput = document.getElementById('audioFile');
+    const confetti = document.getElementById('confetti');
+
+    // --- Confetti generator (simple) ---
+    function makeConfetti(n=18){
+      confetti.innerHTML='';
+      for(let i=0;i<n;i++){
+        const el = document.createElement('span');
+        el.style.left = Math.random()*100 + '%';
+        el.style.top = (Math.random()*-30) + 'vh';
+        el.style.background = `hsl(${Math.random()*60 + 320}, 80%, ${Math.random()*20 + 60}%)`;
+        el.style.width = (6 + Math.random()*8) + 'px';
+        el.style.height = (10 + Math.random()*14) + 'px';
+        el.style.transform = `rotate(${Math.random()*360}deg)`;
+        el.style.animationDelay = (Math.random()*2) + 's';
+        el.style.opacity = 0.95;
+        confetti.appendChild(el);
+      }
+    }
+    makeConfetti(20);
+
+    // toggle open/close envelope
+    function openEnvelope(){
+      envelope.classList.add('open');
+      toggleBtn.textContent = 'Đóng thư';
+    }
+    function closeEnvelope(){
+      envelope.classList.remove('open');
+      toggleBtn.textContent = 'Đọc thư';
+    }
+    function toggleEnvelope(){
+      if(envelope.classList.contains('open')) closeEnvelope(); else openEnvelope();
+    }
+
+    // click behaviors
+    envelope.addEventListener('click', (e)=>{
+      toggleEnvelope();
+      playAudioIfReady();
+    });
+
+    toggleBtn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      toggleEnvelope();
+      playAudioIfReady();
+    });
+
+    // click anywhere on stage should also play music (but not toggle envelope except envelope area)
+    document.querySelector('.stage').addEventListener('click', (e)=>{
+      // if click outside envelope area, just play audio
+      if(!envelope.contains(e.target)) playAudioIfReady();
+    });
+
+    // Audio file input: user can choose a local file to play
+    audioInput.addEventListener('change', (ev)=>{
+      const f = ev.target.files && ev.target.files[0];
+      if(!f) return;
+      const url = URL.createObjectURL(f);
+      audio.src = url;
+      audio.load();
+      // attempt to autoplay when a file is chosen
+      playAudioIfReady(true);
+    });
+
+    // Helper: attempt to play audio; handle browser autoplay policy gracefully
+    async function playAudioIfReady(force=false){
+      if(!audio.src){
+        // no audio set; do nothing
+        return;
+      }
+      try{
+        if(force) await audio.play();
+        else audio.play().catch(()=>{});
+      }catch(e){
+        console.warn('Không thể phát tự động:', e);
+      }
+    }
+
+    // Accessibility: keyboard toggle
+    envelope.addEventListener('keydown',(e)=>{
+      if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleEnvelope(); playAudioIfReady(); }
+    });
+
+    // Save letter content to localStorage so it persists across reloads
+    const STORAGE_KEY = 'thiệp-2010-letter';
+    // load
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if(saved) letter.innerHTML = saved;
+    // save on input
+    letter.addEventListener('input', ()=>{
+      localStorage.setItem(STORAGE_KEY, letter.innerHTML);
+    });
+
+    // Provide an easy way: if user doesn't want to choose file, they can set audio.src directly in the HTML
+    // Example (replace 'your-audio-file.mp3'):
+    // <audio id="bgAudio" loop preload="none" src="your-audio-file.mp3"></audio>
+
+    // small hint: if you want to trigger confetti only when opened:
+    envelope.addEventListener('transitionend', (e)=>{
+      if(envelope.classList.contains('open')) makeConfetti(28);
+    });
+
+  </script>
+
+  <!--
+    HƯỚNG DẪN NGẮN:
+    - Để thêm nhạc: dùng nút "Chọn nhạc" (chọn tệp mp3/m4a trên máy) hoặc chỉnh trực tiếp thuộc tính src của thẻ <audio> trong file.
+    - Để sửa nội dung thư: click vào vùng giấy (có thể gõ trực tiếp). Nội dung sẽ được lưu vào localStorage.
+    - Muốn đổi font hoặc màu: chỉnh phần <link> Google Fonts và biến CSS ở :root.
+    - Mở file .html này trong trình duyệt để xem/kiểm tra.
+  -->
+</body>
+</html>
