@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Thiệp 20/10 — Thư gửi bạn nữ</title>
+  <title>Thiệp 20/10 — Full thư</title>
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
@@ -15,169 +15,317 @@
       --accent:#ff84b8;
       --paper:#fffdf6;
       --shadow: rgba(0,0,0,0.12);
+      --text:#6b3a46;
     }
-    html,body{height:100%;margin:0;font-family:'Poppins',system-ui,Arial}
+
+    html,body{height:100%;margin:0;font-family:'Poppins',system-ui,Arial;background:#ffdff0}
     body{
-      background: radial-gradient(circle at 20% 20%, var(--pink-1), var(--pink-2) 50%);
-      display:flex;align-items:center;justify-content:center;overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
     }
 
+    /* Stage: tăng không gian trên để tiêu đề không đụng phong bì */
     .stage{
-      position:relative;width:900px;max-width:95vw;min-height:620px;
-      border-radius:24px;box-shadow:0 12px 40px var(--shadow);
-      background:linear-gradient(180deg,rgba(255,255,255,0.22),transparent);
-      display:flex;align-items:center;justify-content:center;flex-direction:column;
-      padding:30px 0;
+      position:relative;
+      width:980px;
+      max-width:95vw;
+      height:760px;
+      border-radius:24px;
+      box-shadow:0 18px 50px var(--shadow);
+      background:radial-gradient(circle at 20% 20%, var(--pink-1), var(--pink-2) 50%);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:18px;
+      padding-top:40px; /* đẩy nội dung xuống để không đụng tiêu đề */
     }
 
-    .flower{
-      position:absolute;left:50%;transform:translateX(-50%);top:60px;z-index:5;pointer-events:none;
-      animation:float 4s ease-in-out infinite;
-    }
-    @keyframes float{
-      0%,100%{transform:translateX(-50%) translateY(0)}
-      50%{transform:translateX(-50%) translateY(-10px)}
+    .hint{
+      font-size:18px;
+      color:#7a3a59;
+      font-weight:500;
+      margin-top:6px;
+      text-align:center;
     }
 
-    .hint{font-size:18px;color:#7a3a59;font-weight:500;margin-top:130px;text-align:center}
+    .card-wrap{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:18px;
+      width:100%;
+    }
 
+    /* Envelope */
     .envelope{
-      width:380px;height:250px;position:relative;cursor:pointer;
-      transition:transform .35s ease;transform-origin:center;margin-top:40px;
+      width:560px;
+      height:320px;
+      position:relative;
+      cursor:pointer;
+      transition:transform .35s ease;
+      transform-origin:center;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
-    .envelope.open{transform:translateY(-10px)}
+    .envelope.open{ transform: translateY(-6px); }
 
     .env-body{
-      width:100%;height:100%;
+      width:100%;
+      height:100%;
       background:linear-gradient(180deg,#fff,#fff4f8);
-      border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,0.12);
-      position:relative;overflow:hidden;
+      border-radius:12px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.08);
+      position:relative;
+      overflow:hidden;
     }
 
     .flap{
-      position:absolute;top:-2px;left:0;width:100%;height:60%;
+      position:absolute;
+      top:-2px;
+      left:0;
+      width:100%;
+      height:62%;
       background:linear-gradient(180deg,#ffd8ea,#ffc9de);
       clip-path:polygon(50% 0,100% 40%,100% 100%,0% 100%,0% 40%);
       transition:transform .6s cubic-bezier(.2,.9,.3,1);
-      transform-origin:top;
+      z-index:5;
     }
-    .envelope.open .flap{transform:rotateX(180deg) translateY(-30%)}
+    .envelope.open .flap{
+      transform:rotateX(180deg) translateY(-36%);
+    }
 
+    /* Paper - default inside envelope */
     .paper{
-      position:absolute;left:6%;top:25%;
-      width:88%;background:var(--paper);
-      border-radius:6px;padding:24px;
+      position:absolute;
+      left:6%;
+      top:30%;
+      width:88%;
+      height:70%;
+      background:var(--paper);
+      border-radius:10px;
+      padding:18px 20px;
       box-shadow:0 6px 16px rgba(0,0,0,0.06);
       transform-origin:top center;
-      transition:transform .45s ease,opacity .3s ease;
-      opacity:0;transform:translateY(12px);
-      overflow:auto;max-height:400px;
+      transition: all .45s ease;
+      opacity:0;
+      transform:translateY(12px);
+      overflow:hidden;
+      z-index:6;
     }
-    .envelope.open .paper{opacity:1;transform:translateY(0)}
 
-    .paper .title{font-family:'Dancing Script',cursive;font-size:30px;color:#b0346b;margin:0}
-    .paper .content{margin-top:10px;font-size:16px;line-height:1.55;color:#6b3a46;min-height:120px;text-align:justify;}
+    /* When opened: paper becomes a centered note (fixed) and can grow by content */
+    .envelope.open .paper{
+      position:fixed;
+      left:50%;
+      top:110px;
+      transform:translateX(-50%) translateY(0);
+      width:720px;
+      max-width:92vw;
+      height:auto;
+      max-height:72vh;
+      padding:28px;
+      border-radius:14px;
+      opacity:1;
+      box-shadow:0 24px 60px rgba(0,0,0,0.14);
+      overflow-y:auto;
+    }
 
-    .btn{
+    /* scrollbar styling */
+    .paper::-webkit-scrollbar{ width:8px; }
+    .paper::-webkit-scrollbar-thumb{ background:#ffb6d9;border-radius:6px; }
+    .paper{ scrollbar-width:thin; scrollbar-color:#ffb6d9 #fffdf6; }
+
+    .paper .title{
+      font-family:'Dancing Script',cursive;
+      font-size:30px;
+      color:#b0346b;
+      margin:0 0 6px 0;
+      text-align:left;
+    }
+    .paper .content{
+      margin-top:6px;
+      font-size:16px;
+      line-height:1.6;
+      color:var(--text);
+      white-space:pre-wrap;
+    }
+
+    /* Close button inside paper */
+    .closeBtn{
+      display:inline-block;
+      margin-top:14px;
       background:linear-gradient(180deg,var(--accent),#ff5aa8);
-      border:none;color:white;padding:10px 20px;border-radius:999px;
-      font-weight:600;cursor:pointer;box-shadow:0 6px 14px rgba(255,132,184,0.18);
-      margin-top:18px;
+      color:#fff;
+      border:none;
+      padding:8px 14px;
+      border-radius:999px;
+      cursor:pointer;
+      box-shadow:0 8px 22px rgba(255,132,184,0.18);
+      font-weight:600;
     }
 
-    .confetti{position:absolute;inset:0;pointer-events:none}
-    .confetti span{position:absolute;width:8px;height:14px;border-radius:2px;opacity:0.95;transform-origin:center;animation:fall 4.5s linear infinite}
+    /* confetti */
+    .confetti{ position:absolute; inset:0; pointer-events:none; z-index:2; }
+    .confetti span{ position:absolute; width:8px; height:14px; border-radius:2px; opacity:0.95; transform-origin:center; animation:fall 4.5s linear infinite; }
     @keyframes fall{0%{transform:translateY(-30vh) rotate(0)}100%{transform:translateY(100vh) rotate(360deg)}}
 
-    .note{position:absolute;left:12px;bottom:12px;font-size:13px;color:#7a3a59}
+    /* responsive */
+    @media (max-width:760px){
+      .envelope{ width:92%; height:280px; }
+      .envelope.open .paper{ left:50%; top:80px; width:92vw; max-height:72vh; }
+    }
+    @media (max-width:420px){
+      .hint{ font-size:16px; padding:0 12px; }
+      .paper .title{ font-size:24px; }
+      .paper{ padding:14px; }
+    }
+
+    /* small decorative flower center above envelope */
+    .flower{
+      width:120px; height:64px;
+      margin-top:-8px;
+      pointer-events:none;
+    }
+
   </style>
 </head>
 <body>
   <div class="stage" role="application" aria-label="Thiệp 20/10">
-    <svg class="flower" width="220" height="120" viewBox="0 0 220 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-      <g transform="translate(0,10)">
-        <ellipse cx="110" cy="70" rx="36" ry="12" fill="#b22b6a" opacity="0.14" />
-        <g transform="translate(110,36)">
-          <circle r="14" fill="#ffdfef" />
-          <g transform="rotate(0)">
-            <ellipse rx="18" ry="36" fill="#ff8fb8" transform="rotate(36)"/>
-            <ellipse rx="18" ry="36" fill="#ffd1e8" transform="rotate(108)"/>
-            <ellipse rx="18" ry="36" fill="#ffb8da" transform="rotate(180)"/>
-            <ellipse rx="18" ry="36" fill="#ffcbe6" transform="rotate(252)"/>
+    <div style="height:8px"></div>
+
+    <div class="hint">Click vào thư để đọc — khi mở sẽ hiện bức giấy, có thể cuộn nếu nội dung dài</div>
+
+    <div class="card-wrap">
+      <!-- decorative flower -->
+      <svg class="flower" viewBox="0 0 220 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+        <g transform="translate(0,10)">
+          <ellipse cx="110" cy="70" rx="36" ry="12" fill="#b22b6a" opacity="0.14" />
+          <g transform="translate(110,36)">
+            <circle r="14" fill="#ffdfef" />
+            <g transform="rotate(0)">
+              <ellipse rx="18" ry="36" fill="#ff8fb8" transform="rotate(36)"/>
+              <ellipse rx="18" ry="36" fill="#ffd1e8" transform="rotate(108)"/>
+              <ellipse rx="18" ry="36" fill="#ffb8da" transform="rotate(180)"/>
+              <ellipse rx="18" ry="36" fill="#ffcbe6" transform="rotate(252)"/>
+            </g>
           </g>
         </g>
-      </g>
-    </svg>
+      </svg>
 
-    <div class="hint">Click vào lá thư để mở — hoặc click bất kỳ đâu để bật nhạc</div>
+      <div class="envelope" id="envelope" tabindex="0" title="Click để mở thư">
+        <div class="env-body" aria-hidden="true">
+          <div class="flap"></div>
 
-    <div class="envelope" id="envelope" title="Click để mở thư">
-      <div class="env-body">
-        <div class="flap"></div>
-        <div class="paper" id="paper">
-          <h3 class="title">Gửi đến các bạn nữ thân mến 💌</h3>
-          <div class="content" id="letter">
-            Nhân ngày Phụ nữ Việt Nam 20/10, chúc các bạn nữ luôn xinh đẹp, tự tin, học giỏi và hạnh phúc. 
-            Chúc mọi người mỗi ngày đều rạng rỡ như đóa hoa tươi thắm, luôn mang đến niềm vui, năng lượng tích cực cho tập thể. 
-            Dù ở đâu hay làm gì, hãy luôn nhớ rằng các cậu thật đáng quý và xứng đáng được yêu thương ❤️.<br><br>
-            Cảm ơn các cậu vì đã luôn là những người bạn tuyệt vời, luôn nỗ lực, vui vẻ và hết mình. 
-            Mong rằng 20/10 này sẽ mang lại thật nhiều tiếng cười, những lời chúc tốt đẹp và những điều ngọt ngào nhất 🌸💫
+          <!-- paper (initially inside envelope) -->
+          <div class="paper" id="paper" role="article" aria-label="Nội dung thư">
+            <h3 class="title">Gửi tới các bạn nữ!</h3>
+
+            <div class="content" id="letter">
+Nhân ngày Phụ nữ Việt Nam 20/10, tôi xin chúc tất cả các bạn nữ — dù là trong lớp mình hay lớp khác — luôn xinh đẹp, tự tin và hạnh phúc. Chúc mọi người mỗi ngày đều rạng rỡ như những đóa hoa, luôn biết yêu thương bản thân và sống trọn với đam mê của mình 🌸
+
+Cảm ơn các cậu vì đã luôn mang đến niềm vui, tiếng cười và năng lượng tích cực cho mọi người xung quanh. Mong rằng những cố gắng và nỗ lực của các cậu trong học tập và cuộc sống sẽ được đền đáp thật xứng đáng. Hãy luôn giữ vững niềm tin, nuôi dưỡng ước mơ và không ngại thử thách bản thân — bởi vì mỗi trải nghiệm đều làm ta trưởng thành hơn.
+
+Chúc một ngày 20/10 tràn ngập hoa, quà và những lời chúc ấm áp. Chúc các cô gái của chúng ta luôn giữ nụ cười tươi, tâm hồn lạc quan và gặp thật nhiều điều may mắn trên con đường phía trước nhé! 🌷✨
+            </div>
+
+            <div style="text-align:center">
+              <button class="closeBtn" id="closeBtn">Đóng</button>
+            </div>
           </div>
+
         </div>
+      </div>
+
+      <!-- a button to open too (optional) -->
+      <div style="display:flex;justify-content:center;width:100%;margin-top:8px">
+        <button class="closeBtn" id="openBtn" style="background:linear-gradient(180deg,#ff9ac0,#ff6aa0)">Đọc thư</button>
       </div>
     </div>
 
-    <button class="btn" id="toggleBtn">Đọc thư</button>
-    <audio id="bgAudio" loop preload="auto" src="nhac20-10.mp3"></audio>
+    <audio id="bgAudio" loop preload="none"></audio>
+
     <div class="confetti" id="confetti"></div>
-    <div class="note">Font: Poppins + Dancing Script.</div>
+
+    <!-- <div style="position:absolute;left:18px;bottom:18px;color:#7a3a59;font-size:13px">Font: Poppins + Dancing Script. Mở file .html trong trình duyệt để xem.</div> -->
   </div>
 
   <script>
     const envelope = document.getElementById('envelope');
-    const toggleBtn = document.getElementById('toggleBtn');
-    const audio = document.getElementById('bgAudio');
+    const openBtn = document.getElementById('openBtn');
+    const closeBtn = document.getElementById('closeBtn');
     const confetti = document.getElementById('confetti');
+    const paper = document.getElementById('paper');
 
+    // confetti generator
     function makeConfetti(n=20){
-      confetti.innerHTML='';
+      confetti.innerHTML = '';
       for(let i=0;i<n;i++){
-        const el=document.createElement('span');
-        el.style.left=Math.random()*100+'%';
-        el.style.top=(Math.random()*-30)+'vh';
-        el.style.background=`hsl(${Math.random()*60+320},80%,${Math.random()*20+60}%)`;
-        el.style.width=(6+Math.random()*8)+'px';
-        el.style.height=(10+Math.random()*14)+'px';
-        el.style.animationDelay=(Math.random()*2)+'s';
+        const el = document.createElement('span');
+        el.style.left = Math.random()*100 + '%';
+        el.style.top = (Math.random()*-30) + 'vh';
+        el.style.background = `hsl(${Math.random()*60 + 320}, 80%, ${Math.random()*20 + 60}%)`;
+        el.style.width = (6 + Math.random()*8) + 'px';
+        el.style.height = (10 + Math.random()*14) + 'px';
+        el.style.transform = `rotate(${Math.random()*360}deg)`;
+        el.style.animationDelay = (Math.random()*2) + 's';
         confetti.appendChild(el);
       }
     }
-
-    makeConfetti(25);
+    makeConfetti(24);
 
     function openEnvelope(){
       envelope.classList.add('open');
-      toggleBtn.textContent='Đóng thư';
-      playAudio();
+      // focus the paper for keyboard scroll
+      setTimeout(()=> paper.focus && paper.focus(), 450);
+      makeConfetti(28);
+      // scroll top of paper to top
+      paper.scrollTop = 0;
     }
-
     function closeEnvelope(){
       envelope.classList.remove('open');
-      toggleBtn.textContent='Đọc thư';
     }
 
-    function toggleEnvelope(){
-      if(envelope.classList.contains('open')) closeEnvelope(); else openEnvelope();
-    }
+    envelope.addEventListener('click', (e)=>{
+      // if already open and click inside paper, don't toggle
+      if(envelope.classList.contains('open')){
+        // clicks on paper area should not close envelope
+        if(paper.contains(e.target)) return;
+      }
+      // otherwise toggle
+      envelope.classList.contains('open') ? closeEnvelope() : openEnvelope();
+    });
 
-    function playAudio(){
-      try{audio.play();}catch(e){console.warn('Không thể phát nhạc:',e);}
-    }
+    openBtn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      openEnvelope();
+    });
 
-    envelope.addEventListener('click',()=>toggleEnvelope());
-    toggleBtn.addEventListener('click',(e)=>{e.stopPropagation();toggleEnvelope();});
-    document.querySelector('.stage').addEventListener('click',(e)=>{if(!envelope.contains(e.target)) playAudio();});
-    envelope.addEventListener('transitionend',()=>{if(envelope.classList.contains('open')) makeConfetti(30);});
+    closeBtn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      closeEnvelope();
+    });
+
+    // close when pressing Esc
+    document.addEventListener('keydown',(e)=>{
+      if(e.key === 'Escape') closeEnvelope();
+      if((e.key === 'Enter' || e.key === ' ') && document.activeElement === envelope){
+        e.preventDefault();
+        envelope.classList.contains('open') ? closeEnvelope() : openEnvelope();
+      }
+    });
+
+    // avoid envelope clicking from paper area to close
+    paper.addEventListener('click', (e)=>{
+      e.stopPropagation();
+    });
+
+    // If you want to set audio, edit the <audio id="bgAudio" src="..."> or use JS to set src.
+    const audio = document.getElementById('bgAudio');
+    // Example: audio.src = 'your-audio-file.mp3';
+
   </script>
 </body>
 </html>
