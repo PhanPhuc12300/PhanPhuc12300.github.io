@@ -42,11 +42,36 @@
     .flap{position:absolute;top:-2px;left:0;width:100%;height:60%;background:linear-gradient(180deg,#ffd8ea,#ffc9de);clip-path:polygon(50% 0,100% 40%,100% 100%,0% 100%,0% 40%);transition:transform .6s cubic-bezier(.2,.9,.3,1)}
     .envelope.open .flap{transform:rotateX(180deg) translateY(-36%)}
 
-    .paper{position:absolute;left:6%;top:30%;width:88%;height:70%;background:var(--paper);border-radius:6px;padding:24px;box-shadow:0 6px 16px rgba(0,0,0,0.06);transform-origin:top center;transition:transform .45s ease,opacity .3s ease;opacity:0;transform:translateY(12px)}
-    .envelope.open .paper{opacity:1;transform:translateY(0)}
+    .paper{
+      position:absolute;
+      left:6%;
+      top:0;
+      width:88%;
+      height:100%;
+      background:var(--paper);
+      border-radius:12px;
+      padding:24px;
+      box-shadow:0 6px 16px rgba(0,0,0,0.06);
+      transform-origin:top center;
+      transition:transform .6s ease,opacity .4s ease;
+      opacity:0;
+      transform:translateY(12px);
+      overflow-y:auto;
+      scrollbar-width:thin;
+      scrollbar-color:#ffb6d9 #fffdf6;
+    }
+    .envelope.open .paper{
+      opacity:1;
+      transform:translateY(0);
+    }
+    .paper::-webkit-scrollbar{
+      width:6px;
+    }
+    .paper::-webkit-scrollbar-thumb{
+      background-color:#ffb6d9;
+      border-radius:3px;
+    }
 
-    .paper .title{font-family:'Dancing Script',cursive;font-size:28px;color:#b0346b;margin:0}
-    .paper .content{margin-top:10px;font-size:16px;line-height:1.45;color:#6b3a46;min-height:120px}
 
     .controls{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:6px}
     .btn{background:linear-gradient(180deg,var(--accent),#ff5aa8);border:none;color:white;padding:10px 16px;border-radius:999px;font-weight:600;cursor:pointer;box-shadow:0 6px 14px rgba(255,132,184,0.18)}
@@ -86,7 +111,7 @@
           <div class="flap"></div>
           <div class="paper" id="paper">
             <h3 class="title">Gửi tới các bạn nữ!</h3>
-            <div class="content" id="letter">Nhân ngày Phụ nữ Việt Nam 20/10, tôi xin chúc tất cả các bạn nữ luôn xinh đẹp, tự tin và hạnh phúc. Chúc mọi người mỗi ngày đều rạng rỡ như những đóa hoa, luôn biết yêu thương bản thân và sống trọn với đam mê của mình 🌸.<br/>Cảm ơn các cậu vì đã luôn mang đến niềm vui, tiếng cười và năng lượng tích cực cho mọi người xung quanh. Mong rằng những cố gắng và nỗ lực của các cậu trong học tập và cuộc sống sẽ được đền đáp thật xứng đáng 💐<br/>Chúc một ngày 20/10 tràn ngập hoa, quà và lời chúc đáng yêu. Chúc các cô gái của chúng ta luôn giữ nụ cười tươi, tâm hồn lạc quan và gặp thật nhiều điều may mắn trên con đường phía trước nhé! 🌷✨</div>
+            <div class="content" id="letter">Nhân ngày Phụ nữ Việt Nam 20/10, tôi xin chúc tất cả các bạn nữ luôn xinh đẹp, tự tin và hạnh phúc. Chúc mọi người mỗi ngày đều rạng rỡ như những đóa hoa, luôn biết yêu thương bản thân và sống trọn với đam mê của mình 🌸. Tôi xin thay mặt cảm ơn các cậu vì đã luôn mang đến niềm vui, tiếng cười và năng lượng tích cực cho mọi người xung quanh. Mong rằng những cố gắng và nỗ lực của các cậu trong học tập và cuộc sống sẽ được đền đáp thật xứng đáng 💐</div>
           </div>
         </div>
       </div>
