@@ -253,79 +253,81 @@ Chúc một ngày 20/10 tràn ngập hoa, quà và những lời chúc ấm áp.
   </div>
 
   <script>
-    const envelope = document.getElementById('envelope');
-    const openBtn = document.getElementById('openBtn');
-    const closeBtn = document.getElementById('closeBtn');
-    const confetti = document.getElementById('confetti');
-    const paper = document.getElementById('paper');
+  const envelope = document.getElementById('envelope');
+  const openBtn = document.getElementById('openBtn');
+  const closeBtn = document.getElementById('closeBtn');
+  const confetti = document.getElementById('confetti');
+  const paper = document.getElementById('paper');
+  const audio = document.getElementById('bgAudio');
 
-    // confetti generator
-    function makeConfetti(n=20){
-      confetti.innerHTML = '';
-      for(let i=0;i<n;i++){
-        const el = document.createElement('span');
-        el.style.left = Math.random()*100 + '%';
-        el.style.top = (Math.random()*-30) + 'vh';
-        el.style.background = `hsl(${Math.random()*60 + 320}, 80%, ${Math.random()*20 + 60}%)`;
-        el.style.width = (6 + Math.random()*8) + 'px';
-        el.style.height = (10 + Math.random()*14) + 'px';
-        el.style.transform = `rotate(${Math.random()*360}deg)`;
-        el.style.animationDelay = (Math.random()*2) + 's';
-        confetti.appendChild(el);
-      }
-    }
-    makeConfetti(24);
+  // Gán file nhạc
+  audio.src = "CoChacYeuLaDay.mp3";
+  audio.volume = 0.8;
 
-    function openEnvelope(){
-      envelope.classList.add('open');
-      // focus the paper for keyboard scroll
-      setTimeout(()=> paper.focus && paper.focus(), 450);
-      makeConfetti(28);
-      // scroll top of paper to top
-      paper.scrollTop = 0;
+  // Hàm tạo confetti
+  function makeConfetti(n=20){
+    confetti.innerHTML = '';
+    for(let i=0;i<n;i++){
+      const el = document.createElement('span');
+      el.style.left = Math.random()*100 + '%';
+      el.style.top = (Math.random()*-30) + 'vh';
+      el.style.background = `hsl(${Math.random()*60 + 320}, 80%, ${Math.random()*20 + 60}%)`;
+      el.style.width = (6 + Math.random()*8) + 'px';
+      el.style.height = (10 + Math.random()*14) + 'px';
+      el.style.transform = `rotate(${Math.random()*360}deg)`;
+      el.style.animationDelay = (Math.random()*2) + 's';
+      confetti.appendChild(el);
     }
-    function closeEnvelope(){
-      envelope.classList.remove('open');
-    }
+  }
+  makeConfetti(24);
 
-    envelope.addEventListener('click', (e)=>{
-      // if already open and click inside paper, don't toggle
-      if(envelope.classList.contains('open')){
-        // clicks on paper area should not close envelope
-        if(paper.contains(e.target)) return;
-      }
-      // otherwise toggle
+  function playMusic() {
+    if (audio.paused) {
+      audio.play().catch(()=>{}); // tránh lỗi autoplay
+    }
+  }
+
+  function openEnvelope(){
+    envelope.classList.add('open');
+    paper.scrollTop = 0;
+    makeConfetti(28);
+    playMusic(); // phát nhạc khi mở
+  }
+  function closeEnvelope(){
+    envelope.classList.remove('open');
+  }
+
+  envelope.addEventListener('click', (e)=>{
+    if(envelope.classList.contains('open') && paper.contains(e.target)) return;
+    envelope.classList.contains('open') ? closeEnvelope() : openEnvelope();
+    playMusic(); // phát nhạc khi click thư
+  });
+
+  openBtn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    openEnvelope();
+    playMusic(); // phát nhạc khi click nút
+  });
+
+  closeBtn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    closeEnvelope();
+  });
+
+  // Phát nhạc khi click bất kỳ đâu
+  document.body.addEventListener('click', playMusic);
+
+  document.addEventListener('keydown',(e)=>{
+    if(e.key === 'Escape') closeEnvelope();
+    if((e.key === 'Enter' || e.key === ' ') && document.activeElement === envelope){
+      e.preventDefault();
       envelope.classList.contains('open') ? closeEnvelope() : openEnvelope();
-    });
+      playMusic();
+    }
+  });
 
-    openBtn.addEventListener('click', (e)=>{
-      e.stopPropagation();
-      openEnvelope();
-    });
+  paper.addEventListener('click', (e)=> e.stopPropagation());
+</script>
 
-    closeBtn.addEventListener('click', (e)=>{
-      e.stopPropagation();
-      closeEnvelope();
-    });
-
-    // close when pressing Esc
-    document.addEventListener('keydown',(e)=>{
-      if(e.key === 'Escape') closeEnvelope();
-      if((e.key === 'Enter' || e.key === ' ') && document.activeElement === envelope){
-        e.preventDefault();
-        envelope.classList.contains('open') ? closeEnvelope() : openEnvelope();
-      }
-    });
-
-    // avoid envelope clicking from paper area to close
-    paper.addEventListener('click', (e)=>{
-      e.stopPropagation();
-    });
-
-    // If you want to set audio, edit the <audio id="bgAudio" src="..."> or use JS to set src.
-    const audio = document.getElementById('bgAudio');
-    Example: audio.src = 'CoChacYeuLaDay.mp3';
-
-  </script>
 </body>
 </html>
