@@ -14,42 +14,208 @@
   }
   *{box-sizing:border-box}
   body{
-    margin:0; min-height:100vh; font-family:'Nunito',system-ui,Arial;
-    background: var(--bg1); color:#fff; display:flex; align-items:center; justify-content:center; padding:24px;
+    margin:0;
+    min-height:100vh;
+    font-family:'Nunito',system-ui,Arial;
+    background: var(--bg1);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
   }
 
   .wrap{
-    width:100%; max-width:980px; border-radius:16px; padding:18px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    box-shadow: 0 12px 40px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.04);
+    width:100%;
+    max-width:980px;
+    border-radius:16px;
+    padding:18px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    border:1px solid rgba(255,255,255,0.04);
   }
 
-  .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:14px
+  }
   .brand{display:flex;gap:12px;align-items:center}
-  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#fff}
+  .logo{
+    width:56px;
+    height:56px;
+    border-radius:12px;
+    background:linear-gradient(135deg,var(--accent1),var(--accent2));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+    font-size:20px;
+    color:#fff
+  }
   h1{margin:0;font-size:20px}
   p.small{margin:0;color:rgba(255,255,255,0.8);font-size:13px}
 
   .controls{display:flex;gap:10px;align-items:center}
-  .btn{padding:10px 14px;border-radius:12px;border:none;cursor:pointer;font-weight:700;background:linear-gradient(180deg,var(--accent1),var(--accent2));color:#111}
-  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;padding:8px 12px}
+  .btn{
+    padding:10px 14px;
+    border-radius:12px;
+    border:none;
+    cursor:pointer;
+    font-weight:700;
+    background:linear-gradient(180deg,var(--accent1),var(--accent2));
+    color:#111
+  }
+  .btn.ghost{
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.06);
+    color:#fff;
+    padding:8px 12px
+  }
   .btn:active{transform:translateY(1px) scale(.997)}
 
-  .content{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
-  .playlist{flex:1 1 360px;background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);min-width:260px}
-  .track{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;margin-bottom:10px;transition:background .12s,transform .08s}
-  .track:hover{background:rgba(255,255,255,0.02);transform:translateY(-3px)}
-  .thumb{width:64px;height:48px;border-radius:8px;background:#111;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:12px;flex-shrink:0}
+  .content{
+    display:flex;
+    gap:18px;
+    align-items:flex-start;
+    flex-wrap:wrap
+  }
+  .playlist{
+    flex:1 1 360px;
+    background:var(--card);
+    padding:14px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.03);
+    min-width:260px
+  }
+  .track{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:10px;
+    border-radius:10px;
+    margin-bottom:10px;
+    transition:background .12s,transform .08s
+  }
+  .track:hover{
+    background:rgba(255,255,255,0.02);
+    transform:translateY(-3px)
+  }
+  .thumb{
+    width:64px;
+    height:48px;
+    border-radius:8px;
+    background:#111;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+    color:#fff;
+    font-size:12px;
+    flex-shrink:0
+  }
   .meta{flex:1}
   .meta .t{font-weight:700;font-size:15px;margin-bottom:4px}
   .meta .a{font-size:13px;color:rgba(255,255,255,0.78)}
-  .playBtn{padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700;background:linear-gradient(90deg,#ffd1ec,#ffd4ff);color:#111}
-  .playing{outline:2px solid rgba(155,89,255,0.18);box-shadow:0 6px 18px rgba(155,89,255,0.06)}
+  .playBtn{
+    padding:8px 12px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    font-weight:700;
+    background:linear-gradient(90deg,#ffd1ec,#ffd4ff);
+    color:#111
+  }
+  .playing{
+    outline:2px solid rgba(155,89,255,0.18);
+    box-shadow:0 6px 18px rgba(155,89,255,0.06)
+  }
 
-  .visual{width:320px;min-width:260px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center}
-  .status{font-size:14px;color:#fff;text-align:center;min-height:34px}
-  .meter{width:100%;height:8px;background:rgba(255,255,255,0.04);border-radius:8px;overflow:hidden;margin-top:6px}
-  .meter > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent1),var(--accent2));transition:width .25s linear}
-  .footer{margin-top:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%}
+  .visual{
+    width:320px;
+    min-width:260px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:12px;
+    padding:14px;
+    border:1px solid rgba(255,255,255,0.03);
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    align-items:stretch;
+    justify-content:flex-start
+  }
+
+  .status{
+    font-size:14px;
+    color:#fff;
+    text-align:center;
+    min-height:34px
+  }
+
+  .meter{
+    width:100%;
+    height:8px;
+    background:rgba(255,255,255,0.04);
+    border-radius:8px;
+    overflow:hidden
+  }
+  .meter > i{
+    display:block;
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,var(--accent1),var(--accent2));
+    transition:width .25s linear
+  }
+
+  .volume-wrap{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-top:2px;
+    font-size:13px
+  }
+  #volumeSlider{
+    flex:1;
+    appearance:none;
+    height:6px;
+    border-radius:10px;
+    background:rgba(255,255,255,0.1);
+    outline:none
+  }
+  #volumeSlider::-webkit-slider-thumb{
+    appearance:none;
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--accent1),var(--accent2));
+    cursor:pointer
+  }
+  #volumeSlider::-moz-range-thumb{
+    width:14px;
+    height:14px;
+    border:none;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--accent1),var(--accent2));
+    cursor:pointer
+  }
+  #volumeValue{
+    min-width:42px;
+    text-align:right;
+    color:rgba(255,255,255,0.9);
+    font-weight:700
+  }
+
+  .footer{
+    margin-top:auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    width:100%
+  }
   .credit{color:rgba(255,255,255,0.6);font-size:12px}
 
   @media (max-width:760px){
@@ -64,8 +230,8 @@
       <div class="brand">
         <div class="logo">YT</div>
         <div>
-          <h1>Youtube Loop Player </h1>
-          <p class="small">Paste link YouTube (hoặc video ID). Chọn 1 bài để play.</br>Load lại trang nếu player chưa load.</br>Nhấn Stop/Rest nếu có QC</p>
+          <h1>Youtube Loop Player</h1>
+          <p class="small">Paste link YouTube (hoặc video ID). Chọn 1 bài để play.<br>Load lại trang nếu player chưa load.<br>Nhấn Stop/Rest nếu có QC</p>
         </div>
       </div>
 
@@ -77,8 +243,6 @@
 
     <div class="content">
       <div class="playlist" id="playlist">
-        <!-- Thêm / sửa tracks ở đây bằng data-src (link YouTube or videoID) -->
-
         <div class="track" data-src="https://www.youtube.com/watch?v=AJ7GIsa4lI0">
           <div class="thumb">-16</div>
           <div class="meta"><div class="t">Có Công Mài "Sắc" - Ngô Lan Hương</div><div class="a"></div></div>
@@ -91,7 +255,7 @@
           <button class="playBtn">Play</button>
         </div>
         
-         <div class="track" data-src="https://www.youtube.com/watch?v=zmXKzYXam8c">
+        <div class="track" data-src="https://www.youtube.com/watch?v=zmXKzYXam8c">
           <div class="thumb">-14</div>
           <div class="meta"><div class="t">Trả Cho Anh Remix Speed Up 8D - Nguyễn Thạc Bảo Ngọc</div><div class="a"></div></div>
           <button class="playBtn">Play</button>
@@ -102,8 +266,6 @@
           <div class="meta"><div class="t">Ai Đưa Em Về - TIA (Low Cortisol)</div><div class="a"></div></div>
           <button class="playBtn">Play</button>
         </div>
-
-
 
         <div class="track" data-src="https://www.youtube.com/watch?v=vkpcyY7Xe64">
           <div class="thumb">-12</div>
@@ -117,7 +279,6 @@
           <button class="playBtn">Play</button>
         </div>
 
-        
         <div class="track" data-src="https://www.youtube.com/watch?v=XNwSsXQD5WE">
           <div class="thumb">-10</div>
           <div class="meta"><div class="t">That's What I Like x Một Năm Mới Bình An</div><div class="a"></div></div>
@@ -173,7 +334,6 @@
         </div>
         
         <div class="track" data-src="https://www.youtube.com/watch?v=wOtSo5iZdvk">
-          <!-- https://www.youtube.com/watch?v=Q_O2cCEGbTo -->
           <div class="thumb">-1</div>
           <div class="meta"><div class="t">Trúc Xinh Remix</div><div class="a"></div></div>
           <button class="playBtn">Play</button>
@@ -317,13 +477,12 @@
           <button class="playBtn">Play</button>
         </div>
 
-                <div class="track" data-src="https://www.youtube.com/watch?v=FT8XDE5it2U5">
+        <div class="track" data-src="https://www.youtube.com/watch?v=FT8XDE5it2U5">
           <div class="thumb">23</div>
           <div class="meta"><div class="t">Chắc Em Đã Quên Rồi Remix</div><div class="a"></div></div>
           <button class="playBtn">Play</button>
         </div>
 
-        <!-- Cho phép user paste link mới nhanh -->
         <div style="margin-top:8px;padding-top:8px;border-top:1px dashed rgba(255,255,255,0.04);">
           <input id="newLink" placeholder="Paste YouTube link hoặc ID rồi Enter" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff" />
         </div>
@@ -332,159 +491,181 @@
       <div class="visual">
         <div class="status" id="status">Không có bài nào đang phát</div>
         <div class="meter"><i id="meterBar"></i></div>
+
+        <div class="volume-wrap">
+          🔊 <input type="range" id="volumeSlider" min="0" max="100" value="100">
+          <span id="volumeValue">100%</span>
+        </div>
+
         <div class="footer">
           <div class="credit">Make by GitPages</div>
-          <!-- <div style="font-size:13px;color:rgba(255,255,255,0.8)">Loop: vô hạn</div> -->
         </div>
       </div>
     </div>
   </div>
 
-  <!-- hidden container cho iframe API -->
   <div id="yt-player" style="display:none"></div>
 
-  <!-- YouTube IFrame API -->
   <script src="https://www.youtube.com/iframe_api"></script>
-  <script src="https://www.youtube-nocookie.com/iframe_api"></script>
 
   <script>
-// ==============================
-// YouTube Loop Player – by Thỏ Ngọc 💫
-// ==============================
+  // ==============================
+  // YouTube Loop Player – by Thỏ Ngọc 💫
+  // ==============================
 
-let player = null;
-let playerReady = false;
-let ytApiLoaded = false;
-let currentVideoId = null;
+  let player = null;
+  let playerReady = false;
+  let ytApiLoaded = false;
+  let currentVideoId = null;
 
-// Kiểm tra API có load chưa, nếu chưa thì load lại
-const ensureYouTubeAPI = () => {
-  if (!ytApiLoaded && typeof YT === "undefined") {
-    console.warn("⚠️ YouTube API chưa sẵn sàng, đang nạp lại...");
+  const volumeSlider = document.getElementById('volumeSlider');
+  const volumeValue = document.getElementById('volumeValue');
+  const savedVolume = Number(localStorage.getItem('yt-volume') || 100);
+
+  volumeSlider.value = savedVolume;
+  volumeValue.textContent = savedVolume + "%";
+
+  function applyVolume(vol) {
+    const v = Math.max(0, Math.min(100, Number(vol) || 0));
+    volumeSlider.value = v;
+    volumeValue.textContent = v + "%";
+    localStorage.setItem('yt-volume', String(v));
+    if (playerReady && player && typeof player.setVolume === "function") {
+      player.setVolume(v);
+    }
+  }
+
+  volumeSlider.addEventListener('input', () => {
+    applyVolume(volumeSlider.value);
+  });
+
+  const ensureYouTubeAPI = () => {
+    if (!ytApiLoaded && typeof YT === "undefined") {
+      console.warn("⚠️ YouTube API chưa sẵn sàng, đang nạp lại...");
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.body.appendChild(tag);
+    }
+  };
+
+  function onYouTubeIframeAPIReady() {
+    ytApiLoaded = true;
+    console.log("🎬 YouTube API đã sẵn sàng");
+
+    player = new YT.Player('yt-player', {
+      height: '0',
+      width: '0',
+      videoId: '',
+      playerVars: {
+        autoplay: 0,
+        controls: 0,
+        rel: 0,
+        modestbranding: 1,
+        loop: 1,
+        playlist: ''
+      },
+      events: {
+        onReady: (e) => {
+          playerReady = true;
+          applyVolume(savedVolume);
+          console.log("✅ Player đã sẵn sàng");
+          updateStatus('Player đã sẵn sàng 🎧');
+          bindPlaylistButtons();
+        },
+        onStateChange: onPlayerStateChange
+      }
+    });
+  }
+
+  function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.ENDED) {
+      player.playVideo();
+    }
+  }
+
+  function updateStatus(text) {
+    const el = document.querySelector('.status');
+    if (el) el.textContent = text;
+  }
+
+  function extractVideoId(url) {
+    if (!url) return '';
+    const match = url.match(/(?:v=|\/embed\/|\.be\/|shorts\/)([a-zA-Z0-9_-]{11})/);
+    return match ? match[1] : url.trim();
+  }
+
+  async function playVideo(videoId) {
+    if (!playerReady) {
+      updateStatus('⏳ Đang khởi tạo player...');
+      console.warn("Player chưa sẵn sàng, thử lại sau...");
+      return;
+    }
+
+    if (videoId === currentVideoId) {
+      player.playVideo();
+      updateStatus('▶️ Đang phát lại');
+      return;
+    }
+
+    currentVideoId = videoId;
+    player.loadVideoById(videoId);
+    applyVolume(volumeSlider.value);
+    updateStatus('🎶 Đang phát nhạc...');
+  }
+
+  function pauseVideo() {
+    if (playerReady) {
+      player.pauseVideo();
+      updateStatus('⏸️ Đã tạm dừng');
+    }
+  }
+
+  function stopVideo() {
+    if (playerReady) {
+      player.stopVideo();
+      updateStatus('⏹️ Đã dừng phát');
+    }
+  }
+
+  function bindPlaylistButtons() {
+    const tracks = document.querySelectorAll('.track');
+    tracks.forEach(track => {
+      const btn = track.querySelector('.playBtn');
+      if (!btn) return;
+
+      btn.addEventListener('click', () => {
+        const src = track.getAttribute('data-src');
+        const id = extractVideoId(src);
+        playVideo(id);
+
+        document.querySelectorAll('.track').forEach(t => t.classList.remove('playing'));
+        track.classList.add('playing');
+      });
+    });
+
+    document.getElementById('pauseAll').addEventListener('click', pauseVideo);
+    document.getElementById('stopAll').addEventListener('click', stopVideo);
+
+    const newLink = document.getElementById('newLink');
+    newLink.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const id = extractVideoId(newLink.value);
+        if (id) {
+          playVideo(id);
+          updateStatus('🎵 Đang phát bài vừa nhập');
+        }
+      }
+    });
+  }
+
+  window.addEventListener('load', () => {
     const tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
     document.body.appendChild(tag);
-  }
-};
 
-// Gọi khi API sẵn sàng
-function onYouTubeIframeAPIReady() {
-  ytApiLoaded = true;
-  console.log("🎬 YouTube API đã sẵn sàng");
-
-  player = new YT.Player('yt-player', {
-    height: '0',
-    width: '0',
-    videoId: '',
-    playerVars: {
-      autoplay: 0,
-      controls: 0,
-      rel: 0,
-      modestbranding: 1,
-      loop: 1,
-      playlist: ''
-    },
-    events: {
-      onReady: (e) => {
-        playerReady = true;
-        console.log("✅ Player đã sẵn sàng");
-        updateStatus('Player đã sẵn sàng 🎧');
-        bindPlaylistButtons(); // Gắn sự kiện Play sau khi player sẵn sàng
-      },
-      onStateChange: onPlayerStateChange
-    }
-  });
-}
-
-// Khi trạng thái player thay đổi
-function onPlayerStateChange(event) {
-  if (event.data === YT.PlayerState.ENDED) {
-    player.playVideo(); // tự loop lại
-  }
-}
-
-// Cập nhật trạng thái hiển thị
-function updateStatus(text) {
-  const el = document.querySelector('.status');
-  if (el) el.textContent = text;
-}
-
-// Tách videoId từ link
-function extractVideoId(url) {
-  const match = url.match(/(?:v=|\.be\/)([a-zA-Z0-9_-]{11})/);
-  return match ? match[1] : url;
-}
-
-// Gọi khi click "Play" một bài
-async function playVideo(videoId) {
-  if (!playerReady) {
+    setTimeout(ensureYouTubeAPI, 3000);
     updateStatus('⏳ Đang khởi tạo player...');
-    console.warn("Player chưa sẵn sàng, thử lại sau...");
-    return;
-  }
-
-  if (videoId === currentVideoId) {
-    player.playVideo();
-    updateStatus('▶️ Đang phát lại');
-    return;
-  }
-
-  currentVideoId = videoId;
-  player.loadVideoById(videoId);
-  updateStatus('🎶 Đang phát nhạc...');
-}
-
-// Tạm dừng
-function pauseVideo() {
-  if (playerReady) {
-    player.pauseVideo();
-    updateStatus('⏸️ Đã tạm dừng');
-  }
-}
-
-// Dừng hẳn
-function stopVideo() {
-  if (playerReady) {
-    player.stopVideo();
-    updateStatus('⏹️ Đã dừng phát');
-  }
-}
-
-// Gắn sự kiện cho các nút Play trong danh sách
-function bindPlaylistButtons() {
-  const tracks = document.querySelectorAll('.track');
-  tracks.forEach(track => {
-    const btn = track.querySelector('.playBtn');
-    btn.addEventListener('click', () => {
-      const src = track.getAttribute('data-src');
-      const id = extractVideoId(src);
-      playVideo(id);
-
-      // Đổi trạng thái hiển thị
-      document.querySelectorAll('.track').forEach(t => t.classList.remove('playing'));
-      track.classList.add('playing');
-    });
   });
-
-  // Gắn sự kiện cho Pause/Stop
-  document.getElementById('pauseAll').addEventListener('click', pauseVideo);
-  document.getElementById('stopAll').addEventListener('click', stopVideo);
-}
-
-// Khi trang vừa load
-window.addEventListener('load', () => {
-  // Nạp API YouTube
-  const tag = document.createElement('script');
-  tag.src = "https://www.youtube.com/iframe_api";
-  document.body.appendChild(tag);
-
-  // Kiểm tra lại sau 3s nếu chưa sẵn sàng
-  setTimeout(ensureYouTubeAPI, 3000);
-
-  updateStatus('⏳ Đang khởi tạo player...');
-});
-</script>
-
-
+  </script>
 </body>
 </html>
