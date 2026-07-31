@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebCode Studio</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #1e1e1e;
+    color: #cccccc;
+}
+
+/* APP */
+.app {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+}
+
+/* ACTIVITY BAR */
+.activity {
+    width: 52px;
+    background: #181818;
+    border-right: 1px solid #2b2b2b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.activity-icon {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 23px;
+    color: #888;
+    cursor: pointer;
+}
+
+.activity-icon.active {
+    color: white;
+    border-left: 2px solid #007acc;
+    background: #222;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 230px;
+    background: #181818;
+    border-right: 1px solid #2b2b2b;
+}
+
+.sidebar-title {
+    height: 42px;
+    display: flex;
+    align-items: center;
+    padding-left: 18px;
+    font-size: 12px;
+    color: #bbb;
+    letter-spacing: .5px;
+}
+
+.folder {
+    padding: 8px 14px;
+    font-size: 13px;
+    color: #ddd;
+}
+
+.file {
+    height: 30px;
+    display: flex;
+    align-items: center;
+    padding-left: 28px;
+    gap: 7px;
+    cursor: pointer;
+}
+
+.file:hover {
+    background: #2a2d2e;
+}
+
+.file.active {
+    background: #37373d;
+    color: white;
+}
+
+.html-icon {
+    color: #e44d26;
+}
+
+/* MAIN */
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/* TOP */
+.topbar {
+    height: 36px;
+    background: #252526;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #181818;
+}
+
+.tab {
+    height: 36px;
+    min-width: 150px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #1e1e1e;
+    border-right: 1px solid #2b2b2b;
+    font-size: 13px;
+}
+
+.tab .close {
+    margin-left: auto;
+    color: #999;
+}
+
+/* TOOLBAR */
+.toolbar {
+    height: 42px;
+    background: #252526;
+    border-bottom: 1px solid #333;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 8px;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+}
+
+.run {
+    background: #16825d;
+    color: white;
+    padding: 7px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.run:hover {
+    background: #1b9b6f;
+}
+
+.clear {
+    background: #3a3d41;
+    color: #ddd;
+    padding: 7px 12px;
+    border-radius: 4px;
+}
+
+.toolbar-info {
+    margin-left: auto;
+    color: #777;
+    font-size: 12px;
+}
+
+/* WORKSPACE */
+.workspace {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+}
+
+.editor-area {
+    width: 58%;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.preview-area {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid #333;
+}
+
+.panel-title {
+    height: 30px;
+    background: #252526;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 12px;
+    color: #aaa;
+    border-bottom: 1px solid #333;
+}
+
+#editor {
+    flex: 1;
+}
+
+/* PREVIEW */
+#preview {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: white;
+}
+
+/* STATUS */
+.statusbar {
+    height: 22px;
+    background: #007acc;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 11px;
+}
+
+.status-right {
+    margin-left: auto;
+    display: flex;
+    gap: 18px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="app">
+
+```
+<!-- ACTIVITY BAR -->
+<div class="activity">
+    <div class="activity-icon active">📄</div>
+    <div class="activity-icon">🔍</div>
+    <div class="activity-icon">🌿</div>
+    <div class="activity-icon">🐞</div>
+    <div class="activity-icon" style="margin-top:auto">⚙</div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+
+    <div class="sidebar-title">
+        EXPLORER
+    </div>
+
+    <div class="folder">
+        ▾ WEB PROJECT
+    </div>
+
+    <div class="file active">
+        <span class="html-icon">◇</span>
+        index.html
+    </div>
+
+    <div class="file">
+        <span style="color:#3b82f6">◇</span>
+        style.css
+    </div>
+
+    <div class="file">
+        <span style="color:#f7df1e">◇</span>
+        script.js
+    </div>
+
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+    <div class="topbar">
+        <div class="tab">
+            <span class="html-icon">◇</span>
+            index.html
+            <span class="close">×</span>
+        </div>
+    </div>
+
+    <div class="toolbar">
+
+        <button class="run" onclick="runCode()">
+            ▶ Run
+        </button>
+
+        <button class="clear" onclick="clearPreview()">
+            🗑 Clear
+        </button>
+
+        <div class="toolbar-info">
+            Ctrl + Enter để chạy
+        </div>
+
+    </div>
+
+    <div class="workspace">
+
+        <!-- EDITOR -->
+        <section class="editor-area">
+
+            <div class="panel-title">
+                index.html
+            </div>
+
+            <div id="editor"></div>
+
+        </section>
+
+        <!-- PREVIEW -->
+        <section class="preview-area">
+
+            <div class="panel-title">
+                🌐 PREVIEW
+            </div>
+
+            <iframe id="preview"></iframe>
+
+        </section>
+
+    </div>
+
+    <div class="statusbar">
+
+        <span>🔵</span>
+        <span style="margin-left:6px">Ready</span>
+
+        <div class="status-right">
+            <span>Ln 1, Col 1</span>
+            <span>Spaces: 4</span>
+            <span>UTF-8</span>
+            <span>HTML</span>
+        </div>
+
+    </div>
+
+</main>
+```
+
+</div>
+
+<!-- MONACO -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
+
+<script>
+
+let editor;
+
+require.config({
+    paths: {
+        vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs"
+    }
+});
+
+require(["vs/editor/editor.main"], function () {
+
+    const defaultCode = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+
+    <title>My Website</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 50px;
+        }
+
+        h1 {
+            color: #00d9ff;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+
+<body>
+
+```
+<h1>Hello World!</h1>
+
+<p>Đây là VS Code mini 😎</p>
+
+<button onclick="hello()">
+    Click me
+</button>
+
+<script>
+    function hello() {
+        alert("Hello cậu!");
+    }
+<\/script>
+```
+
+</body>
+</html>`;
+
+```
+editor = monaco.editor.create(
+    document.getElementById("editor"),
+    {
+        value: defaultCode,
+
+        language: "html",
+
+        theme: "vs-dark",
+
+        automaticLayout: true,
+
+        minimap: {
+            enabled: true
+        },
+
+        fontSize: 14,
+
+        fontFamily:
+            "Consolas, 'Courier New', monospace",
+
+        fontLigatures: true,
+
+        tabSize: 4,
+
+        insertSpaces: true,
+
+        wordWrap: "off",
+
+        suggestOnTriggerCharacters: true,
+
+        quickSuggestions: true,
+
+        parameterHints: {
+            enabled: true
+        },
+
+        formatOnType: true,
+
+        autoClosingBrackets: "always",
+
+        autoClosingQuotes: "always",
+
+        autoClosingDelete: "always",
+
+        autoIndent: "full",
+
+        bracketPairColorization: {
+            enabled: true
+        },
+
+        scrollbar: {
+            verticalScrollbarSize: 12,
+            horizontalScrollbarSize: 12
+        }
+    }
+);
+
+
+/*
+    HTML AUTOCOMPLETE
+*/
+
+monaco.languages.registerCompletionItemProvider(
+    "html",
+    {
+        triggerCharacters: ["<", " ", "/"],
+
+        provideCompletionItems: function(model, position) {
+
+            const suggestions = [
+
+                {
+                    label: "div",
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText: "<div>$0</div>",
+                    insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                    documentation: "HTML div element"
+                },
+
+                {
+                    label: "html",
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText:
+                        "<html lang=\"vi\">\n\t$0\n</html>",
+                    insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                },
+
+                {
+                    label: "head",
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText:
+                        "<head>\n\t$0\n</head>",
+                    insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                },
+
+                {
+                    label: "body",
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText:
+                        "<body>\n\t$0\n</body>",
+                    insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                },
+
+                {
+                    label: "h1",
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText: "<h1>$0</h1>",
+                    insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                },
+
+                {
+                    label: "p",
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText: "<p>$0</p>",
+                    insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                },
+
+                {
+                    label: "button",
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText:
+                        "<button>$0</button>",
+                    insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                },
+
+                {
+                    label: "input",
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText:
+                        "<input type=\"${1:text}\" placeholder=\"${2}\">",
+                    insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                },
+
+                {
+                    label: "img",
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText:
+                        "<img src=\"${1}\" alt=\"${2}\">",
+                    insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                },
+
+                {
+                    label: "a",
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText:
+                        "<a href=\"${1}\">$0</a>",
+                    insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                },
+
+                {
+                    label: "script",
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText:
+                        "<script>\n\t$0\n<\\/script>",
+                    insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                },
+
+                {
+                    label: "style",
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText:
+                        "<style>\n\t$0\n</style>",
+                    insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                }
+
+            ];
+
+            return {
+                suggestions: suggestions.map(function(item) {
+
+                    return {
+                        ...item,
+                        range: {
+                            startLineNumber: position.lineNumber,
+                            startColumn: position.column,
+                            endLineNumber: position.lineNumber,
+                            endColumn: position.column
+                        }
+                    };
+
+                })
+            };
+        }
+    }
+);
+
+
+/*
+    CSS AUTOCOMPLETE
+*/
+
+monaco.languages.registerCompletionItemProvider(
+    "css",
+    {
+        triggerCharacters: [":", "-"],
+
+        provideCompletionItems: function(model, position) {
+
+            const properties = [
+
+                "color",
+                "background",
+                "background-color",
+                "font-size",
+                "font-family",
+                "font-weight",
+                "width",
+                "height",
+                "margin",
+                "padding",
+                "border",
+                "border-radius",
+                "display",
+                "position",
+                "top",
+                "left",
+                "right",
+                "bottom",
+                "flex",
+                "grid",
+                "gap",
+                "justify-content",
+                "align-items",
+                "text-align",
+                "box-shadow",
+                "opacity",
+                "transform",
+                "transition"
+
+            ];
+
+            return {
+                suggestions: properties.map(function(prop) {
+
+                    return {
+                        label: prop,
+                        kind:
+                            monaco.languages.CompletionItemKind.Property,
+                        insertText: prop + ": ",
+                        range: {
+                            startLineNumber:
+                                position.lineNumber,
+                            startColumn:
+                                position.column,
+                            endLineNumber:
+                                position.lineNumber,
+                            endColumn:
+                                position.column
+                        }
+                    };
+
+                })
+            };
+
+        }
+    }
+);
+
+
+/*
+    JAVASCRIPT AUTOCOMPLETE
+*/
+
+monaco.languages.registerCompletionItemProvider(
+    "javascript",
+    {
+        triggerCharacters: [".", " "],
+
+        provideCompletionItems: function(model, position) {
+
+            const jsItems = [
+
+                {
+                    label: "console.log",
+                    insertText: "console.log(${1});",
+                    documentation:
+                        "Print value to browser console"
+                },
+
+                {
+                    label: "document",
+                    insertText: "document",
+                    documentation:
+                        "Browser DOM document"
+                },
+
+                {
+                    label: "document.querySelector",
+                    insertText:
+                        "document.querySelector('${1}')",
+                    documentation:
+                        "Select an element"
+                },
+
+                {
+                    label: "document.getElementById",
+                    insertText:
+                        "document.getElementById('${1}')",
+                    documentation:
+                        "Get element by ID"
+                },
+
+                {
+                    label: "addEventListener",
+                    insertText:
+                        "addEventListener('${1}', ${2})",
+                    documentation:
+                        "Add an event listener"
+                },
+
+                {
+                    label: "function",
+                    insertText:
+                        "function ${1:name}(${2}) {\n\t${0}\n}",
+                    documentation:
+                        "Create a function"
+                },
+
+                {
+                    label: "const",
+                    insertText:
+                        "const ${1:name} = ${2};",
+                    documentation:
+                        "Declare a constant"
+                },
+
+                {
+                    label: "let",
+                    insertText:
+                        "let ${1:name} = ${2};",
+                    documentation:
+                        "Declare a variable"
+                },
+
+                {
+                    label: "setTimeout",
+                    insertText:
+                        "setTimeout(() => {\n\t${0}\n}, ${1:1000});"
+                },
+
+                {
+                    label: "setInterval",
+                    insertText:
+                        "setInterval(() => {\n\t${0}\n}, ${1:1000});"
+                },
+
+                {
+                    label: "alert",
+                    insertText:
+                        "alert('${1}');"
+                }
+
+            ];
+
+            return {
+                suggestions: jsItems.map(function(item) {
+
+                    return {
+                        label: item.label,
+                        kind:
+                            monaco.languages.CompletionItemKind.Function,
+                        insertText:
+                            item.insertText,
+                        insertTextRules:
+                            monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        documentation:
+                            item.documentation,
+
+                        range: {
+                            startLineNumber:
+                                position.lineNumber,
+                            startColumn:
+                                position.column,
+                            endLineNumber:
+                                position.lineNumber,
+                            endColumn:
+                                position.column
+                        }
+                    };
+
+                })
+            };
+
+        }
+    }
+);
+
+
+/*
+    CHẠY CODE
+*/
+
+window.runCode = function() {
+
+    const code = editor.getValue();
+
+    const iframe =
+        document.getElementById("preview");
+
+    const blob =
+        new Blob([code], {
+            type: "text/html"
+        });
+
+    const url =
+        URL.createObjectURL(blob);
+
+    iframe.src = url;
+};
+
+
+/*
+    CLEAR
+*/
+
+window.clearPreview = function() {
+
+    document.getElementById("preview")
+        .srcdoc = "";
+
+};
+
+
+/*
+    CTRL + ENTER
+*/
+
+editor.addCommand(
+    monaco.KeyMod.Ctrl |
+    monaco.KeyCode.Enter,
+    function() {
+
+        runCode();
+
+    }
+);
+
+
+/*
+    TỰ ĐỘNG CHẠY LẦN ĐẦU
+*/
+
+setTimeout(function() {
+
+    runCode();
+
+}, 500);
+```
+
+});
+
+</script>
+
+</body>
+</html>
