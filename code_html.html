@@ -210,6 +210,9 @@ button {
 
 #editor {
     flex: 1;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
 }
 
 /* PREVIEW */
@@ -356,7 +359,7 @@ button {
 
 <!-- MONACO -->
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js"></script>
 
 <script>
 
@@ -412,479 +415,108 @@ require(["vs/editor/editor.main"], function () {
 </button>
 
 <script>
-    function hello() {
-        alert("Hello cậu!");
+require.config({
+    paths: {
+        vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs"
     }
-<\/script>
-```
+});
+
+require(["vs/editor/editor.main"], function () {
+
+    const defaultCode = `<!DOCTYPE html>
+<html>
+<head>
+    <title>WebCode Studio</title>
+
+    <style>
+        body {
+            background: #111;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+            padding: 50px;
+        }
+
+        h1 {
+            color: cyan;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Hello World!</h1>
+
+    <p>Code thử ở đây 😎</p>
+
+    <button onclick="hello()">
+        Click me
+    </button>
+
+    <script>
+        function hello() {
+            alert("Hello cậu!");
+        }
+    <\/script>
 
 </body>
 </html>`;
 
-```
-editor = monaco.editor.create(
-    document.getElementById("editor"),
-    {
-        value: defaultCode,
+    editor = monaco.editor.create(
+        document.getElementById("editor"),
+        {
+            value: defaultCode,
 
-        language: "html",
+            language: "html",
 
-        theme: "vs-dark",
+            theme: "vs-dark",
 
-        automaticLayout: true,
+            automaticLayout: true,
 
-        minimap: {
-            enabled: true
-        },
+            fontSize: 14,
 
-        fontSize: 14,
+            fontFamily: "Consolas, monospace",
 
-        fontFamily:
-            "Consolas, 'Courier New', monospace",
+            tabSize: 4,
 
-        fontLigatures: true,
+            minimap: {
+                enabled: true
+            },
 
-        tabSize: 4,
+            wordWrap: "off",
 
-        insertSpaces: true,
+            suggestOnTriggerCharacters: true,
 
-        wordWrap: "off",
+            quickSuggestions: true,
 
-        suggestOnTriggerCharacters: true,
+            parameterHints: {
+                enabled: true
+            },
 
-        quickSuggestions: true,
+            autoClosingBrackets: "always",
 
-        parameterHints: {
-            enabled: true
-        },
+            autoClosingQuotes: "always",
 
-        formatOnType: true,
+            autoIndent: "full",
 
-        autoClosingBrackets: "always",
-
-        autoClosingQuotes: "always",
-
-        autoClosingDelete: "always",
-
-        autoIndent: "full",
-
-        bracketPairColorization: {
-            enabled: true
-        },
-
-        scrollbar: {
-            verticalScrollbarSize: 12,
-            horizontalScrollbarSize: 12
+            bracketPairColorization: {
+                enabled: true
+            }
         }
-    }
-);
+    );
 
-
-/*
-    HTML AUTOCOMPLETE
-*/
-
-monaco.languages.registerCompletionItemProvider(
-    "html",
-    {
-        triggerCharacters: ["<", " ", "/"],
-
-        provideCompletionItems: function(model, position) {
-
-            const suggestions = [
-
-                {
-                    label: "div",
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText: "<div>$0</div>",
-                    insertTextRules:
-                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                    documentation: "HTML div element"
-                },
-
-                {
-                    label: "html",
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText:
-                        "<html lang=\"vi\">\n\t$0\n</html>",
-                    insertTextRules:
-                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                },
-
-                {
-                    label: "head",
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText:
-                        "<head>\n\t$0\n</head>",
-                    insertTextRules:
-                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                },
-
-                {
-                    label: "body",
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText:
-                        "<body>\n\t$0\n</body>",
-                    insertTextRules:
-                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                },
-
-                {
-                    label: "h1",
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText: "<h1>$0</h1>",
-                    insertTextRules:
-                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                },
-
-                {
-                    label: "p",
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText: "<p>$0</p>",
-                    insertTextRules:
-                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                },
-
-                {
-                    label: "button",
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText:
-                        "<button>$0</button>",
-                    insertTextRules:
-                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                },
-
-                {
-                    label: "input",
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText:
-                        "<input type=\"${1:text}\" placeholder=\"${2}\">",
-                    insertTextRules:
-                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                },
-
-                {
-                    label: "img",
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText:
-                        "<img src=\"${1}\" alt=\"${2}\">",
-                    insertTextRules:
-                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                },
-
-                {
-                    label: "a",
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText:
-                        "<a href=\"${1}\">$0</a>",
-                    insertTextRules:
-                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                },
-
-                {
-                    label: "script",
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText:
-                        "<script>\n\t$0\n<\\/script>",
-                    insertTextRules:
-                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                },
-
-                {
-                    label: "style",
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText:
-                        "<style>\n\t$0\n</style>",
-                    insertTextRules:
-                        monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                }
-
-            ];
-
-            return {
-                suggestions: suggestions.map(function(item) {
-
-                    return {
-                        ...item,
-                        range: {
-                            startLineNumber: position.lineNumber,
-                            startColumn: position.column,
-                            endLineNumber: position.lineNumber,
-                            endColumn: position.column
-                        }
-                    };
-
-                })
-            };
+    // Ctrl + Enter để chạy
+    editor.addCommand(
+        monaco.KeyMod.Ctrl | monaco.KeyCode.Enter,
+        function () {
+            runCode();
         }
-    }
-);
+    );
 
-
-/*
-    CSS AUTOCOMPLETE
-*/
-
-monaco.languages.registerCompletionItemProvider(
-    "css",
-    {
-        triggerCharacters: [":", "-"],
-
-        provideCompletionItems: function(model, position) {
-
-            const properties = [
-
-                "color",
-                "background",
-                "background-color",
-                "font-size",
-                "font-family",
-                "font-weight",
-                "width",
-                "height",
-                "margin",
-                "padding",
-                "border",
-                "border-radius",
-                "display",
-                "position",
-                "top",
-                "left",
-                "right",
-                "bottom",
-                "flex",
-                "grid",
-                "gap",
-                "justify-content",
-                "align-items",
-                "text-align",
-                "box-shadow",
-                "opacity",
-                "transform",
-                "transition"
-
-            ];
-
-            return {
-                suggestions: properties.map(function(prop) {
-
-                    return {
-                        label: prop,
-                        kind:
-                            monaco.languages.CompletionItemKind.Property,
-                        insertText: prop + ": ",
-                        range: {
-                            startLineNumber:
-                                position.lineNumber,
-                            startColumn:
-                                position.column,
-                            endLineNumber:
-                                position.lineNumber,
-                            endColumn:
-                                position.column
-                        }
-                    };
-
-                })
-            };
-
-        }
-    }
-);
-
-
-/*
-    JAVASCRIPT AUTOCOMPLETE
-*/
-
-monaco.languages.registerCompletionItemProvider(
-    "javascript",
-    {
-        triggerCharacters: [".", " "],
-
-        provideCompletionItems: function(model, position) {
-
-            const jsItems = [
-
-                {
-                    label: "console.log",
-                    insertText: "console.log(${1});",
-                    documentation:
-                        "Print value to browser console"
-                },
-
-                {
-                    label: "document",
-                    insertText: "document",
-                    documentation:
-                        "Browser DOM document"
-                },
-
-                {
-                    label: "document.querySelector",
-                    insertText:
-                        "document.querySelector('${1}')",
-                    documentation:
-                        "Select an element"
-                },
-
-                {
-                    label: "document.getElementById",
-                    insertText:
-                        "document.getElementById('${1}')",
-                    documentation:
-                        "Get element by ID"
-                },
-
-                {
-                    label: "addEventListener",
-                    insertText:
-                        "addEventListener('${1}', ${2})",
-                    documentation:
-                        "Add an event listener"
-                },
-
-                {
-                    label: "function",
-                    insertText:
-                        "function ${1:name}(${2}) {\n\t${0}\n}",
-                    documentation:
-                        "Create a function"
-                },
-
-                {
-                    label: "const",
-                    insertText:
-                        "const ${1:name} = ${2};",
-                    documentation:
-                        "Declare a constant"
-                },
-
-                {
-                    label: "let",
-                    insertText:
-                        "let ${1:name} = ${2};",
-                    documentation:
-                        "Declare a variable"
-                },
-
-                {
-                    label: "setTimeout",
-                    insertText:
-                        "setTimeout(() => {\n\t${0}\n}, ${1:1000});"
-                },
-
-                {
-                    label: "setInterval",
-                    insertText:
-                        "setInterval(() => {\n\t${0}\n}, ${1:1000});"
-                },
-
-                {
-                    label: "alert",
-                    insertText:
-                        "alert('${1}');"
-                }
-
-            ];
-
-            return {
-                suggestions: jsItems.map(function(item) {
-
-                    return {
-                        label: item.label,
-                        kind:
-                            monaco.languages.CompletionItemKind.Function,
-                        insertText:
-                            item.insertText,
-                        insertTextRules:
-                            monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                        documentation:
-                            item.documentation,
-
-                        range: {
-                            startLineNumber:
-                                position.lineNumber,
-                            startColumn:
-                                position.column,
-                            endLineNumber:
-                                position.lineNumber,
-                            endColumn:
-                                position.column
-                        }
-                    };
-
-                })
-            };
-
-        }
-    }
-);
-
-
-/*
-    CHẠY CODE
-*/
-
-window.runCode = function() {
-
-    const code = editor.getValue();
-
-    const iframe =
-        document.getElementById("preview");
-
-    const blob =
-        new Blob([code], {
-            type: "text/html"
-        });
-
-    const url =
-        URL.createObjectURL(blob);
-
-    iframe.src = url;
-};
-
-
-/*
-    CLEAR
-*/
-
-window.clearPreview = function() {
-
-    document.getElementById("preview")
-        .srcdoc = "";
-
-};
-
-
-/*
-    CTRL + ENTER
-*/
-
-editor.addCommand(
-    monaco.KeyMod.Ctrl |
-    monaco.KeyCode.Enter,
-    function() {
-
-        runCode();
-
-    }
-);
-
-
-/*
-    TỰ ĐỘNG CHẠY LẦN ĐẦU
-*/
-
-setTimeout(function() {
-
+    // Chạy lần đầu
     runCode();
 
-}, 500);
-```
-
 });
-
 </script>
 
 </body>
