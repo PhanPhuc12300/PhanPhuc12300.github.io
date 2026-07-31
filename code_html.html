@@ -363,72 +363,65 @@ button {
 
 <script>
 
-let editor;
+let editor = null;
 
-require.config({
-    paths: {
-        vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs"
+/* =========================
+   CHẠY HTML
+========================= */
+
+function runCode() {
+
+    if (!editor) {
+        console.log("Editor chưa sẵn sàng");
+        return;
     }
-});
 
-require(["vs/editor/editor.main"], function () {
+    const code = editor.getValue();
 
-    const defaultCode = `<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
+    const preview = document.getElementById("preview");
 
-    <title>My Website</title>
+    preview.srcdoc = code;
+}
 
-    <style>
-        body {
-            font-family: Arial;
-            background: #111;
-            color: white;
-            text-align: center;
-            padding: 50px;
-        }
 
-        h1 {
-            color: #00d9ff;
-        }
+/* =========================
+   XÓA PREVIEW
+========================= */
 
-        button {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-    </style>
+function clearPreview() {
 
-</head>
+    const preview = document.getElementById("preview");
 
-<body>
+    preview.srcdoc = "";
 
-```
-<h1>Hello World!</h1>
+}
 
-<p>Đây là VS Code mini 😎</p>
 
-<button onclick="hello()">
-    Click me
-</button>
+/* =========================
+   MONACO
+========================= */
 
-<script>
 require.config({
     paths: {
         vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs"
     }
 });
 
+
 require(["vs/editor/editor.main"], function () {
 
-    const defaultCode = `<!DOCTYPE html>
-<html>
+    const defaultCode =
+`<!DOCTYPE html>
+<html lang="vi">
+
 <head>
+
+    <meta charset="UTF-8">
+
     <title>WebCode Studio</title>
 
     <style>
+
         body {
             background: #111;
             color: white;
@@ -440,14 +433,23 @@ require(["vs/editor/editor.main"], function () {
         h1 {
             color: cyan;
         }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
     </style>
+
 </head>
 
 <body>
 
     <h1>Hello World!</h1>
 
-    <p>Code thử ở đây 😎</p>
+    <p>Đây là WebCode Studio 😎</p>
 
     <button onclick="hello()">
         Click me
@@ -460,11 +462,16 @@ require(["vs/editor/editor.main"], function () {
     <\/script>
 
 </body>
+
 </html>`;
+
+
+    /* Tạo editor */
 
     editor = monaco.editor.create(
         document.getElementById("editor"),
         {
+
             value: defaultCode,
 
             language: "html",
@@ -475,9 +482,12 @@ require(["vs/editor/editor.main"], function () {
 
             fontSize: 14,
 
-            fontFamily: "Consolas, monospace",
+            fontFamily:
+                "Consolas, 'Courier New', monospace",
 
             tabSize: 4,
+
+            insertSpaces: true,
 
             minimap: {
                 enabled: true
@@ -485,9 +495,9 @@ require(["vs/editor/editor.main"], function () {
 
             wordWrap: "off",
 
-            suggestOnTriggerCharacters: true,
-
             quickSuggestions: true,
+
+            suggestOnTriggerCharacters: true,
 
             parameterHints: {
                 enabled: true
@@ -501,22 +511,325 @@ require(["vs/editor/editor.main"], function () {
 
             bracketPairColorization: {
                 enabled: true
+            },
+
+            scrollbar: {
+                verticalScrollbarSize: 12,
+                horizontalScrollbarSize: 12
             }
+
         }
     );
 
-    // Ctrl + Enter để chạy
+
+    /* =========================
+       CTRL + ENTER
+    ========================= */
+
     editor.addCommand(
-        monaco.KeyMod.Ctrl | monaco.KeyCode.Enter,
+        monaco.KeyMod.Ctrl |
+        monaco.KeyCode.Enter,
+
         function () {
             runCode();
         }
     );
 
-    // Chạy lần đầu
+
+    /* =========================
+       HTML AUTOCOMPLETE
+    ========================= */
+
+    monaco.languages.registerCompletionItemProvider(
+        "html",
+        {
+
+            triggerCharacters: ["<", " "],
+
+            provideCompletionItems:
+                function(model, position) {
+
+                    const items = [
+
+                        ["div", "<div>$0</div>"],
+
+                        ["span", "<span>$0</span>"],
+
+                        ["p", "<p>$0</p>"],
+
+                        ["h1", "<h1>$0</h1>"],
+
+                        ["h2", "<h2>$0</h2>"],
+
+                        ["button", "<button>$0</button>"],
+
+                        ["input",
+                         "<input type=\"${1:text}\" placeholder=\"${2}\">"],
+
+                        ["img",
+                         "<img src=\"${1}\" alt=\"${2}\">"],
+
+                        ["a",
+                         "<a href=\"${1}\">$0</a>"],
+
+                        ["ul",
+                         "<ul>\\n\\t<li>$0</li>\\n</ul>"],
+
+                        ["li",
+                         "<li>$0</li>"],
+
+                        ["form",
+                         "<form>\\n\\t$0\\n</form>"],
+
+                        ["table",
+                         "<table>\\n\\t$0\\n</table>"],
+
+                        ["script",
+                         "<script>\\n\\t$0\\n<\\\\/script>"],
+
+                        ["style",
+                         "<style>\\n\\t$0\\n</style>"]
+
+                    ];
+
+
+                    return {
+
+                        suggestions:
+                            items.map(function(item) {
+
+                                return {
+
+                                    label: item[0],
+
+                                    kind:
+                                        monaco
+                                        .languages
+                                        .CompletionItemKind
+                                        .Keyword,
+
+                                    insertText: item[1],
+
+                                    insertTextRules:
+                                        monaco
+                                        .languages
+                                        .CompletionItemInsertTextRule
+                                        .InsertAsSnippet,
+
+                                    range: {
+
+                                        startLineNumber:
+                                            position.lineNumber,
+
+                                        startColumn:
+                                            position.column,
+
+                                        endLineNumber:
+                                            position.lineNumber,
+
+                                        endColumn:
+                                            position.column
+
+                                    }
+
+                                };
+
+                            })
+
+                    };
+
+                }
+
+        }
+    );
+
+
+    /* =========================
+       CSS AUTOCOMPLETE
+    ========================= */
+
+    monaco.languages.registerCompletionItemProvider(
+        "css",
+        {
+
+            triggerCharacters: [":", "-"],
+
+            provideCompletionItems:
+                function(model, position) {
+
+                    const properties = [
+
+                        "color",
+                        "background",
+                        "background-color",
+                        "font-size",
+                        "font-family",
+                        "font-weight",
+                        "width",
+                        "height",
+                        "margin",
+                        "padding",
+                        "border",
+                        "border-radius",
+                        "display",
+                        "position",
+                        "top",
+                        "left",
+                        "right",
+                        "bottom",
+                        "flex",
+                        "grid",
+                        "gap",
+                        "justify-content",
+                        "align-items",
+                        "text-align",
+                        "box-shadow",
+                        "opacity",
+                        "transform",
+                        "transition"
+
+                    ];
+
+
+                    return {
+
+                        suggestions:
+                            properties.map(function(prop) {
+
+                                return {
+
+                                    label: prop,
+
+                                    kind:
+                                        monaco
+                                        .languages
+                                        .CompletionItemKind
+                                        .Property,
+
+                                    insertText:
+                                        prop + ": ",
+
+                                    range: {
+
+                                        startLineNumber:
+                                            position.lineNumber,
+
+                                        startColumn:
+                                            position.column,
+
+                                        endLineNumber:
+                                            position.lineNumber,
+
+                                        endColumn:
+                                            position.column
+
+                                    }
+
+                                };
+
+                            })
+
+                    };
+
+                }
+
+        }
+    );
+
+
+    /* =========================
+       JAVASCRIPT AUTOCOMPLETE
+    ========================= */
+
+    monaco.languages.registerCompletionItemProvider(
+        "javascript",
+        {
+
+            triggerCharacters: [".", " "],
+
+            provideCompletionItems:
+                function(model, position) {
+
+                    const items = [
+
+                        "console.log",
+
+                        "document",
+
+                        "document.querySelector",
+
+                        "document.getElementById",
+
+                        "addEventListener",
+
+                        "function",
+
+                        "const",
+
+                        "let",
+
+                        "var",
+
+                        "alert",
+
+                        "setTimeout",
+
+                        "setInterval"
+
+                    ];
+
+
+                    return {
+
+                        suggestions:
+                            items.map(function(item) {
+
+                                return {
+
+                                    label: item,
+
+                                    kind:
+                                        monaco
+                                        .languages
+                                        .CompletionItemKind
+                                        .Function,
+
+                                    insertText: item,
+
+                                    range: {
+
+                                        startLineNumber:
+                                            position.lineNumber,
+
+                                        startColumn:
+                                            position.column,
+
+                                        endLineNumber:
+                                            position.lineNumber,
+
+                                        endColumn:
+                                            position.column
+
+                                    }
+
+                                };
+
+                            })
+
+                    };
+
+                }
+
+        }
+    );
+
+
+    /* Chạy code mặc định */
+
     runCode();
 
 });
+
 </script>
 
 </body>
