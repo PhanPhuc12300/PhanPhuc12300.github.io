@@ -63,7 +63,7 @@ for(let i=1;i<=40;i++){
  c.innerHTML=`<img src="HLKT/${i}.jpg" loading="lazy"><div class="num">Ảnh ${i}</div>`;
  c.onclick=()=>{
    document.getElementById("light").style.display="flex";
-   document.getElementById("big").src=`HLKT/${i}.jpg`;
+   document.getElementById("big").src=`${i}.jpg`;
  }
  gallery.appendChild(c);
 }
