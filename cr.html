@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kỷ niệm</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+font-family:Segoe UI,sans-serif;
+background:linear-gradient(135deg,#ffd6ea,#ffeef7);
+overflow-x:hidden;color:#7a2854}
+header{padding:50px 20px;text-align:center}
+h1{font-size:48px}
+p{margin-top:10px}
+#gallery{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:18px;padding:25px;max-width:1400px;margin:auto}
+.card{
+background:#fff8fc;border-radius:18px;padding:10px;
+box-shadow:0 8px 20px rgba(255,105,180,.2);
+transition:.3s;cursor:pointer}
+.card:hover{transform:translateY(-6px) scale(1.03)}
+.card img{width:100%;height:260px;object-fit:cover;border-radius:12px}
+.num{text-align:center;padding:8px;font-weight:bold}
+#light{
+display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);
+justify-content:center;align-items:center;z-index:9}
+#light img{max-width:92%;max-height:90%;border-radius:12px}
+#close{
+position:fixed;top:20px;right:30px;font-size:40px;color:white;
+cursor:pointer}
+.heart{
+position:fixed;top:-20px;color:#ff69b4;animation:fall linear forwards;
+pointer-events:none}
+@keyframes fall{
+to{transform:translateY(110vh) rotate(360deg);opacity:0}
+}
+footer{text-align:center;padding:30px;color:#b04c7c}
+</style>
+</head>
+<body>
+<header>
+<h1>💗 Những Khoảnh Khắc 💗</h1>
+<p>Lưu giữ những kỷ niệm đẹp.</p>
+</header>
+
+<div id="gallery"></div>
+
+<div id="light">
+<div id="close">&times;</div>
+<img id="big">
+</div>
+
+<footer>41 bức ảnh • Made with ❤</footer>
+
+<script>
+const gallery=document.getElementById("gallery");
+for(let i=1;i<=41;i++){
+ const c=document.createElement("div");
+ c.className="card";
+ c.innerHTML=`<img src="HLKT/${i}.jpg" loading="lazy"><div class="num">Ảnh ${i}</div>`;
+ c.onclick=()=>{
+   document.getElementById("light").style.display="flex";
+   document.getElementById("big").src=`HLKT/${i}.jpg`;
+ }
+ gallery.appendChild(c);
+}
+document.getElementById("close").onclick=()=>{
+ document.getElementById("light").style.display="none";
+};
+document.getElementById("light").onclick=e=>{
+ if(e.target.id==="light")e.currentTarget.style.display="none";
+}
+setInterval(()=>{
+ let h=document.createElement("div");
+ h.className="heart";
+ h.innerHTML=["💗","💕","🌸"][Math.floor(Math.random()*3)];
+ h.style.left=Math.random()*100+"vw";
+ h.style.fontSize=(18+Math.random()*20)+"px";
+ h.style.animationDuration=(5+Math.random()*5)+"s";
+ document.body.appendChild(h);
+ setTimeout(()=>h.remove(),10000);
+},250);
+</script>
+</body>
+</html>
