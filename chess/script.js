@@ -401,3 +401,73 @@ function renderCapturedPieces(){
     },250);
 
 }
+function updateStatus(){
+
+    let turn=game.turn()==="w"?"White":"Black";
+
+    turnEl.textContent=turn;
+
+    if(game.in_checkmate()){
+
+        statusEl.textContent="Checkmate";
+
+        resultTitle.textContent=
+            game.turn()==="w"
+            ?"Black Wins!"
+            :"White Wins!";
+
+        return;
+
+    }
+
+    if(game.in_stalemate()){
+
+        statusEl.textContent="Draw (Stalemate)";
+
+        resultTitle.textContent="Draw";
+
+        return;
+
+    }
+
+    if(game.in_threefold_repetition()){
+
+        statusEl.textContent="Draw (Threefold Repetition)";
+
+        resultTitle.textContent="Draw";
+
+        return;
+
+    }
+
+    if(game.insufficient_material()){
+
+        statusEl.textContent="Draw (Insufficient Material)";
+
+        resultTitle.textContent="Draw";
+
+        return;
+
+    }
+
+    if(game.in_draw()){
+
+        statusEl.textContent="Draw";
+
+        resultTitle.textContent="Draw";
+
+        return;
+
+    }
+
+    if(game.in_check()){
+
+        statusEl.textContent=turn+" is in Check";
+
+        return;
+
+    }
+
+    statusEl.textContent=turn+"'s Turn";
+
+}
