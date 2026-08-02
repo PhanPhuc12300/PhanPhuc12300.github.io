@@ -2,7 +2,7 @@
 
 let board;
 let game=new Chess();
-let engine=STOCKFISH();
+let engine=null;
 
 let playerColor="white";
 let engineColor="black";
