@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play Chess vs Stockfish</title>
+
+    <!-- Chessboard -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/chessboard.js/1.0.0/css/chessboard.min.css">
+
+    <!-- Style -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="menu">
+
+    <h1>♟ Chess vs Stockfish</h1>
+
+    <div class="choose">
+
+        <button id="playWhite" class="colorBtn white">
+            Play White
+        </button>
+
+        <button id="playBlack" class="colorBtn black">
+            Play Black
+        </button>
+
+    </div>
+
+</div>
+
+<div id="gameArea">
+
+    <div class="leftPanel">
+
+        <div class="player">
+
+            <h2>Black</h2>
+
+            <div id="capturedByWhite"
+                 class="captured"></div>
+
+        </div>
+
+        <div id="board"></div>
+
+        <div class="player">
+
+            <h2>White</h2>
+
+            <div id="capturedByBlack"
+                 class="captured"></div>
+
+        </div>
+
+    </div>
+
+    <div class="rightPanel">
+
+        <div class="statusCard">
+
+            <h3>Game Status</h3>
+
+            <p id="status">
+                Waiting...
+            </p>
+
+        </div>
+
+        <div class="statusCard">
+
+            <h3>Turn</h3>
+
+            <p id="turn">
+                White
+            </p>
+
+        </div>
+
+        <div class="statusCard">
+
+            <h3>Evaluation</h3>
+
+            <p id="eval">
+                --
+            </p>
+
+        </div>
+
+        <div class="statusCard">
+
+            <h3>Moves</h3>
+
+            <div id="moveHistory"></div>
+
+        </div>
+
+        <div class="buttons">
+
+            <button id="newGame">
+                New Game
+            </button>
+
+            <button id="undo">
+                Undo
+            </button>
+
+            <button id="flip">
+                Flip Board
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="promotionPopup">
+
+    <div class="promotionBox">
+
+        <h2>Choose Promotion</h2>
+
+        <div class="promotionPieces">
+
+            <img id="promoQ">
+
+            <img id="promoR">
+
+            <img id="promoB">
+
+            <img id="promoN">
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="gameOver">
+
+    <div class="popup">
+
+        <h2 id="gameResult">
+            Game Over
+        </h2>
+
+        <button id="playAgain">
+            Play Again
+        </button>
+
+    </div>
+
+</div>
+
+<!-- Chess.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
+
+<!-- Chessboard -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard.js/1.0.0/js/chessboard.min.js"></script>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- Stockfish -->
+<script src="https://cdn.jsdelivr.net/npm/stockfish@16.0.0/src/stockfish.js"></script>
+
+<!-- Main -->
+<script src="script.js"></script>
+
+</body>
+</html>
