@@ -60,7 +60,7 @@ const gallery=document.getElementById("gallery");
 for(let i=1;i<=40;i++){
  const c=document.createElement("div");
  c.className="card";
- c.innerHTML=`<img src="HLKT/${i}.jpg" loading="lazy"><div class="num">Ảnh ${i}</div>`;
+ c.innerHTML=`<img src="${i}.jpg" loading="lazy"><div class="num">Ảnh ${i}</div>`;
  c.onclick=()=>{
    document.getElementById("light").style.display="flex";
    document.getElementById("big").src=`${i}.jpg`;
